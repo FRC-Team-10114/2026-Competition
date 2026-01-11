@@ -1,8 +1,8 @@
 package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public interface ShooterIO {
     
-    public void setControl(double RPM);
-
-    public double getPosition();
+    public void setRPM(AngularVelocity RPM);
 }
