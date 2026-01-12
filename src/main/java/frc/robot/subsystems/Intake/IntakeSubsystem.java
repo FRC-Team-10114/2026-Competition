@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -17,6 +19,8 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.io.setControl(velocity, false);
+        
+        Logger.recordOutput("Intake/IntakeVelocity", this.io.getVelocity());
     }
 
     public void intake() {
