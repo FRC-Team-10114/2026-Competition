@@ -99,7 +99,7 @@ public class Limelight extends SubsystemBase {
             mt2.pose.getRotation().getRadians()
         };
 
-        SmartDashboard.putNumberArray("LLPose", pose);
+        SmartDashboard.putNumberArray("Limelight/FieldPose", pose);
     }
 
     // 提供給外部使用的 Getter
