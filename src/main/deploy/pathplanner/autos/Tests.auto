@@ -7,7 +7,61 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SimplePath"
+            "pathName": "Path 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 7"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Path 8"
           }
         }
       ]
