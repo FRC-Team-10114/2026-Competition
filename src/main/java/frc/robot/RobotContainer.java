@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Intake.IntakeIO;
 import frc.robot.subsystems.Intake.IntakeIOSpark;
@@ -59,7 +60,7 @@ public class RobotContainer {
 
     public final IntakeSubsystem intake = new IntakeSubsystem(intakeIO);
 
-    public final Limelight limelight = new Limelight(drivetrain);
+    public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
 
    private final Field2d field;
 
@@ -69,7 +70,14 @@ public class RobotContainer {
     private final SendableChooser<Command> startPosChooser = new SendableChooser<>();
     private final SendableChooser<Command> taskChooser = new SendableChooser<>();
 
+    private final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
+
     public RobotContainer() {
+
+        // Swerve Drivetrain Current & Voltage Test 
+
+        for (int i = 0; i < 4; i++) this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
+
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
 

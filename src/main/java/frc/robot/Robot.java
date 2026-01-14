@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import com.ctre.phoenix6.HootAutoReplay;
 
 import edu.wpi.first.math.util.Units;
@@ -25,6 +29,20 @@ public class Robot extends TimedRobot {
     private final boolean kUseLimelight = false;
 
     public Robot() {
+
+        Logger.recordMetadata("ProjectName", "MySwerveProject"); // 設定專案名稱
+        
+        if (isReal()) {
+            // 如果是真實機器人，將 log 存入隨身碟，並發送到 NetworkTables
+            Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs/")); 
+            Logger.addDataReceiver(new NT4Publisher()); 
+        } else {
+            // 如果是模擬器
+            Logger.addDataReceiver(new NT4Publisher()); 
+        }
+
+        Logger.start(); // 這行必須在所有初始化之前執行
+
         m_robotContainer = new RobotContainer();
     }
 
@@ -41,17 +59,17 @@ public class Robot extends TimedRobot {
          * This example is sufficient to show that vision integration is possible, though exact implementation
          * of how to use vision should be tuned per-robot and to the team's specification.
          */
-        if (kUseLimelight) {
-            var driveState = m_robotContainer.drivetrain.getState();
-            double headingDeg = driveState.Pose.getRotation().getDegrees();
-            double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
+        // if (kUseLimelight) {
+        //     var driveState = m_robotContainer.drivetrain.getState();
+        //     double headingDeg = driveState.Pose.getRotation().getDegrees();
+        //     double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
 
-            LimelightHelpers.SetRobotOrientation("limelight", headingDeg, 0, 0, 0, 0, 0);
-            var llMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-            if (llMeasurement != null && llMeasurement.tagCount > 0 && Math.abs(omegaRps) < 2.0) {
-                m_robotContainer.drivetrain.addVisionMeasurement(llMeasurement.pose, llMeasurement.timestampSeconds);
-            }
-        }
+        //     LimelightHelpers.SetRobotOrientation("limelight", headingDeg, 0, 0, 0, 0, 0);
+        //     var llMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        //     if (llMeasurement != null && llMeasurement.tagCount > 0 && Math.abs(omegaRps) < 2.0) {
+        //         m_robotContainer.drivetrain.addVisionMeasurement(llMeasurement.pose, llMeasurement.timestampSeconds);
+        //     }
+        // }
     }
 
     @Override
