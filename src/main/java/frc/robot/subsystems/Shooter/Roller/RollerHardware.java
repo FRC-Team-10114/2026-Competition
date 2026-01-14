@@ -21,12 +21,9 @@ public class RollerHardware implements RollerIO {
     
     private final TalonFX shooter = new TalonFX(15);
     
-    // ⚠️ 修正重點：
-    // Phoenix 6 的 getVelocity() 回傳的是 StatusSignal<Double> (純數值)
-    // 它還不支援直接回傳 StatusSignal<AngularVelocity>
     private final StatusSignal<AngularVelocity> velocitySignal = shooter.getVelocity();
 
-    private final MotionMagicVelocityVoltage m_request = new MotionMagicVelocityVoltage(0).withEnableFOC(true);
+    private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
     
     public static final double MotorToRPM = 1.0; 
 
@@ -43,6 +40,10 @@ public class RollerHardware implements RollerIO {
                 .withStatorCurrentLimit(70.0)
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(40.0);
+
+
+        configs.CurrentLimits.withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLimit(Amps.of(80));
 
         // 馬達設定
         configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;

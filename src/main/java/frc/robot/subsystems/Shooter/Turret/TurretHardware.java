@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class TurretHardware implements TurretIO {
     private final TalonFX Turretd = new TalonFX(20);
     private final double metersPerangle = 1.0;
-    private final MotionMagicVoltage Turretdvolt = new MotionMagicVoltage(0.0).withEnableFOC(true);
 
+    private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
     public TurretHardware() {
         this.configureMotors();
     }
@@ -34,6 +34,10 @@ public class TurretHardware implements TurretIO {
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(40.0);
 
+            
+
+        configs.CurrentLimits.withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLimit(Amps.of(80));
         // 馬達設定
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -57,7 +61,7 @@ public class TurretHardware implements TurretIO {
 
     public void setAngleRadians(double angle) {
         Turretd.setControl(
-                Turretdvolt.withPosition(Units.radiansToRotations(angle)));
+                m_request.withPosition(Units.radiansToRotations(angle)));
     }
 
     public void setControl(Supplier<Angle> angleSupplier) {
