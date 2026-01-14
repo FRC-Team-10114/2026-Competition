@@ -50,6 +50,7 @@ public class IntakeIOTalon implements IntakeIO {
 
     @Override
     public double getVelocity() {
+        intakeVelocity.refresh();
         return this.intakeVelocity.getValueAsDouble();
     }
 }

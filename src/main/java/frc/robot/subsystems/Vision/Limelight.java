@@ -1,67 +1,66 @@
 package frc.robot.subsystems.Vision;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
 public class Limelight extends SubsystemBase {
-        
+
     private final CommandSwerveDrivetrain drive;
-    private final String limelightName = "limelight-left";
+    private final String limelightName;
 
     private final Pigeon2 gyro;
 
     private int tagId = -1;
 
-    public Limelight(CommandSwerveDrivetrain drive) {
+    public Limelight(
+            CommandSwerveDrivetrain drive,
+            String limelightName) {
         this.drive = drive;
+        this.limelightName = limelightName;
         this.gyro = drive.getPigeon2();
     }
 
     @Override
     public void periodic() {
-        processLimelight(limelightName);
-        SmartDashboard.putNumber("Vision/VisionID", tagId);
-    }
-
-
-    private void processLimelight(String llName) {
-        // MegaTag2 Configure
         LimelightHelpers.SetRobotOrientation(
-            llName, 
-            gyro.getYaw().getValueAsDouble(), 
-            gyro.getAngularVelocityZWorld().getValueAsDouble(),
-            gyro.getPitch().getValueAsDouble(), 
-            gyro.getAngularVelocityYWorld().getValueAsDouble(), 
-            gyro.getRoll().getValueAsDouble(), 
-            gyro.getAngularVelocityXWorld().getValueAsDouble()
-        );
+                this.limelightName,
+                this.gyro.getYaw().getValueAsDouble(),
+                this.gyro.getAngularVelocityZWorld().getValueAsDouble(),
+                this.gyro.getPitch().getValueAsDouble(),
+                this.gyro.getAngularVelocityYWorld().getValueAsDouble(),
+                this.gyro.getRoll().getValueAsDouble(),
+                this.gyro.getAngularVelocityXWorld().getValueAsDouble());
 
         // MegaTag2 result
 
-        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName) == null) return;
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(llName);
+        if (mt2 == null)
+            return;
 
-        tagId = (int) LimelightHelpers.getFiducialID(llName);
-
+        tagId = (int) LimelightHelpers.getFiducialID(limelightName);
 
         // Filterts
 
-        if (mt2.tagCount == 0) return;
+        if (mt2.tagCount == 0)
+            return;
 
         // 機器人旋轉太快時 (大於 maxYawRate度/秒)，視覺會有殘影，不使用數據
         // (假設 drive.getGyroYawRate() 回傳 deg/s)
-        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > VisionConstants.MAX_GYRO_RATE) return;
+        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > VisionConstants.MAX_GYRO_RATE)
+            return;
 
         // 檢查座標是否跑出場地外 (X: 0~16.54m, Y: 0~8.21m)
-        if (mt2.pose.getX() < 0 || mt2.pose.getX() > 16.54 || 
-            mt2.pose.getY() < 0 || mt2.pose.getY() > 8.21) return;
+        if (mt2.pose.getX() < 0 || mt2.pose.getX() > 16.54 ||
+                mt2.pose.getY() < 0 || mt2.pose.getY() > 8.21)
+            return;
 
         // ---------------------------------------------------------
         // 4. 計算標準差 (Trust Level)
@@ -72,12 +71,12 @@ public class Limelight extends SubsystemBase {
 
         if (mt2.tagCount >= 2) {
             // 多 Tag：非常信任
-            xyStds = 0.5; 
-            degStds = 6.0; 
+            xyStds = 0.5;
+            degStds = 6.0;
         } else {
             // 單 Tag：信任度隨距離遞減 (距離越遠，標準差越大)
             // 這裡使用距離的平方來快速降低遠距離的權重
-            xyStds = 1.0 * (avgDist * avgDist); 
+            xyStds = 1.0 * (avgDist * avgDist);
             degStds = 999.0; // 單 Tag 完全不信任 MT2 算出的角度，只用它的 X/Y
         }
 
@@ -86,20 +85,16 @@ public class Limelight extends SubsystemBase {
         // ---------------------------------------------------------
         // 這裡需要你的 Drive 支援接收標準差 (Vector<N3>)
         drive.addVisionMeasurement(
-            mt2.pose,             // 視覺算出的 Pose2d
-            mt2.timestampSeconds, // 這是正確的拍攝時間 (Latency Compensated)
-            VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds))
-        );
+                mt2.pose, // 視覺算出的 Pose2d
+                mt2.timestampSeconds, // 這是正確的拍攝時間 (Latency Compensated)
+                VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
 
-        double[] pose = { 
-            mt2.pose.getX(),
-            mt2.pose.getY(),
-            mt2.pose.getRotation().getRadians()
-        };
-
-        SmartDashboard.putNumberArray("Limelight/FieldPose", pose);
+        Logger.recordOutput("Limelight/Pose/" + this.limelightName, mt2.pose);
+        Logger.recordOutput("Limelight/TagID/" + this.limelightName, tagId);
     }
 
     // 提供給外部使用的 Getter
-    public int getTagId() { return tagId; }
+    public int getTagId() {
+        return tagId;
+    }
 }

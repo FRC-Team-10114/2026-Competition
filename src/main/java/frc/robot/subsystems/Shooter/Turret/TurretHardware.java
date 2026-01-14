@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Turret;
+package frc.robot.subsystems.Shooter.Turret;
 
 import static edu.wpi.first.units.Units.Radians;
 
@@ -54,10 +54,11 @@ public class TurretHardware implements TurretIO {
 
         Turretd.getConfigurator().apply(configs);
     }
-  public void setAngleRadians(double angle) {
-    Turretd.setControl(
-        Turretdvolt.withPosition(Units.radiansToRotations(angle)));
-  }
+
+    public void setAngleRadians(double angle) {
+        Turretd.setControl(
+                Turretdvolt.withPosition(Units.radiansToRotations(angle)));
+    }
 
     public void setControl(Supplier<Angle> angleSupplier) {
         this.setAngleRadians(angleSupplier.get().in(Radians));

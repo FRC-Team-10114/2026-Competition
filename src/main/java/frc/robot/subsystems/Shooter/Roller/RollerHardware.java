@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Shooter.Roller;
 
 // --- 1. CTRE Phoenix 6 函式庫 ---
 import com.ctre.phoenix6.StatusSignal;
@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Velocity;
 // 靜態引入 Units 類別，這樣才能直接用 RotationsPerSecond
 import static edu.wpi.first.units.Units.*; 
 
-public class ShooterHardware implements ShooterIO {
+public class RollerHardware implements RollerIO {
     
     private final TalonFX shooter = new TalonFX(15);
     
@@ -30,7 +30,7 @@ public class ShooterHardware implements ShooterIO {
     
     public static final double MotorToRPM = 1.0; 
 
-    public ShooterHardware() {
+    public RollerHardware() {
         this.configureMotors();
     }
 
