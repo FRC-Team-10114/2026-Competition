@@ -5,8 +5,9 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class HoodConfig {
     
+    public static SparkMaxConfig hoodConfig;
+
     static {
-        SparkMaxConfig hoodConfig = new SparkMaxConfig();
 
         hoodConfig
                 .idleMode(IdleMode.kBrake)
@@ -18,6 +19,14 @@ public class HoodConfig {
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimit(0.0)
                 .reverseSoftLimitEnabled(true);
-        
+        hoodConfig.encoder
+                .velocityConversionFactor(0)
+                .positionConversionFactor(0)
+                .apply(hoodConfig.encoder);
+        hoodConfig.closedLoop
+                .p(0.1)
+                .i(0)
+                .d(0)
+                .apply(hoodConfig.closedLoop);
     }
 }
