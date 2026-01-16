@@ -1,280 +1,160 @@
 package frc.robot.subsystems.Vision;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.littletonrobotics.junction.Logger;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
+import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.PhotonVisionConstants;
+import frc.robot.Constants.PhotonVisionConstants.CameraConfig;
+import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
 public class PhotonVision extends SubsystemBase {
-    
-      private int tagId = -1;
 
-  /** 輔助：示範 VisionConstants.SIM_CAMERA_PROPERTIES 的最小 stub（你可以在別處定義） */
-  public class VisionConstants {
-    public static final Map<String, Transform3d> cameraTransforms = Map.of(
-        "RightOV", new Transform3d(
-            // 位置不變 (車尾右側)
-            new Translation3d(-0.20979456, -0.13607890, 0.15952705),
-            // 🛠️ 修改這裡：原本是 180-30，改成 180+30 (即 -150度)
-            new Rotation3d(0.0, 0.0, Math.toRadians(180 + 30))),
-        "LeftOV", new Transform3d(
-            // 位置不變 (車尾左側)
-            new Translation3d(-0.20979456, 0.13607890, 0.15952705),
-            // 🛠️ 修改這裡：原本是 -180+30，改成 -180-30 (即 150度)
-            new Rotation3d(0.0, 0.0, Math.toRadians(-180 - 30))));
-    public static final double borderPixels = 15.0; // 拒絕貼邊緣的角點（避免畸變/遮擋）
-    public static final double maxSingleTagDistanceMeters = Units.feetToMeters(6.0); // 單tag最遠可接受距離
-    public static final double maxYawRate = 720.0;//最大可以接受的旋轉速度
-  }
+    private final PhotonCamera camera;
+    private final CameraConfig config;
+    private final PhotonPoseEstimator poseEstimator;
+    private final CommandSwerveDrivetrain drivetrain;
 
-  private static class CamWrapper {
-    final String name;
-    final PhotonCamera cam;
-    final PhotonPoseEstimator estimator;
+    private int m_lastTagId = -1;
 
-    CamWrapper(String name, PhotonCamera cam, PhotonPoseEstimator estimator) {
-      this.name = name;
-      this.cam = cam;
-      this.estimator = estimator;
+    public PhotonVision(CommandSwerveDrivetrain drive, CameraConfig config) {
+        this.drivetrain = drive;
+        this.config = config;
+
+        // 1. 初始化相機（名稱從 Constants 取得）
+        this.camera = new PhotonCamera(config.cameraName());
+
+        // 2. 初始化場地與 Estimator
+        AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+        this.poseEstimator = new PhotonPoseEstimator(fieldLayout, config.cameraLocation());
+
+        this.poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
-  }
 
-  private final List<CamWrapper> cams = new ArrayList<>();
-  private drive drive;
+    @Override
+    public void periodic() {
+        updateVision();
+    }
 
-  // thresholds & tuning:
-  private final double borderPixels = VisionConstants.borderPixels; // 拒絕貼邊緣的角點（避免畸變/遮擋）
-  private final double maxSingleTagDistanceMeters = VisionConstants.maxSingleTagDistanceMeters; // 單tag最遠可接受距離
+    private void updateVision() {
+        // 讀取所有未讀取的結果（對應高頻率相機）
+        for (PhotonPipelineResult result : camera.getAllUnreadResults()) {
 
-  /**
-   * @param cameraTransforms map: cameraName -> Transform3d (camera-to-robot
-   *                         transform)
-   * @param poseEstimator    SwerveDrivePoseEstimator 實例（你用來融合 odometry + vision）
-   */
-  public PhotonVision(Map<String, Transform3d> cameraTransforms, drive drive) {
-    this.drive = drive;
-
-    // 載入官方場地 tag 資訊 (photon pose estimator 需要 field layout)
-    AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-
-    // 為每顆 camera 建立 PhotonCamera + PhotonPoseEstimator
-    VisionConstants.cameraTransforms.forEach((name, transform) -> {
-      PhotonCamera cam = new PhotonCamera(name);
-      PhotonPoseEstimator estimator = new PhotonPoseEstimator(
-          fieldLayout,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          transform);
-      // 多 tag fallback: 遇不到 multi-tag 結果時使用最低 ambiguous 方案
-      estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-      cams.add(new CamWrapper(name, cam, estimator));
-    });
-  }
-
-  /**
-   * - 讀 unread results (每個 camera)
-   * - 用 PhotonPoseEstimator.update(result) 產生 Pose3d（camera frame -> robot frame）
-   * - 根據距離、被使用 tag 數、邊界檢查等決定是否接受此觀測，以及計算權重
-   * - 權重平均合併 (x, y, theta)
-   * - 轉成 Pose2d 與 timestamp，丟給 poseEstimator.addVisionMeasurement()
-   */
-  @Override
-  public void periodic() {
-    this.vision();
-  }
-
-  public void vision() {
-    // 遍歷每一台相機 (不再需要收集 List 做平均，直接處理直接送)
-    for (CamWrapper cw : cams) {
-      // 讀取這台相機的所有未讀結果
-      for (PhotonPipelineResult result : cw.cam.getAllUnreadResults()) {
-
-        // 1. 基礎檢查與更新
-        var poseOpt = cw.estimator.update(result);
-
-        if (result.hasTargets()) {
-          tagId = result.getBestTarget().getFiducialId();
-        }
-
-        if (poseOpt.isEmpty())
-          continue;
-
-        // 機器人旋轉太快時 (大於 maxYawRate度/秒)，視覺會有殘影，不使用數據
-        if (Math.abs(drive.getGyroYawRate()) > VisionConstants.maxYawRate)
-          continue;
-
-        var est = poseOpt.get();
-        Pose3d cameraRobotPose3d = est.estimatedPose;
-        double resultTimeSec = est.timestampSeconds;
-
-        // 2. 過濾邏輯 (Filter)
-
-        // Z 軸高度檢查
-        if (!filterByZ(cameraRobotPose3d))
-          continue;
-
-        // 邊緣檢查 (Corner Edge Check)
-        boolean cornerNearEdge = false;
-        var targets = result.getTargets();
-        for (var tgt : targets) {
-          var corners = tgt.detectedCorners;
-          if (corners != null) {
-            for (var corner : corners) {
-              if (corner == null)
+            var poseOpt = poseEstimator.update(result);
+            if (poseOpt.isEmpty())
                 continue;
-              if (Math.abs(corner.x - 0.0) < borderPixels || Math.abs(corner.y - 0.0) < borderPixels ||
-                  Math.abs(corner.x - cw.cam.getCameraMatrix().get().getNumCols()) < borderPixels || // 簡化寫法，或維持原樣
-                  Math.abs(corner.y - cw.cam.getCameraMatrix().get().getNumRows()) < borderPixels) { // 這裡假設你有拿到解析度，若無維持原判斷即可
-                // 註：若不想改原本的寬高判斷，維持原本寫法即可，這邊示意
-                if (Math.abs(corner.x - 0.0) < borderPixels || Math.abs(corner.y - 0.0) < borderPixels) {
-                  cornerNearEdge = true;
-                  break;
-                }
-                // 注意：上面這幾行如果你原本的寫法有 width/height 變數，請繼續使用你原本的寫法
-                // 為了保持你的註解與邏輯，我還原你原本的邊緣檢查邏輯如下：
-                // (假設 camera resolution 寫死或已知，這邊簡化為不檢查右下邊界以免報錯，或者你保留原本程式碼)
-              }
+
+            // 基礎資訊更新
+            if (result.hasTargets()) {
+                m_lastTagId = result.getBestTarget().getFiducialId();
             }
-          }
-          if (cornerNearEdge)
-            break;
+
+            // 過濾 A：旋轉速度過快（防止動態模糊導致的誤判）
+            double rotSpeed = Math.abs(drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
+            if (rotSpeed > PhotonVisionConstants.maxYawRate)
+                continue;
+
+            var est = poseOpt.get();
+            Pose3d estimatedPose3d = est.estimatedPose;
+
+            // 過濾 B：Z 軸高度檢查（機器人不可能飛起來或鑽進地裡）
+            if (Math.abs(estimatedPose3d.getZ()) > 0.5)
+                continue;
+
+            // 過濾 C：單個 Tag 的有效性檢查
+            int numTags = est.targetsUsed.size();
+            double avgDist = 0.0;
+            for (var tgt : est.targetsUsed) {
+                avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
+            }
+            avgDist /= numTags;
+
+            if (numTags == 1) {
+                // 單 Tag 若太遠或太模糊則捨棄
+                if (avgDist > PhotonVisionConstants.maxSingleTagDistanceMeters)
+                    continue;
+                if (result.getBestTarget().getPoseAmbiguity() > 0.2)
+                    continue;
+            }
+
+            // 3. 計算信任權重（標準差）
+            Vector<N3> stdDevs;
+            if (numTags >= 2) {
+                // 多 Tag 極其信任
+                stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+            } else {
+                // 單 Tag 信任度隨距離平方衰減，且完全不信任視覺的角度（交給陀螺儀）
+                double distErr = 0.5 * Math.pow(avgDist, 2);
+                stdDevs = VecBuilder.fill(distErr, distErr, 999999);
+            }
+
+            // 4. 發送至 Drivetrain
+            double timestamp = Utils.fpgaToCurrentTime(est.timestampSeconds);
+            drivetrain.addVisionMeasurement(estimatedPose3d.toPose2d(), timestamp, stdDevs);
+
+            Logger.recordOutput("Vision/PhotonVision/" + config.cameraName() + "/Pose", estimatedPose3d);
+            Logger.recordOutput("Vision/PhotonVision/" + config.cameraName() + "/timestamp", timestamp);
+            Logger.recordOutput("Vision/PhotonVision/" + config.cameraName() + "/stdDevs", stdDevs);
         }
-        if (cornerNearEdge)
-          continue;
-
-        // 計算距離與 Tag 數量
-        double avgDist = 0.0;
-        int usedTags = 0;
-        for (var tgt : poseOpt.get().targetsUsed) {
-          double d = tgt.getBestCameraToTarget().getTranslation().getNorm();
-          avgDist += d;
-          usedTags++;
-        }
-
-        // Ambiguity 檢查 (重要！)
-        var bestTarget = result.getBestTarget();
-        if (usedTags == 1 && bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2) {
-          continue; // 單 Tag 太模糊，丟棄
-        }
-
-        if (usedTags == 0)
-          continue;
-        avgDist /= usedTags;
-
-        // 距離過濾
-        if (usedTags < 2 && avgDist > maxSingleTagDistanceMeters)
-          continue;
-
-        // 3. 計算標準差 (Trust) - 這取代了原本的 Weight 計算
-        Vector<N3> stdDevs;
-        if (usedTags >= 2) {
-          // 【多 Tag】非常信任：X/Y 10cm, 角度 5度
-          stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
-        } else {
-          // 【單 Tag】不信任：誤差隨距離平方增長
-          double distError = 0.5 * avgDist * avgDist;
-          // 角度給予無限大 (999999)，代表「完全不相信單 Tag 的角度」，只相信 Gyro
-          stdDevs = VecBuilder.fill(distError, distError, 999999);
-        }
-
-        // 4. 直接送出數據 (Send to Pose Estimator)
-        // 不需要再存 list 做平均了，直接餵給 Estimator
-        Pose2d robotPose2d = cameraRobotPose3d.toPose2d();
-        double fpgatime = Utils.fpgaToCurrentTime(resultTimeSec);
-
-        // 呼叫 drive 的方法 (請確認 NewDrive 有支援接收 stdDevs)
-        drive.addVisionMeasurement(robotPose2d, fpgatime, stdDevs);
-      }
-    }
-    // 迴圈結束，工作完成。PoseEstimator 會自動處理融合。
-  }
-
-    private boolean filterByZ(Pose3d pose3d) {
-    double z = pose3d.getZ();
-    // 若相機報出的機器人 z > 0.6m 代表不合理（你的場地、相機角度會影響門檻）
-    return Math.abs(z) < 0.5;
-  }
-
-  public int apriltagId() {
-    return tagId;
-  }
-  public boolean resetPoseToVision() {
-    Pose2d bestPose = null;
-    double minStdDev = 999.0; // 用來比較誰比較準，數值越小越準
-    int bestTagCount = 0;
-
-    for (CamWrapper cw : cams) {
-      // 讀取最新結果
-      var result = cw.cam.getLatestResult();
-      if (!result.hasTargets())
-        continue;
-
-      var poseOpt = cw.estimator.update(result);
-      if (poseOpt.isEmpty())
-        continue;
-
-      var est = poseOpt.get();
-      Pose3d pose3d = est.estimatedPose;
-
-      // 1. 基本過濾：高度是否合理
-      if (Math.abs(pose3d.getZ()) > 0.5)
-        continue;
-
-      // 2. 計算 Tag 數量與平均距離
-      int usedTags = 0;
-      double avgDist = 0.0;
-      for (var tgt : est.targetsUsed) {
-        avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
-        usedTags++;
-      }
-      if (usedTags == 0)
-        continue;
-      avgDist /= usedTags;
-
-      // 3. 過濾模糊的單 Tag
-      // 如果只有 1 個 Tag，且模糊度太高 (>0.2)，這個數據不安全，不要用來重置
-      if (usedTags == 1) {
-        var bestTarget = result.getBestTarget();
-        if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
-          continue;
-      }
-
-      // 4. 評分機制：找出「最可信」的 Pose
-      // 邏輯：多 Tag 優先於單 Tag。同 Tag 數時，距離近者優先。
-      // 這裡我們簡單算出一個「信任分數 (stdDev)」，越小越好
-      double currentScore;
-      if (usedTags >= 2) {
-        currentScore = 0.1 + avgDist * 0.1; // 多 Tag 分數很低 (很好)
-      } else {
-        currentScore = 10.0 + avgDist * 2.0; // 單 Tag 分數較高 (較差)
-      }
-
-      // 如果這台相機比目前的最佳結果還準，就更新
-      if (usedTags > bestTagCount || (usedTags == bestTagCount && currentScore < minStdDev)) {
-        minStdDev = currentScore;
-        bestTagCount = usedTags;
-        bestPose = pose3d.toPose2d();
-      }
     }
 
-    // 5. 如果有找到任何可信的 Pose，就重置 Drive 的里程計
-    if (bestPose != null) {
-      // ⚠️ 呼叫 Drive 的 resetOdometry (硬重置)
-      // 注意：這會把機器人的座標直接改掉，請確保機器人是靜止的
-      drive.resetOdometry(bestPose);
-      return true;
+    /** 用於自動階段對齊或初始定位 */
+    public boolean resetPoseToVision() {
+        var result = camera.getLatestResult();
+        var poseOpt = poseEstimator.update(result);
+
+        if (poseOpt.isPresent()) {
+            Pose2d estimatedPose2d = poseOpt.get().estimatedPose.toPose2d();
+            Pose3d estimatedPose3d = poseOpt.get().estimatedPose;
+
+            // 1. 基礎檢查：高度是否合理 (Z 軸)
+            if (Math.abs(estimatedPose3d.getZ()) > 0.5)
+                return false;
+
+            // 2. 取得目前機器人的位置
+            Pose2d currentPose = drivetrain.getPose2d();
+
+            // 3. 計算視覺與目前位置的差異
+            // 距離差異 (公尺)
+            double distanceDiff = currentPose.getTranslation().getDistance(estimatedPose2d.getTranslation());
+            // 角度差異 (度)
+            double rotationDiff = Math
+                    .abs(currentPose.getRotation().getDegrees() - estimatedPose2d.getRotation().getDegrees());
+
+            // 4. 設定門檻 (Thresholds)
+            // 如果差異太小 (例如距離 < 5cm 且 角度 < 2度)，就視為已經精準，不需要重設
+            double distanceTolerance = 0.05; // 5 公分
+            double rotationTolerance = 2.0; // 2 度
+
+            if (distanceDiff < distanceTolerance && rotationDiff < rotationTolerance) {
+                // 差異太小，不執行重設，回傳 true 或 false 視你的邏輯而定 (這裡回傳 false 代表沒重設)
+                return false;
+            }
+
+            // 5. 只有差異夠大才重設座標
+            drivetrain.resetPose(estimatedPose2d);
+            return true;
+        }
+
+        return false;
     }
 
-    return false; // 沒看到任何 Tag，重置失敗
-  }
+    // ** 外部 getter */
+    public int getAprilTagId() {
+        return m_lastTagId;
+    }
 }

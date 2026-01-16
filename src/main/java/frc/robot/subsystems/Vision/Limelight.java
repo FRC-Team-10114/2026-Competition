@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
 public class Limelight extends SubsystemBase {
@@ -54,7 +54,7 @@ public class Limelight extends SubsystemBase {
 
         // 機器人旋轉太快時 (大於 maxYawRate度/秒)，視覺會有殘影，不使用數據
         // (假設 drive.getGyroYawRate() 回傳 deg/s)
-        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > VisionConstants.MAX_GYRO_RATE)
+        if (Math.abs(gyro.getAngularVelocityZWorld().getValueAsDouble()) > LimelightConstants.MAX_GYRO_RATE)
             return;
 
         // 檢查座標是否跑出場地外 (X: 0~16.54m, Y: 0~8.21m)
