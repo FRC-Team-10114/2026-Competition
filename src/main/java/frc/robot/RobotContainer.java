@@ -15,6 +15,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,10 +37,11 @@ import frc.robot.subsystems.Vision.Limelight;
 
 public class RobotContainer {
 
-    private double MaxSpeed = (4 / 5.47) * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = (4 / 5.47) * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts
+                                                                                               // desired top speed
     private double MaxTeleOpSpeed = MaxSpeed;
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
+                                                                                      // max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -62,7 +64,7 @@ public class RobotContainer {
 
     public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
 
-   private final Field2d field;
+    private final Field2d field;
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
@@ -72,11 +74,36 @@ public class RobotContainer {
 
     private final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
 
+    public enum AutoStart {
+        LEFT, CENTER, RIGHT, NONE
+    }
+
+    public enum RoundOne {
+        GO_CENTER,
+        GO_DEPOT,
+        GO_OUTPOST,
+        GO_TOWER,
+        NONE
+    }
+
+    public enum RoundTwo {
+        GO_CENTER,
+        GO_DEPOT,
+        GO_OUTPOST,
+        GO_TOWER,
+        NONE
+    }
+
+    private final SendableChooser<AutoStart> AutoStartChooser = new SendableChooser<>();
+    private final SendableChooser<RoundOne> AutoRoundOneChooser = new SendableChooser<>();
+    private final SendableChooser<RoundTwo> AutoRoundTwoChooser = new SendableChooser<>();
+
     public RobotContainer() {
 
-        // Swerve Drivetrain Current & Voltage Test 
+        // Swerve Drivetrain Current & Voltage Test
 
-        for (int i = 0; i < 4; i++) this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
+        for (int i = 0; i < 4; i++)
+            this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
 
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -113,17 +140,27 @@ public class RobotContainer {
 
     private void configureAutoChoosers() {
 
-        startPosChooser.addOption("start", new PathPlannerAuto("start"));
+        AutoStartChooser.setDefaultOption("None", AutoStart.NONE);
+        AutoStartChooser.addOption("Start: Left", AutoStart.LEFT);
+        AutoStartChooser.addOption("Start: Right", AutoStart.RIGHT);
+        AutoStartChooser.addOption("Start: CENTER", AutoStart.CENTER);
+        SmartDashboard.putData("Auto/1. Start Position", AutoStartChooser);
 
-        SmartDashboard.putData("start", startPosChooser);
+        AutoRoundOneChooser.setDefaultOption("R1: Go Center", RoundOne.GO_CENTER);
+        AutoRoundOneChooser.addOption("R1: Go Center", RoundOne.GO_CENTER);
+        AutoRoundOneChooser.addOption("R1: Go Depot", RoundOne.GO_DEPOT);
+        AutoRoundOneChooser.addOption("R1: Go Outpost", RoundOne.GO_OUTPOST);
+        AutoRoundOneChooser.addOption("R1: Go Tower", RoundOne.GO_TOWER);
+        AutoRoundOneChooser.addOption("R1: NONE", RoundOne.NONE);
+        SmartDashboard.putData("Auto/2. Round One", AutoRoundOneChooser);
 
-        taskChooser.setDefaultOption("MiddeLeft", new PathPlannerAuto("MiddeLeft"));
-
-        taskChooser.addOption("MiddeLeft", new PathPlannerAuto("MiddeLeft"));
-        taskChooser.addOption("MiddeRight", new PathPlannerAuto("MiddeRight"));
-        taskChooser.addOption("ToUs", new PathPlannerAuto("ToUs"));
-
-        SmartDashboard.putData("Auto/2. Task", taskChooser);
+        AutoRoundTwoChooser.setDefaultOption("R2: Go Center", RoundTwo.GO_CENTER);
+        AutoRoundTwoChooser.addOption("R2: Go Center", RoundTwo.GO_CENTER);
+        AutoRoundTwoChooser.addOption("R2: Go Depot", RoundTwo.GO_DEPOT);
+        AutoRoundTwoChooser.addOption("R2: Go Outpost", RoundTwo.GO_OUTPOST);
+        AutoRoundTwoChooser.addOption("R2: Go Tower", RoundTwo.GO_TOWER);
+        AutoRoundTwoChooser.addOption("R2: Go NONE", RoundTwo.NONE);
+        SmartDashboard.putData("Auto/2. Round Two", AutoRoundTwoChooser);
     }
 
     private void configureBindings() {
@@ -166,10 +203,194 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    public Command getAutonomousCommand() {
+    public Command auto() {
+        // 1. 取得選項
+        AutoStart startPose = AutoStartChooser.getSelected();
+        RoundOne roundOneDo = AutoRoundOneChooser.getSelected();
+        RoundTwo roundTwoDo = AutoRoundTwoChooser.getSelected();
+
+        // 2. 決定起始路徑
+        Command start = null;
+
+        if (start == null) {
+
+            Pose2d currentPose = this.drivetrain.getPose2d();
+
+            try {
+                Pose2d leftStart = PathPlannerPath.fromChoreoTrajectory("Left_start")
+                        .getStartingHolonomicPose()
+                        .orElse(new Pose2d());
+
+                Pose2d centerStart = PathPlannerPath.fromChoreoTrajectory("Center_start")
+                        .getStartingHolonomicPose()
+                        .orElse(new Pose2d());
+
+                Pose2d rightStart = PathPlannerPath.fromChoreoTrajectory("Right_start")
+                        .getStartingHolonomicPose()
+                        .orElse(new Pose2d());
+
+                // C. 計算距離 (使用 getTranslation().getDistance())
+                double distLeft = currentPose.getTranslation().getDistance(leftStart.getTranslation());
+                double distCenter = currentPose.getTranslation().getDistance(centerStart.getTranslation());
+                double distRight = currentPose.getTranslation().getDistance(rightStart.getTranslation());
+
+                // D. 比較誰最近
+                if (distLeft < distCenter && distLeft < distRight) {
+                    startPose = AutoStart.LEFT;
+                } else if (distRight < distCenter && distRight < distLeft) {
+                    startPose = AutoStart.RIGHT;
+                } else {
+                    startPose = AutoStart.CENTER;
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                startPose = AutoStart.LEFT;
+            }
+        }
+        switch (startPose) {
+                case LEFT:
+                    start = new PathPlannerAuto("Left_start");
+                    break;
+                case CENTER:
+                    start = new PathPlannerAuto("Center_start");
+                    break;
+                case RIGHT:
+                    start = new PathPlannerAuto("Right_start");
+                    break;
+            }
+
+        // 3. 決定第一輪任務
+        Command RoundOne = Commands.none();
+        switch (startPose) {
+            case LEFT:
+                switch (roundOneDo) {
+                    case GO_CENTER:
+                        RoundOne = new PathPlannerAuto("Left_Center_Left");
+                        break;
+                    case GO_DEPOT:
+                        RoundOne = new PathPlannerAuto("Left_DEPOT_LEFT");
+                        break;
+                    case GO_OUTPOST:
+                        RoundOne = new PathPlannerAuto("Left_DEPOST_Left");
+                        break;
+                    case GO_TOWER:
+                        RoundOne = new PathPlannerAuto("Left_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 這裡一定要加 break，不然會跑去執行 RIGHT 的邏輯
+
+            case RIGHT:
+                switch (roundOneDo) {
+                    case GO_CENTER:
+                        RoundOne = new PathPlannerAuto("Right_Center_Right");
+                        break;
+                    case GO_DEPOT:
+                        RoundOne = new PathPlannerAuto("Right_DEPOT_Right");
+                        break;
+                    case GO_OUTPOST:
+                        RoundOne = new PathPlannerAuto("Right_DEPOST_Right");
+                        break;
+                    case GO_TOWER:
+                        RoundOne = new PathPlannerAuto("Right_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 補上 break
+
+            case CENTER:
+                switch (roundOneDo) {
+                    case GO_CENTER:
+                        RoundOne = new PathPlannerAuto("Center_Center_Center");
+                        break;
+                    case GO_DEPOT:
+                        RoundOne = new PathPlannerAuto("Center_DEPOT_Center");
+                        break;
+                    case GO_OUTPOST:
+                        RoundOne = new PathPlannerAuto("Center_DEPOST_Center");
+                        break;
+                    case GO_TOWER:
+                        RoundOne = new PathPlannerAuto("Center_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 補上 break
+        }
+
+        // 4. 決定第二輪任務 (修正變數指派錯誤)
+        Command RoundTwo = Commands.none();
+        switch (startPose) {
+            case LEFT:
+                switch (roundTwoDo) {
+                    case GO_CENTER:
+                        RoundTwo = new PathPlannerAuto("Left_Center_Left");
+                        break;
+                    case GO_DEPOT:
+                        RoundTwo = new PathPlannerAuto("Left_DEPOT_LEFT");
+                        break;
+                    case GO_OUTPOST:
+                        RoundTwo = new PathPlannerAuto("Left_DEPOST_Left");
+                        break;
+                    case GO_TOWER:
+                        RoundTwo = new PathPlannerAuto("Left_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 補上 break
+
+            case RIGHT:
+                switch (roundTwoDo) {
+                    case GO_CENTER:
+                        RoundTwo = new PathPlannerAuto("Right_Center_Right");
+                        break;
+                    case GO_DEPOT:
+                        RoundTwo = new PathPlannerAuto("Right_DEPOT_Right");
+                        break;
+                    case GO_OUTPOST:
+                        RoundTwo = new PathPlannerAuto("Right_DEPOST_Right");
+                        break;
+                    case GO_TOWER:
+                        RoundTwo = new PathPlannerAuto("Right_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 補上 break
+
+            case CENTER:
+                switch (roundTwoDo) {
+                    case GO_CENTER:
+                        RoundTwo = new PathPlannerAuto("Center_Center_Center");
+                        break;
+                    case GO_DEPOT:
+                        RoundTwo = new PathPlannerAuto("Center_DEPOT_Center");
+                        break;
+                    case GO_OUTPOST:
+                        RoundTwo = new PathPlannerAuto("Center_DEPOST_Center");
+                        break;
+                    case GO_TOWER:
+                        RoundTwo = new PathPlannerAuto("Center_Tower");
+                        break;
+                    case NONE:
+                        break;
+                }
+                break; // ✅ 補上 break
+        }
+
+        // 5. 串聯執行
         return Commands.sequence(
-            startPosChooser.getSelected(),
-            taskChooser.getSelected()
-        );
+                start,
+                RoundOne,
+                RoundTwo);
+    }
+
+    public Command getAutonomousCommand() {
+        return auto();
+
     }
 }
