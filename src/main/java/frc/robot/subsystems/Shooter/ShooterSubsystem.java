@@ -22,6 +22,7 @@ public class ShooterSubsystem extends SubsystemBase {
         this.roller = roller;
         this.turret = turret;
         
+        this.turret.resetAngle();
     }
 
 

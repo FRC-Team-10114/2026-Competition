@@ -9,20 +9,27 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.MathHelper.EncoderWithGearRatio;
+import frc.robot.MathHelper.RobustCRTCalculator;
 
 public class TurretHardware implements TurretIO {
     private final TalonFX Turretd = new TalonFX(20);
+
+    private final CANcoder encoder1, encoder2;
+        
     private final double metersPerangle = 1.0;
 
     private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
     public TurretHardware() {
+        this.encoder1 = new CANcoder(21);
+        this.encoder2 = new CANcoder(22);
         this.configureMotors();
     }
 
@@ -68,5 +75,21 @@ public class TurretHardware implements TurretIO {
 
     public void setControl(Supplier<Angle> angleSupplier) {
         this.setAngleRadians(angleSupplier.get().in(Radians));
+    }
+
+    public void resetAngle() {
+
+        EncoderWithGearRatio encoder1 = new EncoderWithGearRatio(
+            this.encoder1.getPosition().getValueAsDouble(),
+            30
+        );
+
+        EncoderWithGearRatio encoder2 = new EncoderWithGearRatio(
+            this.encoder2.getPosition().getValueAsDouble(),
+            31
+        );
+
+        double angle = RobustCRTCalculator.calculateAbsolutePosition(encoder1, encoder2);
+        Turretd.getConfigurator().setPosition(angle);
     }
 }
