@@ -10,7 +10,7 @@ public class RobustCRTCalculator {
         // 1. 計算相位差
         double diff = master.position - slave.position;
         
-        // 2. 處理 Wrapping 確保在 [0, 1)
+        // 2. 處理 Wrapping 確保在 [0, 1]
         diff %= 1.0;
         if (diff < 0) diff += 1.0;
 

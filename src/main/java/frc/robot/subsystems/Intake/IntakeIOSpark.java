@@ -9,12 +9,15 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.Constants.IntakeConstants;
 
-public class IntakeIOSpark implements IntakeIO{
-    
+public class IntakeIOSpark implements IntakeIO {
+
     private final SparkMax intake;
 
+
     public IntakeIOSpark() {
+
         this.intake = new SparkMax(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+
     }
 
     @Override
@@ -29,10 +32,18 @@ public class IntakeIOSpark implements IntakeIO{
 
     @Override
     public void configure() {
+
+        SparkMaxConfig MaxIntakeConfig = new SparkMaxConfig();
+
+        MaxIntakeConfig
+                .idleMode(IdleMode.kBrake)
+                .inverted(false)
+                .smartCurrentLimit(30)
+                .apply(MaxIntakeConfig);
+
         this.intake.configure(
-            IntakeConfig.MaxIntakeConfig, 
-            ResetMode.kResetSafeParameters, 
-            PersistMode.kPersistParameters
-        );
+                MaxIntakeConfig,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 }

@@ -369,7 +369,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Pose2d getPose2d() {
         Pose2d pose = this.getState().Pose;
 
-        return pose;
+        return pose;    
     }
 
     public ChassisSpeeds getChassisSpeeds() {

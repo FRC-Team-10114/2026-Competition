@@ -89,8 +89,8 @@ public class Limelight extends SubsystemBase {
                 mt2.timestampSeconds, // 這是正確的拍攝時間 (Latency Compensated)
                 VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
 
-        Logger.recordOutput("Limelight/Pose/" + this.limelightName, mt2.pose);
-        Logger.recordOutput("Limelight/TagID/" + this.limelightName, tagId);
+        Logger.recordOutput("Vision/Limelight/Pose/" + this.limelightName, mt2.pose);
+        Logger.recordOutput("Vision/Limelight/TagID/" + this.limelightName, tagId);
     }
 
     // 提供給外部使用的 Getter
