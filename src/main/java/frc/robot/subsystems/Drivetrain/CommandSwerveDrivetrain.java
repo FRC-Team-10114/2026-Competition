@@ -371,13 +371,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         return pose;
     }
-    public Rotation2d getRotation(){
+
+    public Rotation2d getRotation() {
         return this.getPigeon2().getRotation2d();
     }
 
-public ChassisSpeeds getFieldVelocity() {
+    public ChassisSpeeds getFieldVelocity() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation());
     }
+
     public ChassisSpeeds getChassisSpeeds() {
         return this.getState().Speeds;
     }
@@ -409,5 +411,9 @@ public ChassisSpeeds getFieldVelocity() {
                 constraints,
                 0.0);
         return Commands.sequence(pathfindingCommand);
+    }
+
+    public void resetPosetotest() {
+        this.resetPose(new Pose2d(3.560225248336792, 4.027120113372803, getRotation()));
     }
 }
