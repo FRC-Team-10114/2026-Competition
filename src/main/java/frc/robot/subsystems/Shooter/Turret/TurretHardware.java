@@ -1,11 +1,13 @@
 package frc.robot.subsystems.Shooter.Turret;
 
+import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,8 +25,8 @@ public class TurretHardware implements TurretIO {
     private final CANcoder encoder1, encoder2;
         
     private final double metersPerangle = 1.0;
-    private final MotionMagicVoltage Turretdvolt = new MotionMagicVoltage(0.0).withEnableFOC(true);
 
+    private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
     public TurretHardware() {
         this.encoder1 = new CANcoder(21);
         this.encoder2 = new CANcoder(22);
@@ -41,6 +43,10 @@ public class TurretHardware implements TurretIO {
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(40.0);
 
+            
+
+        configs.CurrentLimits.withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLimit(Amp.of(80));
         // 馬達設定
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -64,7 +70,7 @@ public class TurretHardware implements TurretIO {
 
     public void setAngleRadians(double angle) {
         Turretd.setControl(
-                Turretdvolt.withPosition(Units.radiansToRotations(angle)));
+                m_request.withPosition(Units.radiansToRotations(angle)));
     }
 
     public void setControl(Supplier<Angle> angleSupplier) {

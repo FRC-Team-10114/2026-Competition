@@ -8,16 +8,15 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 public class IntakeConfig {
     
-    public static SparkMaxConfig MaxIntakeConfig;
+    public static SparkMaxConfig MaxIntakeConfig = new SparkMaxConfig();
 
-    public static TalonFXConfiguration TalonIntakeConfig;
+    public static TalonFXConfiguration TalonIntakeConfig = new TalonFXConfiguration();
 
     static {
         MaxIntakeConfig
                 .idleMode(IdleMode.kBrake)
                 .inverted(false)
-                .smartCurrentLimit( 30)
-                .apply(MaxIntakeConfig);
+                .smartCurrentLimit(30);
 
         TalonIntakeConfig.CurrentLimits
                 .withStatorCurrentLimitEnable(true)
@@ -27,6 +26,5 @@ public class IntakeConfig {
 
         TalonIntakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         TalonIntakeConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        
     }
 }

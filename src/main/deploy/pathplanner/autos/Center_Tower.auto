@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Test Path"
+            "pathName": "Center_TOWER"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }
