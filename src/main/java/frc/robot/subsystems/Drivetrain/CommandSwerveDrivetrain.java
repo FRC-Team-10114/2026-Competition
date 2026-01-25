@@ -395,21 +395,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command driveHelper(Pose2d tagetPose2d) {
-        // Since we are using a holonomic drivetrain, the rotation component of this
-        // pose
-        // represents the goal holonomic rotation
+
         Pose2d targetPose = tagetPose2d;
 
-        // Create the constraints to use while pathfinding
         PathConstraints constraints = new PathConstraints(
                 3.0, 4.0,
                 Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-        // Since AutoBuilder is configured, we can use it to build pathfinding commands
         Command pathfindingCommand = AutoBuilder.pathfindToPose(
                 targetPose,
                 constraints,
-                0.0);
+                3.0);
         return Commands.sequence(pathfindingCommand);
     }
 

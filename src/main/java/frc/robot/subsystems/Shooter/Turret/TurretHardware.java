@@ -26,7 +26,7 @@ public class TurretHardware implements TurretIO {
         
     private final double metersPerangle = 1.0;
 
-    private final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+    private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
     public TurretHardware() {
         this.encoder1 = new CANcoder(21);
         this.encoder2 = new CANcoder(22);
