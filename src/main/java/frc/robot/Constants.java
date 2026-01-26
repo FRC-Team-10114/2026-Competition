@@ -1,5 +1,12 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotation;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -8,6 +15,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 
 public class Constants {
     private static final AprilTagFieldLayout layout;
@@ -29,7 +38,7 @@ public class Constants {
         } catch (Exception e) {
             // 萬一讀不到檔案 (極少發生)，給個預設值防止程式崩潰
             // 這裡可以填入規則書上的大約數值
-            layout = null; 
+            layout = null;
             e.printStackTrace();
         }
 
@@ -39,7 +48,7 @@ public class Constants {
             fieldWidth = layout.getFieldWidth();
         } else {
             // Fallback (保底數值)
-            fieldLength = 16.54; 
+            fieldLength = 16.54;
             fieldWidth = 8.21;
         }
     }
@@ -54,7 +63,42 @@ public class Constants {
     }
 
     public static final class IntakeConstants {
-        public static final int INTAKE_MOTOR_ID = 13;
+
+        public static final int INTAKE_ARM_MOTOR_ID = 13;
+        public static final int INTKAE_ARM_CANCODER_ID = 15;
+
+        public static final double INTAKE_ARM_GEAR_RATIO = 0.0;
+        public static final double INTAKE_ARM_VELOCITY_CONVERSION_FACOTR = RadiansPerSecond
+                .convertFrom(INTAKE_ARM_GEAR_RATIO, RotationsPerSecond);
+        public static final double INTAKE_ARM_POSITION_CONVERSION_FACTOR = Radians.convertFrom(INTAKE_ARM_GEAR_RATIO,
+                Rotation);
+
+        public static final double[] INTAKE_ARM_PID = { 0.1, 0.0, 0.0 };
+        public static final double INTAKE_ARM_CRUISE_VELOCITY = RadiansPerSecond.fromBaseUnits(10);
+        public static final double INTAKE_ARM_MAX_ACCELERATION = RadiansPerSecondPerSecond.fromBaseUnits(20);
+
+        public static final Voltage INTAKE_ARM_STATOR_CURRENT_LIMIT = Volts.of(50);
+        public static final Voltage INTAKE_ARM_SUPPLY_CURRENT_LIMIT = Volts.of(40);
+
+        public static final Angle INTAKE_ARM_FORWARD_LIMIT = Radians.of(0.0);
+        public static final Angle INTAKE_ARM_REVERSE_LIMIT = Radians.of(0.0);
+
+        public static final int INTAKE_ROLLER_MOTOR_ID = 14;
+
+        public static final double[] INTAKE_ROLLER_PID = { 0.1, 0.0, 0.0 };
+
+        public static final double INTAKE_ROLLER_CRUISE_VELOCITY = RadiansPerSecond.fromBaseUnits(10);
+        public static final double INTAKE_ROLLER_MAX_ACCELERATION = RadiansPerSecondPerSecond.fromBaseUnits(20);
+
+        public static final double INTAKE_ROLLER_GEAR_RATIO = 0.0;
+        public static final double INTAKE_ROLLER_VELOCITY_CONVERSION_FACOTR = RotationsPerSecond
+                .convertFrom(INTAKE_ROLLER_GEAR_RATIO, RotationsPerSecond);
+        public static final double INTAKE_ROLLER_POSITION_CONVERSION_FACTOR = Rotation.convertFrom(
+                INTAKE_ROLLER_GEAR_RATIO,
+                Rotation);
+
+        public static final Voltage INTAKE_ROLLER_STATOR_CURRENT_LIMIT = Volts.of(50);
+        public static final Voltage INTAKE_ROLLER_SUPPLY_CURRENT_LIMIT = Volts.of(40);
     }
 
     public static final class LimelightConstants {
