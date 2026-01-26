@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -47,11 +49,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
         if (state != null) {
 
-            // --- A. 更新砲塔 (Turret) ---
-            // 取得算出來的 "場地角度"
             Rotation2d targetFieldAngle = state.turretFieldAngle();
-            // 轉成單位物件
+
             Angle targetAngleUnit = Radians.of(targetFieldAngle.getRadians());
+
+            Logger.recordOutput("targetFieldAngle",targetFieldAngle);
 
             this.setTurretAngle(drive.getRotation(),targetAngleUnit);
         }

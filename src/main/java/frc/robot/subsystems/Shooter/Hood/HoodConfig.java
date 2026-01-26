@@ -5,7 +5,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class HoodConfig {
     
-    public static SparkMaxConfig hoodConfig;
+    public static SparkMaxConfig hoodConfig = new SparkMaxConfig();
 
     static {
 
