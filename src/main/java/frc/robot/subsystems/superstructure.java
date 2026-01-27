@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Intake.IntakeSubssystem;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.FieldTagMap;
 import frc.robot.util.AllianceFlipUtil;
@@ -19,14 +20,16 @@ public class superstructure extends SubsystemBase {
 
     private final CommandSwerveDrivetrain drive;
 
+    private final ShooterSubsystem shooterSubsystem;
+
+    private final IntakeSubssystem intakeSubsystem;
+
     private static final double BLUE_ZONE_LIMIT = 5.50;
 
     private static final double RED_ZONE_START = 16.54 - 5.50; // 約 11.04
 
     private static final double FIELD_WIDTH = 8.21;
     private static final double MID_Y = FIELD_WIDTH / 2.0; // 中線 Y = 4.105
-
-    private final ShooterSubsystem shooterSubsystem;
 
     public enum area {
         CENTER,
@@ -39,12 +42,17 @@ public class superstructure extends SubsystemBase {
         BOTTOM
     }
 
-    public superstructure(CommandSwerveDrivetrain drive, ShooterSubsystem shooterSubsystem) {
+    public superstructure(
+            CommandSwerveDrivetrain drive,
+            ShooterSubsystem shooterSubsystem,
+            IntakeSubssystem intakeSubssystem) {
+
         this.drive = drive;
         this.shooterSubsystem = shooterSubsystem;
+        this.intakeSubsystem = intakeSubssystem;
     }
 
-        public VerticalSide getVerticalSide() {
+    public VerticalSide getVerticalSide() {
         double Y = drive.getPose2d().getY();
         if (Y > MID_Y) {
             return VerticalSide.TOP;
@@ -53,7 +61,7 @@ public class superstructure extends SubsystemBase {
         }
     }
 
-    public area getarea() {
+    public area getArea() {
         double x = drive.getPose2d().getX();
 
         if (x < BLUE_ZONE_LIMIT) {
@@ -67,7 +75,7 @@ public class superstructure extends SubsystemBase {
 
     public Pose2d ToTrenchPose() {
         Pose2d targetPose;
-        if (this.getarea() == area.BlueAlliance || this.getarea() == area.RedAlliance) {
+        if (this.getArea() == area.BlueAlliance || this.getArea() == area.RedAlliance) {
             if (this.getVerticalSide() == VerticalSide.TOP) {
                 targetPose = FieldTagMap.getLeftTrenchPoses()[1];
             } else {
