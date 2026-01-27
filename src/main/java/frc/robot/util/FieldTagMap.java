@@ -14,8 +14,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class FieldTagMap {
 
     public static final Map<Integer, Pose3d> tagMap = new HashMap<>();
-    private static final int[] LEFT_TRENCH_IDS = { 6, 7 };
-    private static final int[] RIGHT_TRENCH_IDS = { 12, 1 };
+    private static final int[] LEFT_TRENCH_IDS = { 22, 23 };
+    private static final int[] RIGHT_TRENCH_IDS = { 17, 28 };
     private static final double HALF_WIDTH = 1.668 / 2.0;
 
 

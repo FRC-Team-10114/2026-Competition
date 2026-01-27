@@ -1,9 +1,4 @@
-// Copyright (c) 2025-2026 Littleton Robotics
-// http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
+//Inspired by and adapted from FRC Team 6328
 
 package frc.robot.subsystems.Shooter;
 
@@ -159,9 +154,12 @@ public class ShooterCalculator {
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
 
-                // 8. 記錄與回傳
-                Logger.recordOutput("Shooting/EffectiveDistance", lookaheadTurretToTargetDistance);
-                Logger.recordOutput("Shooting/TargetFieldAngle", targetFieldAngle.getDegrees());
+                Pose2d simturretPosition = estimatedPose.transformBy(
+                                new Transform2d(
+                                                robotToTurret.getTranslation().toTranslation2d(),
+                                                robotToTurret.getRotation().toRotation2d()));
+                
+                Logger.recordOutput("simturretPosition", new Pose2d(simturretPosition.getX(),simturretPosition.getY(),targetFieldAngle));
                 Logger.recordOutput("Shooting/LookaheadPose", lookaheadPose);
 
                 return new ShootingState(targetFieldAngle, lookaheadTurretToTargetDistance);

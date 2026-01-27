@@ -11,7 +11,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+
 import frc.robot.subsystems.Intake.IntakeSubssystem;
+
+import frc.robot.subsystems.Shooter.ShooterCalculator;
+
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.FieldTagMap;
 import frc.robot.util.AllianceFlipUtil;
@@ -74,6 +78,7 @@ public class superstructure extends SubsystemBase {
     }
 
     public Pose2d ToTrenchPose() {
+
         Pose2d targetPose;
         if (this.getArea() == area.BlueAlliance || this.getArea() == area.RedAlliance) {
             if (this.getVerticalSide() == VerticalSide.TOP) {
@@ -81,26 +86,30 @@ public class superstructure extends SubsystemBase {
             } else {
                 targetPose = FieldTagMap.getRightTrenchPoses()[1];
             }
+
+        Pose2d[] selectedTrench;
+        if (this.getVerticalSide() == VerticalSide.TOP) {
+            selectedTrench = FieldTagMap.getLeftTrenchPoses();
+
         } else {
-            if (this.getVerticalSide() == VerticalSide.TOP) {
-                targetPose = FieldTagMap.getLeftTrenchPoses()[0];
-            } else {
-                targetPose = FieldTagMap.getRightTrenchPoses()[0];
-            }
+            selectedTrench = FieldTagMap.getRightTrenchPoses();
         }
-        return AllianceFlipUtil.apply(targetPose);
+        Pose2d finalTarget;
+        if(getarea() == area.CENTER){
+            finalTarget = selectedTrench[0];       
+        }else{
+            finalTarget = selectedTrench[1];
+        }
+
+        return AllianceFlipUtil.apply(finalTarget);
     }
 
     public Command DriveToTrench() {
         List<Rotation2d> snapAngles = List.of(
                 Rotation2d.fromDegrees(0),
-                Rotation2d.fromDegrees(45),
                 Rotation2d.fromDegrees(90),
-                Rotation2d.fromDegrees(135),
                 Rotation2d.fromDegrees(180),
-                Rotation2d.fromDegrees(-45),
-                Rotation2d.fromDegrees(-90),
-                Rotation2d.fromDegrees(-135));
+                Rotation2d.fromDegrees(-90));
 
         // 使用 defer: 確保「按下按鈕的那一瞬間」才計算機器人要去哪
         return Commands.defer(() -> {
@@ -121,6 +130,7 @@ public class superstructure extends SubsystemBase {
             Pose2d finalTargetPose = new Pose2d(
                     rawTargetPose.getTranslation(),
                     bestAngle);
+                    Logger.recordOutput("Superstructure/ToTrenchPose", finalTargetPose);
             return drive.driveHelper(finalTargetPose);
 
         }, Set.of(drive));
@@ -128,7 +138,5 @@ public class superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("ToTrenchPose", this.ToTrenchPose());
-        this.shooterSubsystem.setTurretAngle(drive.getRotation(), null);
     }
 }
