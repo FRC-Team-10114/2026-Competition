@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Auto;
+import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.Shooter.Hood.HoodIONEO;
 import frc.robot.subsystems.Shooter.Turret.TurretHardware;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.RobotStatus;
 
 public class RobotContainer {
 
@@ -83,23 +85,26 @@ public class RobotContainer {
 
     private final HoodIO hood = new HoodIONEO(0);
 
-    private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain);
-
-    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator, drivetrain);
-
     private final ArmIO arm = new ArmIOTalon();
 
     private final RollerIO roller = new RollerIOTalon();
 
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(arm, roller);
+    public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    private final superstructure superstructure = new superstructure(drivetrain, shooterSubsystem, intakeSubsystem);
+    private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain,robotStatus);
 
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator,
+            drivetrain, robotStatus);
+
+    private final superstructure superstructure = new superstructure(drivetrain, shooterSubsystem, intakeSubsystem,
+            robotStatus);
 
     public RobotContainer() {
 
-        // Swerve Drivetrain Current & Voltage Test 
-        for (int i = 0; i < 4; i++) this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
+        // Swerve Drivetrain Current & Voltage Test
+        for (int i = 0; i < 4; i++)
+            this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
 
         field = new Field2d();
         SmartDashboard.putData("Field", field);
@@ -136,8 +141,7 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> drive
                         .withVelocityX(-joystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
-                ));
+                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -147,11 +151,14 @@ public class RobotContainer {
 
         // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         // joystick.b().whileTrue(drivetrain.applyRequest(
-        //         () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+        // () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(),
+        // -joystick.getLeftX()))));
 
-        // joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+        // joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
+        // forwardStraight.withVelocityX(0.5).withVelocityY(0)));
         // joystick.povDown()
-        //         .whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
+        // .whileTrue(drivetrain.applyRequest(() ->
+        // forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
         // // Run SysId routines when holding back/start and X/Y.
         // // Note that each routine should be run exactly once in a single log.

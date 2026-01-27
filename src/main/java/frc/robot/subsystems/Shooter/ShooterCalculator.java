@@ -33,9 +33,11 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
+import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
 public class ShooterCalculator {
+        private final RobotStatus robotStatus;
         private final CommandSwerveDrivetrain drive;
         private final InterpolatingTreeMap<Double, Rotation2d> hoodMap;
         private final InterpolatingTreeMap<Double, AngularVelocity> rollMap;
@@ -57,8 +59,10 @@ public class ShooterCalculator {
                 TRACKING // 純追蹤/待機：使用縮小範圍 (Soft Limits)
         }
 
-        public ShooterCalculator(CommandSwerveDrivetrain drive) {
+        public ShooterCalculator(CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
                 this.drive = drive;
+                this.robotStatus = robotStatus;
+
                 hoodMap = new InterpolatingTreeMap<>(
                                 InverseInterpolator.forDouble(),
                                 Rotation2d::interpolate);
@@ -88,34 +92,26 @@ public class ShooterCalculator {
         ) {
         }
 
-        public ShootingState calculateShootingState() {
-                // 1. 取得基本狀態
+        public ShootingState calculateShootingToHub() {
                 Pose2d estimatedPose = drive.getPose2d();
                 ChassisSpeeds robotRelativeVelocity = drive.getChassisSpeeds();
 
-                // 2. 延遲補償 (Phase Delay Compensation)
-                // 預測 "現在命令發出後，實際執行時" 機器人會在哪
                 estimatedPose = estimatedPose.exp(new Twist2d(
                                 robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
                                 robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
                                 robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
 
-                // 3. 計算砲塔位置
                 Pose2d turretPosition = estimatedPose.transformBy(
                                 new Transform2d(
                                                 robotToTurret.getTranslation().toTranslation2d(),
                                                 robotToTurret.getRotation().toRotation2d()));
 
-                // 4. 計算目標位置 (處理紅藍翻轉)
                 Translation2d target = AllianceFlipUtil.apply(siteConstants.topCenterPoint.toTranslation2d());
                 double turretToTargetDistance = target.getDistance(turretPosition.getTranslation());
 
-                // 5. 計算砲塔的場地速度 (Turret Field Velocity)
                 ChassisSpeeds robotVelocity = drive.getFieldVelocity();
                 double robotAngle = estimatedPose.getRotation().getRadians();
 
-                // V_turret = V_robot + (Omega x Radius)
-                // 這是為了算出機器人旋轉時，砲塔本身被甩動的速度
                 double turretVelocityX = robotVelocity.vxMetersPerSecond
                                 + robotVelocity.omegaRadiansPerSecond
                                                 * (robotToTurret.getY() * Math.cos(robotAngle)
@@ -125,36 +121,23 @@ public class ShooterCalculator {
                                                 * (robotToTurret.getX() * Math.cos(robotAngle)
                                                                 - robotToTurret.getY() * Math.sin(robotAngle));
 
-                // 6. 核心迭代運算 (Iterative Solver)
-                // 找出 "Lookahead Pose" (虛擬發射點)
                 double timeOfFlight = 0.0;
                 Pose2d lookaheadPose = turretPosition;
                 double lookaheadTurretToTargetDistance = turretToTargetDistance;
 
-                // 跑 5 次迭代通常就足夠收斂了，不用跑到 20 次
                 for (int i = 0; i < 5; i++) {
-                        // 查表：根據目前的預測距離，查子彈飛多久
                         timeOfFlight = timeOfFlightMap.get(lookaheadTurretToTargetDistance);
 
-                        // 計算偏移量：在飛行時間內，機器人速度會把球帶偏多少
                         double offsetX = turretVelocityX * timeOfFlight;
                         double offsetY = turretVelocityY * timeOfFlight;
 
-                        // 更新 Lookahead Pose
                         lookaheadPose = new Pose2d(
                                         turretPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
                                         turretPosition.getRotation());
 
-                        // 更新距離
                         lookaheadTurretToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
                 }
 
-                // ==========================================
-                // 7. (新增) 計算最終瞄準角度
-                // ==========================================
-
-                // 數學原理：我們假設機器人已經瞬間移動到了 lookaheadPose
-                // 所以直接計算 "LookaheadPose -> Target" 的向量角度，就是正確的瞄準角
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
 
@@ -162,9 +145,8 @@ public class ShooterCalculator {
                                 new Transform2d(
                                                 robotToTurret.getTranslation().toTranslation2d(),
                                                 robotToTurret.getRotation().toRotation2d()));
-                
-                Logger.recordOutput("simturretPosition", new Pose2d(simturretPosition.getX(),simturretPosition.getY(),targetFieldAngle));
-                Logger.recordOutput("Shooting/LookaheadPose", lookaheadPose);
+                Logger.recordOutput("ToHubsimturretPosition",
+                                new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
 
                 return new ShootingState(targetFieldAngle, lookaheadTurretToTargetDistance);
         }
@@ -232,4 +214,85 @@ public class ShooterCalculator {
                 lastSetpointRads = bestAngle;
                 return Radians.of(bestAngle);
         }
+
+        // ----------------------------------------------------------------------------------------------------
+        public ShootingState calculateShootingToAlliance() {
+                // 1. 取得基本狀態
+                Pose2d estimatedPose = drive.getPose2d();
+                ChassisSpeeds robotRelativeVelocity = drive.getChassisSpeeds();
+
+                // 2. 延遲補償 (Phase Delay Compensation)
+                // 預測 "現在命令發出後，實際執行時" 機器人會在哪
+                estimatedPose = estimatedPose.exp(new Twist2d(
+                                robotRelativeVelocity.vxMetersPerSecond * phaseDelay,
+                                robotRelativeVelocity.vyMetersPerSecond * phaseDelay,
+                                robotRelativeVelocity.omegaRadiansPerSecond * phaseDelay));
+
+                // 3. 計算砲塔位置
+                Pose2d turretPosition = estimatedPose.transformBy(
+                                new Transform2d(
+                                                robotToTurret.getTranslation().toTranslation2d(),
+                                                robotToTurret.getRotation().toRotation2d()));
+
+                // 4. 計算目標位置 (處理紅藍翻轉)
+                Translation2d target;
+                if (robotStatus.getVerticalSide() == RobotStatus.VerticalSide.TOP) {
+                        target = AllianceFlipUtil.apply(siteConstants.topLeftCenterPoint.toTranslation2d());
+                } else {
+                        target = AllianceFlipUtil.apply(siteConstants.topRightCenterPoint.toTranslation2d());
+                }
+                double turretToTargetDistance = target.getDistance(turretPosition.getTranslation());
+
+                // 5. 計算砲塔的場地速度 (Turret Field Velocity)
+                ChassisSpeeds robotVelocity = drive.getFieldVelocity();
+                double robotAngle = estimatedPose.getRotation().getRadians();
+
+                // V_turret = V_robot + (Omega x Radius)
+                // 這是為了算出機器人旋轉時，砲塔本身被甩動的速度
+                double turretVelocityX = robotVelocity.vxMetersPerSecond
+                                + robotVelocity.omegaRadiansPerSecond
+                                                * (robotToTurret.getY() * Math.cos(robotAngle)
+                                                                - robotToTurret.getX() * Math.sin(robotAngle));
+                double turretVelocityY = robotVelocity.vyMetersPerSecond
+                                + robotVelocity.omegaRadiansPerSecond
+                                                * (robotToTurret.getX() * Math.cos(robotAngle)
+                                                                - robotToTurret.getY() * Math.sin(robotAngle));
+
+                // 6. 核心迭代運算 (Iterative Solver)
+                // 找出 "Lookahead Pose" (虛擬發射點)
+                double timeOfFlight = 0.0;
+                Pose2d lookaheadPose = turretPosition;
+                double lookaheadTurretToTargetDistance = turretToTargetDistance;
+
+                // 跑 5 次迭代通常就足夠收斂了，不用跑到 20 次
+                for (int i = 0; i < 5; i++) {
+                        // 查表：根據目前的預測距離，查子彈飛多久
+                        timeOfFlight = timeOfFlightMap.get(lookaheadTurretToTargetDistance);
+
+                        // 計算偏移量：在飛行時間內，機器人速度會把球帶偏多少
+                        double offsetX = turretVelocityX * timeOfFlight;
+                        double offsetY = turretVelocityY * timeOfFlight;
+
+                        // 更新 Lookahead Pose
+                        lookaheadPose = new Pose2d(
+                                        turretPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
+                                        turretPosition.getRotation());
+
+                        // 更新距離
+                        lookaheadTurretToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+                }
+
+                Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
+                Rotation2d targetFieldAngle = vectorToTarget.getAngle();
+
+                Pose2d simturretPosition = estimatedPose.transformBy(
+                                new Transform2d(
+                                                robotToTurret.getTranslation().toTranslation2d(),
+                                                robotToTurret.getRotation().toRotation2d()));
+
+                Logger.recordOutput("ToAlliancesimturretPosition",
+                                new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
+                return new ShootingState(targetFieldAngle, lookaheadTurretToTargetDistance);
+        }
+
 }
