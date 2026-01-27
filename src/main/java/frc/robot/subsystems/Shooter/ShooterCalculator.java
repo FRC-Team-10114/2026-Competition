@@ -1,4 +1,8 @@
-//Inspired by and adapted from FRC Team 6328
+/*
+ * Original code from Littleton Robotics (Team 6328) - 2026 Season
+ * Modified by Team [10114]
+ * * Licensed under the MIT License.
+ */
 
 package frc.robot.subsystems.Shooter;
 
