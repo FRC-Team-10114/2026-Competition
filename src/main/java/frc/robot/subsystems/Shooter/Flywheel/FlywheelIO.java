@@ -1,8 +1,8 @@
-package frc.robot.subsystems.Shooter.Roller;
+package frc.robot.subsystems.Shooter.Flywheel;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public interface RollerIO {
+public interface FlywheelIO {
     
     public void setRPM(AngularVelocity RPM);
 }

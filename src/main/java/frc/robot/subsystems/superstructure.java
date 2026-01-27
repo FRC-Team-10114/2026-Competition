@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+<<<<<<< Updated upstream
+=======
+import frc.robot.subsystems.Intake.IntakeSubsystem;
+>>>>>>> Stashed changes
 import frc.robot.subsystems.Shooter.ShooterCalculator;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.FieldTagMap;
@@ -20,6 +24,13 @@ public class superstructure extends SubsystemBase {
 
     private final CommandSwerveDrivetrain drive;
 
+<<<<<<< Updated upstream
+=======
+    private final ShooterSubsystem shooterSubsystem;
+
+    private final IntakeSubsystem intakeSubsystem;
+
+>>>>>>> Stashed changes
     private static final double BLUE_ZONE_LIMIT = 5.50;
 
     private static final double RED_ZONE_START = 16.54 - 5.50; // 約 11.04
@@ -40,7 +51,15 @@ public class superstructure extends SubsystemBase {
         BOTTOM
     }
 
+<<<<<<< Updated upstream
     public superstructure(CommandSwerveDrivetrain drive, ShooterSubsystem shooterSubsystem) {
+=======
+    public superstructure(
+            CommandSwerveDrivetrain drive,
+            ShooterSubsystem shooterSubsystem,
+            IntakeSubsystem intakeSubssystem) {
+
+>>>>>>> Stashed changes
         this.drive = drive;
         this.shooterSubsystem = shooterSubsystem;
     }
@@ -74,13 +93,14 @@ public class superstructure extends SubsystemBase {
             selectedTrench = FieldTagMap.getRightTrenchPoses();
         }
         Pose2d finalTarget;
-        if(getarea() == area.CENTER){
-            finalTarget = selectedTrench[0];       
-        }else{
+        if (getArea() == area.CENTER) {
+            finalTarget = selectedTrench[0];
+        } else {
             finalTarget = selectedTrench[1];
         }
 
         return AllianceFlipUtil.apply(finalTarget);
+
     }
 
     public Command DriveToTrench() {
@@ -109,7 +129,7 @@ public class superstructure extends SubsystemBase {
             Pose2d finalTargetPose = new Pose2d(
                     rawTargetPose.getTranslation(),
                     bestAngle);
-                    Logger.recordOutput("Superstructure/ToTrenchPose", finalTargetPose);
+            Logger.recordOutput("Superstructure/ToTrenchPose", finalTargetPose);
             return drive.driveHelper(finalTargetPose);
 
         }, Set.of(drive));

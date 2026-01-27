@@ -31,14 +31,20 @@ import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.Intake.Arm.ArmIO;
+import frc.robot.subsystems.Intake.Arm.ArmIOTalon;
+import frc.robot.subsystems.Intake.Roller.RollerIO;
+import frc.robot.subsystems.Intake.Roller.RollerIOTalon;
 import frc.robot.subsystems.Shooter.ShooterCalculator;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
+import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIONEO;
 import frc.robot.subsystems.Shooter.Turret.TurretHardware;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
-import frc.robot.subsystems.Shooter.Roller.*;
 
 public class RobotContainer {
 
@@ -73,15 +79,21 @@ public class RobotContainer {
 
     private final TurretIO turret = new TurretHardware();
 
-    private final RollerIO roller = new RollerHardware();
+    private final FlywheelIO flywheel = new FlywheelHardware();
 
     private final HoodIO hood = new HoodIONEO(0);
 
     private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain);
 
-    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(hood, roller, turret, shooterCalculator, drivetrain);
+    private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator, drivetrain);
 
-    private final superstructure superstructure = new superstructure(drivetrain, null);
+    private final ArmIO arm = new ArmIOTalon();
+
+    private final RollerIO roller = new RollerIOTalon();
+
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(arm, roller);
+
+    private final superstructure superstructure = new superstructure(drivetrain, shooterSubsystem, intakeSubsystem);
 
 
     public RobotContainer() {

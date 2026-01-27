@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootState;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
-import frc.robot.subsystems.Shooter.Roller.RollerIO;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 
 public class ShooterSubsystem extends SubsystemBase {
 
     private final HoodIO hood;
-    private final RollerIO roller;
+    private final FlywheelIO flywheel;
     private final TurretIO turret;
     private final ShooterCalculator shooterCalculator;
     private final CommandSwerveDrivetrain drive;
@@ -33,9 +33,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private Angle currentTurretTargetAngle = Degree.of(0);
 
     // 建構子需要傳入 Robot Rotation Supplier，因為 Turret 解繞需要它
-    public ShooterSubsystem(HoodIO hood, RollerIO roller, TurretIO turret, ShooterCalculator shooterCalculator,CommandSwerveDrivetrain drive) {
+    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,CommandSwerveDrivetrain drive) {
         this.hood = hood;
-        this.roller = roller;
+        this.flywheel = flywheel;
         this.turret = turret;
         this.shooterCalculator = shooterCalculator;
         this.drive = drive;
@@ -82,7 +82,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setRollerVelocity(AngularVelocity velocity) {
-        this.roller.setRPM(velocity);
+        this.flywheel.setRPM(velocity);
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {

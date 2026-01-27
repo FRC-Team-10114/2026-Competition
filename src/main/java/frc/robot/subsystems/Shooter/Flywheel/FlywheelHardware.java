@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shooter.Roller;
+package frc.robot.subsystems.Shooter.Flywheel;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -11,7 +11,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import static edu.wpi.first.units.Units.*;
 
+<<<<<<< Updated upstream
 public class FlywheelHardware implements RollerIO {
+=======
+public class FlywheelHardware implements FlywheelIO {
+>>>>>>> Stashed changes
 
     private final TalonFX shooter = new TalonFX(15);
 
