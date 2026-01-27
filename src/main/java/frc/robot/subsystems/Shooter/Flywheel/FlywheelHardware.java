@@ -11,7 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import static edu.wpi.first.units.Units.*;
 
-public class RollerHardware implements RollerIO {
+public class FlywheelHardware implements RollerIO {
 
     private final TalonFX shooter = new TalonFX(15);
 
@@ -19,7 +19,7 @@ public class RollerHardware implements RollerIO {
 
     private final VelocityTorqueCurrentFOC m_request = new VelocityTorqueCurrentFOC(0);
 
-    public RollerHardware() {
+    public FlywheelHardware() {
         this.configureMotors();
     }
 

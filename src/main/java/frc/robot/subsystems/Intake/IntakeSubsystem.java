@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.Arm.ArmIO;
 import frc.robot.subsystems.Intake.Roller.RollerIO;
 
-public class IntakeSubssystem extends SubsystemBase {
+public class IntakeSubsystem extends SubsystemBase {
     
     private final ArmIO arm;
 
     private final RollerIO roller;
 
-    public IntakeSubssystem(ArmIO arm, RollerIO roller) {
+    public IntakeSubsystem(ArmIO arm, RollerIO roller) {
         this.arm = arm;
         this.roller = roller;
     }
