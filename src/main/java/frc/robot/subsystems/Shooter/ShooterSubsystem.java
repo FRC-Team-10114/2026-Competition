@@ -3,7 +3,6 @@ package frc.robot.subsystems.Shooter;
 import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Radians;
 
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -12,9 +11,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// 假設 ShootingState 定義在 Calculator 裡，如果不是，請根據你的檔案位置 import
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootState;
+import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
@@ -32,20 +31,23 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private Angle currentTurretTargetAngle = Degree.of(0);
 
+    private final RobotStatus robotStatus;
+
     // 建構子需要傳入 Robot Rotation Supplier，因為 Turret 解繞需要它
-    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,CommandSwerveDrivetrain drive) {
+    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,CommandSwerveDrivetrain drive,RobotStatus robotStatus) {
         this.hood = hood;
         this.flywheel = flywheel;
         this.turret = turret;
         this.shooterCalculator = shooterCalculator;
         this.drive = drive;
+        this.robotStatus = robotStatus;
 
         this.turret.resetAngle();
     }
 
     @Override
     public void periodic() {
-        ShootingState state = this.shooterCalculator.calculateShootingState();
+        ShootingState state = this.shootergoal();
 
         if (state != null) {
 
@@ -53,9 +55,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
             Angle targetAngleUnit = Radians.of(targetFieldAngle.getRadians());
 
-            Logger.recordOutput("targetFieldAngle",targetFieldAngle);
-
             this.setTurretAngle(drive.getRotation(),targetAngleUnit);
+        }
+    }
+
+    public ShootingState shootergoal(){
+        if(robotStatus.getArea() == RobotStatus.Area.CENTER){
+            return  this.shooterCalculator.calculateShootingToAlliance();
+        }else{
+            return this.shooterCalculator.calculateShootingToHub();
         }
     }
 

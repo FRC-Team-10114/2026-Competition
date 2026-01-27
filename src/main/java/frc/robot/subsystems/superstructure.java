@@ -18,6 +18,7 @@ import frc.robot.subsystems.Shooter.ShooterCalculator;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.FieldTagMap;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.subsystems.RobotStatus;
 
 public class superstructure extends SubsystemBase {
 
@@ -25,66 +26,32 @@ public class superstructure extends SubsystemBase {
 
     private final IntakeSubsystem intakeSubsystem;
 
-    private static final double BLUE_ZONE_LIMIT = 5.50;
-
-    private static final double RED_ZONE_START = 16.54 - 5.50; // 約 11.04
-
-    private static final double FIELD_WIDTH = 8.21;
-    private static final double MID_Y = FIELD_WIDTH / 2.0; // 中線 Y = 4.105
-
     private final ShooterSubsystem shooterSubsystem;
 
-    public enum area {
-        CENTER,
-        BlueAlliance,
-        RedAlliance
-    }
+    public final RobotStatus robotStatus;
 
-    public enum VerticalSide {
-        TOP,
-        BOTTOM
-    }
 
     public superstructure(
             CommandSwerveDrivetrain drive,
             ShooterSubsystem shooterSubsystem,
-            IntakeSubsystem intakeSubssystem) {
+            IntakeSubsystem intakeSubssystem,RobotStatus robotStatus) {
 
         this.drive = drive;
         this.shooterSubsystem = shooterSubsystem;
         this.intakeSubsystem = intakeSubssystem;
+        this.robotStatus = robotStatus;
     }
 
-    public VerticalSide getVerticalSide() {
-        double Y = drive.getPose2d().getY();
-        if (Y > MID_Y) {
-            return VerticalSide.TOP;
-        } else {
-            return VerticalSide.BOTTOM;
-        }
-    }
-
-    public area getarea() {
-        double x = drive.getPose2d().getX();
-
-        if (x < BLUE_ZONE_LIMIT) {
-            return area.BlueAlliance;
-        } else if (x > RED_ZONE_START) {
-            return area.RedAlliance;
-        } else {
-            return area.CENTER;
-        }
-    }
 
     public Pose2d ToTrenchPose() {
         Pose2d[] selectedTrench;
-        if (this.getVerticalSide() == VerticalSide.TOP) {
+        if (robotStatus.getVerticalSide() == RobotStatus.VerticalSide.TOP) {
             selectedTrench = FieldTagMap.getLeftTrenchPoses();
         } else {
             selectedTrench = FieldTagMap.getRightTrenchPoses();
         }
         Pose2d finalTarget;
-        if (getarea() == area.CENTER) {
+        if (robotStatus.getArea() == RobotStatus.Area.CENTER) {
             finalTarget = selectedTrench[0];
         } else {
             finalTarget = selectedTrench[1];

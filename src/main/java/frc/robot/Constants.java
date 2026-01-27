@@ -9,6 +9,8 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Map;
 
+import com.google.gson.annotations.Until;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -131,11 +133,24 @@ public class Constants {
         public static final double width = Units.inchesToMeters(31.8);
         public static final double openingDistanceFromFloor = Units.inchesToMeters(28.1);
         public static final double height = Units.inchesToMeters(7.0);
+        public static final double bumpers = Units.inchesToMeters(73.0);
+        public static final double hub = Units.inchesToMeters(47.0);
 
         public static final Translation3d topCenterPoint = new Translation3d(
-                layout.getTagPose(26).get().getX() + width / 2.0, // 取得 Tag 26 的 X 並加上半寬
+                layout.getTagPose(26).get().getX() + width / 2.0,
                 fieldWidth / 2.0, // Y 軸置中
                 height // 高度固定
         );
+        public static final Translation3d topLeftCenterPoint = new Translation3d(
+                layout.getTagPose(26).get().getX() + width / 2.0,
+                (fieldWidth / 2.0) + (bumpers / 2 + hub / 2), // Y 軸置中
+                height // 高度固定
+        );
+        public static final Translation3d topRightCenterPoint = new Translation3d(
+                layout.getTagPose(26).get().getX() + width / 2.0,
+                (fieldWidth / 2.0) - (bumpers / 2 + hub / 2), // Y 軸置中
+                height // 高度固定
+        );
     }
+
 }

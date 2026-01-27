@@ -412,4 +412,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void resetPosetotest() {
         this.resetPose(new Pose2d(3.560225248336792, 4.027120113372803, getRotation()));
     }
+    public double getPitchDegrees() {
+        // 取得俯仰角 (度數)
+        return this.getPigeon2().getPitch().getValueAsDouble();
+    }
+
+    public double getRollDegrees() {
+        // 取得側傾角 (度數)
+        return this.getPigeon2().getRoll().getValueAsDouble();
+    }
+
+    public boolean isClimbing() {
+        double threshold = 10.0;
+        return Math.abs(getPitchDegrees()) > threshold || Math.abs(getRollDegrees()) > threshold;
+    }
 }
