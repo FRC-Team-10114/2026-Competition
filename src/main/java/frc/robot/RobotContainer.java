@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -83,7 +84,7 @@ public class RobotContainer {
 
     private final FlywheelIO flywheel = new FlywheelHardware();
 
-    private final HoodIO hood = new HoodIONEO(0);
+    private final HoodIO hood = new HoodIONEO();
 
     private final ArmIO arm = new ArmIOTalon();
 
@@ -92,7 +93,7 @@ public class RobotContainer {
     private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(arm, roller);
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain,robotStatus);
+    private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain, robotStatus);
 
     private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator,
             drivetrain, robotStatus);
@@ -168,11 +169,18 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-        drivetrain.registerTelemetry(logger::telemeterize);
-        joystick.rightBumper().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
-        joystick.a().whileTrue(this.superstructure.DriveToTrench());
+        // drivetrain.registerTelemetry(logger::telemeterize);
+        // joystick.rightBumper().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
+        // joystick.a().whileTrue(this.superstructure.DriveToTrench());
+
+        joystick.povUp().whileTrue(new InstantCommand(() -> shooterSubsystem.hoodUp()));
+        joystick.povDown().whileTrue(new InstantCommand(() -> shooterSubsystem.hoodDown()));
+
+        joystick.y().onTrue(new InstantCommand(() -> shooterSubsystem.flywheelup()));
+        joystick.a().onTrue(new InstantCommand(() -> shooterSubsystem.flywheeldown()));
+
     }
 
     public Command getAutonomousCommand() {

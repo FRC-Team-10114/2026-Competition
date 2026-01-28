@@ -1,8 +1,9 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
-
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -27,14 +28,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ShooterCalculator shooterCalculator;
     private final CommandSwerveDrivetrain drive;
 
+    private double hoodPosition = Radians.convertFrom(40, Degrees);
+
     private ShootState currentShootState = ShootState.TRACKING;
 
     private Angle currentTurretTargetAngle = Degree.of(0);
 
     private final RobotStatus robotStatus;
 
+    private double flywheelRPS = 0.0;
+
     // 建構子需要傳入 Robot Rotation Supplier，因為 Turret 解繞需要它
-    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,CommandSwerveDrivetrain drive,RobotStatus robotStatus) {
+    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
+            CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
         this.hood = hood;
         this.flywheel = flywheel;
         this.turret = turret;
@@ -43,6 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
         this.robotStatus = robotStatus;
 
         this.turret.resetAngle();
+        this.hood.reset();
     }
 
     @Override
@@ -55,14 +62,21 @@ public class ShooterSubsystem extends SubsystemBase {
 
             Angle targetAngleUnit = Radians.of(targetFieldAngle.getRadians());
 
-            this.setTurretAngle(drive.getRotation(),targetAngleUnit);
+            this.setTurretAngle(drive.getRotation(), targetAngleUnit);
         }
+
+        hood.setAngle(Radians.of(hoodPosition));
+
+        Logger.recordOutput("Shooter/HoodAngle", hood.getAngle());
+        Logger.recordOutput("Shooter/TargetPosition", hoodPosition);
+        Logger.recordOutput("Shooter/flywheelgoal", flywheelRPS);
+        Logger.recordOutput("Shooter/flywheelRPSl", this.flywheel.getRPS());
     }
 
-    public ShootingState shootergoal(){
-        if(robotStatus.getArea() == RobotStatus.Area.CENTER){
-            return  this.shooterCalculator.calculateShootingToAlliance();
-        }else{
+    public ShootingState shootergoal() {
+        if (robotStatus.getArea() == RobotStatus.Area.CENTER) {
+            return this.shooterCalculator.calculateShootingToAlliance();
+        } else {
             return this.shooterCalculator.calculateShootingToHub();
         }
     }
@@ -84,13 +98,12 @@ public class ShooterSubsystem extends SubsystemBase {
         );
     }
 
-
     public void setHoodAngle(Angle targetRad) {
         this.hood.setAngle(targetRad);
     }
 
-    public void setRollerVelocity(AngularVelocity velocity) {
-        this.flywheel.setRPM(velocity);
+    public void setRollerRPS(AngularVelocity velocity) {
+        this.flywheel.setRPS(velocity);
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
@@ -99,5 +112,25 @@ public class ShooterSubsystem extends SubsystemBase {
 
         this.turret.setControl(setpoint);
 
+    }
+
+    // TEST METHOD
+
+    public void hoodUp() {
+        this.hoodPosition = Radians.convertFrom(58, Degrees);
+    }
+
+    public void hoodDown() {
+        this.hoodPosition = Radians.convertFrom(38, Degrees);
+    }
+
+    public void flywheelup() {
+        this.flywheelRPS += 50;
+        this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
+    }
+
+    public void flywheeldown() {
+        this.flywheelRPS -= 50;
+        this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
     }
 }

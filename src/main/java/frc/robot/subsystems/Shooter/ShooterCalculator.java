@@ -151,6 +151,7 @@ public class ShooterCalculator {
                 return new ShootingState(targetFieldAngle, lookaheadTurretToTargetDistance);
         }
 
+        //-------------------------------------------------------------------------------------------------------------------
         public Angle TurretCalculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
 
                 // 1. 根據狀態決定目前的 "合法範圍"

@@ -3,30 +3,37 @@ package frc.robot.subsystems.Shooter.Hood;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import frc.robot.subsystems.Shooter.ShooterConstants;
+
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotation;
+
+import com.revrobotics.spark.config.SparkFlexConfig;
+
 public class HoodConfig {
     
-    public static SparkMaxConfig hoodConfig = new SparkMaxConfig();
+    public static SparkFlexConfig hoodConfig = new SparkFlexConfig();
 
     static {
 
         hoodConfig
-                .idleMode(IdleMode.kBrake)
-                .inverted(true)
-                .smartCurrentLimit(25)
+                .idleMode(IdleMode.kCoast)
+                .inverted(false)
+                .smartCurrentLimit(40)
                 .apply(hoodConfig);
         hoodConfig.softLimit
-                .forwardSoftLimit(0.0)
+                .forwardSoftLimit(ShooterConstants.Hood_MAX_RADS)
                 .forwardSoftLimitEnabled(true)
-                .reverseSoftLimit(0.0)
-                .reverseSoftLimitEnabled(true);
+                .reverseSoftLimit(ShooterConstants.Hood_MIN_RADS)
+                .reverseSoftLimitEnabled(true)
+                .apply(hoodConfig.softLimit);
         hoodConfig.encoder
-                .velocityConversionFactor(0)
-                .positionConversionFactor(0)
+                .positionConversionFactor(Radians.convertFrom(ShooterConstants.Hood_GEAR_RATIO, Rotation))
                 .apply(hoodConfig.encoder);
         hoodConfig.closedLoop
-                .p(0.1)
+                .p(5.56)
                 .i(0)
-                .d(0)
+                .d(0.01)
                 .apply(hoodConfig.closedLoop);
     }
 }
