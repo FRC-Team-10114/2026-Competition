@@ -27,7 +27,7 @@ public class RollerIOTalon implements RollerIO{
 
     @Override
     public void setVelocity(AngularVelocity velocity) {
-        this.rollerMotor.set(velocity.baseUnitMagnitude());
+        this.rollerMotor.setControl(output.withOutput(Volts.of(10)));
     }
     @Override
     public AngularVelocity getVelocity() {
