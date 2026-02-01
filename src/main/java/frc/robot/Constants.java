@@ -100,12 +100,6 @@ public class Constants {
     public static final class LimelightConstants {
         public static final double MAX_GYRO_RATE = 1080;
     }
-
-    public static final class HoodConstants {
-        private final double GEAR_RATIO = 1;
-        private final double POSITION_CONVERSION_FACTOR = (2 * Math.PI) / GEAR_RATIO;
-    }
-
     public static final class PhotonVisionConstants {
 
         public record CameraConfig(String cameraName, Transform3d cameraLocation) {

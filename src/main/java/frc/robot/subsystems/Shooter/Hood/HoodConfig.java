@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Shooter.Hood;
 
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -17,7 +16,7 @@ public class HoodConfig {
     static {
 
         hoodConfig
-                .idleMode(IdleMode.kCoast)
+                .idleMode(IdleMode.kBrake)
                 .inverted(false)
                 .smartCurrentLimit(40)
                 .apply(hoodConfig);

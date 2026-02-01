@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.security.PublicKey;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
