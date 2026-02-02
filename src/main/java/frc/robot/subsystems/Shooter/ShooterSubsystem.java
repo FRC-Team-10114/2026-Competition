@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootState;
-import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
+import frc.robot.util.RobotStatus.RobotStatus;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -38,7 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double flywheelRPS = 0.0;
 
-    // 建構子需要傳入 Robot Rotation Supplier，因為 Turret 解繞需要它
     public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
         this.hood = hood;

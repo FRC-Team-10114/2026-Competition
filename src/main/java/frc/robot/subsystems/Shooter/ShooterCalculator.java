@@ -27,9 +27,9 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.util.FIeldHelper.AllianceFlipUtil;
+import frc.robot.util.RobotStatus.RobotStatus;
 
 public class ShooterCalculator {
         private final RobotStatus robotStatus;

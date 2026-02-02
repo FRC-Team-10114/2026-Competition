@@ -19,8 +19,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.Constants.PhotonVisionConstants.CameraConfig;
-import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.util.RobotStatus.RobotStatus;
 
 public class PhotonVision extends SubsystemBase {
 
@@ -28,14 +28,13 @@ public class PhotonVision extends SubsystemBase {
     private final CameraConfig config;
     private final PhotonPoseEstimator poseEstimator;
     private final CommandSwerveDrivetrain drivetrain;
-    private final RobotStatus robotStatus;
+    private boolean NeedResetPose = false;
 
     private int m_lastTagId = -1;
 
-    public PhotonVision(CommandSwerveDrivetrain drive, CameraConfig config, RobotStatus robotStatus) {
+    public PhotonVision(CommandSwerveDrivetrain drive, CameraConfig config) {
         this.drivetrain = drive;
         this.config = config;
-        this.robotStatus = robotStatus;
 
         // 1. 初始化相機（名稱從 Constants 取得）
         this.camera = new PhotonCamera(config.cameraName());
@@ -51,6 +50,9 @@ public class PhotonVision extends SubsystemBase {
     @Override
     public void periodic() {
         updateVision();
+    }
+    public void NeedResetPoseEvent() {
+        this.NeedResetPose = true;
     }
 
     private void updateVision() {
@@ -96,14 +98,14 @@ public class PhotonVision extends SubsystemBase {
 
             // 3. 計算信任權重（標準差）
             Vector<N3> stdDevs;
-            if (robotStatus.NeedResetPose) {
+            if (this.NeedResetPose) {
                 // 1. 發現旗標是 True！代表剛落地，需要強力校正
                 // 給予極小的標準差 (例如 1公分, 1公分, 1度)
                 stdDevs = VecBuilder.fill(0.01, 0.01, Units.degreesToRadians(1));
 
                 // 2. 【重要】用完之後馬上把旗標降下來 (False)
                 // 這樣下一幀就會變回普通的信任度，不會一直鎖死
-                robotStatus.NeedResetPose = false;
+                this.NeedResetPose = false;
 
             } else {
                 // 一般情況的標準差計算 (保持你原本的邏輯)

@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Auto;
-import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.superstructure;
+import frc.robot.subsystems.Drivetrain.AutoAlign;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
@@ -45,6 +45,7 @@ import frc.robot.subsystems.Shooter.Turret.TurretHardware;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.util.RobotStatus.RobotStatus;
 
 public class RobotContainer {
 
@@ -67,8 +68,8 @@ public class RobotContainer {
 
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    public final Limelight limelight = new Limelight(drivetrain, "limelight-left", robotStatus);
-    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.newCam, robotStatus);
+    public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
+    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.newCam);
 
     private final Field2d field = new Field2d();
 
@@ -89,8 +90,10 @@ public class RobotContainer {
     private final TriggerIO trigger = new TriggerIOHardware();
     private final HopperSubsystem hopper = new HopperSubsystem(trigger, washingMechine);
 
+    private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
+
     private final superstructure superstructure = new superstructure(drivetrain, shooter, intake,
-            hopper, robotStatus);
+            hopper, autoAlign);
 
     public RobotContainer() {
 
@@ -99,6 +102,8 @@ public class RobotContainer {
             this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
 
         configureBindings();
+
+        configureEvents();
 
         log();
 
@@ -174,5 +179,11 @@ public class RobotContainer {
             field.getObject("path").setPoses(poses);
         });
 
+    }
+
+    private void configureEvents() {
+        robotStatus.addEvent(() -> {
+            photonVision.NeedResetPoseEvent();
+        });
     }
 }

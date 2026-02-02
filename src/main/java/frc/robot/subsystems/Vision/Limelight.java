@@ -11,8 +11,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.LimelightConstants;
-import frc.robot.subsystems.RobotStatus;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.util.RobotStatus.RobotStatus;
 
 public class Limelight extends SubsystemBase {
 
@@ -23,15 +23,12 @@ public class Limelight extends SubsystemBase {
 
     private int tagId = -1;
 
-    public final RobotStatus robotStatus;
-
     public Limelight(
             CommandSwerveDrivetrain drive,
-            String limelightName, RobotStatus robotStatus) {
+            String limelightName) {
         this.drive = drive;
         this.limelightName = limelightName;
         this.gyro = drive.getPigeon2();
-        this.robotStatus = robotStatus;
     }
 
     @Override
@@ -76,11 +73,7 @@ public class Limelight extends SubsystemBase {
         double degStds;
         double avgDist = mt2.avgTagDist;
 
-        if (robotStatus.NeedResetPose) {
-            xyStds = 0.01; // 改成跟 PhotonVision 一樣強
-            degStds = 0.01; // 角度也極度信任
-            robotStatus.NeedResetPose = false;
-        } else {
+
 
             if (mt2.tagCount >= 2) {
                 // 多 Tag：非常信任
@@ -92,7 +85,6 @@ public class Limelight extends SubsystemBase {
                 xyStds = 1.0 * (avgDist * avgDist);
                 degStds = 999.0; // 單 Tag 完全不信任 MT2 算出的角度，只用它的 X/Y
             }
-        }
 
         // ---------------------------------------------------------
         // 5. 送入 Drive Subsystem
