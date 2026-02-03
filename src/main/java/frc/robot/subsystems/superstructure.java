@@ -57,7 +57,7 @@ public class superstructure extends SubsystemBase {
     }
 
     public Command stopWashCommand() {
-        return Commands.run(hopper::stopWashing);
+        return Commands.run(hopper::stopSpin);
     }
 
     public Command loadCommand() {
