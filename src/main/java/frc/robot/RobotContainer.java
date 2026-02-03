@@ -182,8 +182,6 @@ public class RobotContainer {
     }
 
     private void configureEvents() {
-        robotStatus.addEvent(() -> {
-            photonVision.NeedResetPoseEvent();
-        });
+        robotStatus.TiggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
     }
 }
