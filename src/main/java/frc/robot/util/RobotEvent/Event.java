@@ -17,4 +17,12 @@ public class Event {
     public interface Targetactive{
         void Targetactive();
     }
+    @FunctionalInterface
+    public interface ShootingStateTrue{
+        void ShootingStateTrue();
+    }
+    @FunctionalInterface
+    public interface ShootingStateFalse{
+        void ShootingStateFalse();
+    }
 }

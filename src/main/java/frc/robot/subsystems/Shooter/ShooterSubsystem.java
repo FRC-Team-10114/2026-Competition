@@ -33,8 +33,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private ShootState currentShootState = ShootState.TRACKING;
 
-    private Angle currentTurretTargetAngle = Degree.of(0);
-
     private final RobotStatus robotStatus;
 
     private double flywheelRPS = 0.0;
@@ -42,6 +40,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private boolean IsInAllience = true;
 
     private boolean Targetactive = true;
+
+    private boolean Isshooting = true;
+
+    private boolean test = false;
+
+    private Angle m_targetAngle = Degrees.of(0);
 
     public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
@@ -54,30 +58,48 @@ public class ShooterSubsystem extends SubsystemBase {
 
         this.turret.resetAngle();
         this.hood.reset();
+
     }
 
     @Override
     public void periodic() {
-        hood.setAngle(Radians.of(hoodPosition));
+        // SetShooterGoal();
+        // Logger.recordOutput("Targetactive",Targetactive);
+        // Logger.recordOutput("Isshooting",Isshooting);
+        Logger.recordOutput("HoodAngle", hood.getAngle());
+        Logger.recordOutput("HoodgoalAngle", m_targetAngle);
+        Logger.recordOutput("flywheelRPS", flywheelRPS);
+        hood.setAngle(m_targetAngle);
     }
-    public void setIsInAllience(){
-        if(robotStatus.isInMyAllianceZone()){
+
+    public void setIsInAllience() {
+        if (robotStatus.isInMyAllianceZone()) {
             IsInAllience = true;
-        }else{
+        } else {
             IsInAllience = false;
         }
     }
-    public void TrueTargetactive(){
+
+    public void TrueIsshooting() {
+        Isshooting = true;
+    }
+
+    public void FalseIsshooting() {
+        Isshooting = false;
+    }
+
+    public void TrueTargetactive() {
         Targetactive = true;
     }
-    public void FalseTargetactive(){
+
+    public void FalseTargetactive() {
         Targetactive = false;
     }
 
-    public boolean SpinAllTime(){
-        if(Targetactive == true && IsInAllience == true){
+    public boolean SpinAllTime() {
+        if (Targetactive == true && IsInAllience == true) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -88,7 +110,7 @@ public class ShooterSubsystem extends SubsystemBase {
         } else {
             return this.shooterCalculator.calculateShootingToHub();
         }
-    } 
+    }
 
     public void SetShooterGoal() {
         ShootingState state = this.shooterTargetChoose();
@@ -105,7 +127,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         this.setRollerRPS(FlywheelRPS);
 
-        this.setTurretAngle(drive.getRotation(),TurretTarget);
+        this.setTurretAngle(drive.getRotation(), TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -113,7 +135,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setRollerRPS(AngularVelocity velocity) {
-        this.flywheel.setRPS(velocity);
+        if (!SpinAllTime() || !Isshooting) {
+            test = false;
+            return;
+        } else {
+            test = true;
+            this.flywheel.setRPS(velocity);
+        }
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
@@ -126,21 +154,20 @@ public class ShooterSubsystem extends SubsystemBase {
 
     // TEST METHOD
 
-    public void hoodUp() {
-        this.hoodPosition = Radians.convertFrom(58, Degrees);
+public void hoodUp() {
+        m_targetAngle = m_targetAngle.plus(Degrees.of(5));
     }
-
     public void hoodDown() {
-        this.hoodPosition = Radians.convertFrom(38, Degrees);
+        m_targetAngle = m_targetAngle.minus(Degrees.of(5));
     }
 
     public void flywheelup() {
-        this.flywheelRPS += 50;
+        this.flywheelRPS += 10;
         this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
     public void flywheeldown() {
-        this.flywheelRPS -= 50;
+        this.flywheelRPS -= 10;
         this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
     }
 

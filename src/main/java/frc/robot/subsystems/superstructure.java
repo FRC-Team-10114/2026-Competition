@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.FIeldHelper.AllianceFlipUtil;
 import frc.robot.util.FIeldHelper.FieldTagMap;
+import frc.robot.util.RobotEvent.Event.*;
 
 public class superstructure extends SubsystemBase {
 
@@ -27,15 +29,15 @@ public class superstructure extends SubsystemBase {
     private final ShooterSubsystem shooter;
     private final HopperSubsystem hopper;
     private final AutoAlign autoAlign;
-
+    private final List<ShootingStateTrue> ShootingStateTrue = new ArrayList<>();
+    private final List<ShootingStateFalse> ShootingStateFalse = new ArrayList<>();
 
     public superstructure(
             CommandSwerveDrivetrain drive,
             ShooterSubsystem shooter,
-            IntakeSubsystem intake, 
+            IntakeSubsystem intake,
             HopperSubsystem hopper,
-            AutoAlign autoAlign
-    ) {
+            AutoAlign autoAlign) {
         this.drive = drive;
         this.shooter = shooter;
         this.intake = intake;
@@ -47,8 +49,8 @@ public class superstructure extends SubsystemBase {
 
     public Command intakeCommand() {
         return Commands.startEnd(
-            intake::intake, 
-            intake::back);
+                intake::intake,
+                intake::back);
     }
 
     // Hopper Methods
@@ -63,12 +65,44 @@ public class superstructure extends SubsystemBase {
 
     public Command loadCommand() {
         return Commands.startEnd(
-            hopper::load, 
-            hopper::stopTrigger);
+                hopper::load,
+                hopper::stopTrigger);
     }
-    public Command DriveToTrench(){
-       return this.autoAlign.DriveToTrench();
+
+    public Command DriveToTrench() {
+        return this.autoAlign.DriveToTrench();
     }
+
+    public void TriggerShootingStateTrue(ShootingStateTrue event) {
+        ShootingStateTrue.add(event);
+    }
+
+    public void TriggerShootingStateFalse(ShootingStateFalse event) {
+        ShootingStateFalse.add(event);
+    }
+
+    public void setShootingStateTrue() {
+        for (ShootingStateTrue listener : ShootingStateTrue) {
+            listener.ShootingStateTrue();
+        }
+    }
+        public void setShootingStateFalse() {
+        for (ShootingStateFalse listener : ShootingStateFalse) {
+            listener.ShootingStateFalse();
+        }
+    }
+
+    public Command shoot() {
+        return aimCommand();
+    }
+
+    public Command aimCommand() {
+        return this.startEnd(
+                () -> setShootingStateTrue(), // 按下開始：進入射擊模式 (開放極限)
+                () -> setShootingStateFalse() // 放開結束：回到追蹤模式 (縮小範圍)
+        );
+    }
+
     @Override
     public void periodic() {
     }

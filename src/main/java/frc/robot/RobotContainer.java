@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -40,7 +41,7 @@ import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
-import frc.robot.subsystems.Shooter.Hood.HoodIONEO;
+import frc.robot.subsystems.Shooter.Hood.HoodTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretHardware;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
@@ -77,7 +78,7 @@ public class RobotContainer {
 
     private final TurretIO turret = new TurretHardware();
     private final FlywheelIO flywheel = new FlywheelHardware();
-    private final HoodIO hood = new HoodIONEO();
+    private final HoodIO hood = new HoodTalon();
     private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain, robotStatus);
     private final ShooterSubsystem shooter = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator, drivetrain,
             robotStatus);
@@ -132,10 +133,23 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.start().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
+        // joystick.start().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
+        // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
+        // joystick.leftBumper().whileTrue(this.superstructure.shoot());
+
+        joystick.a().onTrue(
+                Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+
+        joystick.b().onTrue(
+                Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+
+        joystick.leftBumper().onTrue(
+                Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+
+        joystick.rightBumper().onTrue(
+                Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
         sysidTest();
     }
 
@@ -183,7 +197,9 @@ public class RobotContainer {
 
     private void configureEvents() {
         robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
-        robotStatus.TriggerInActive();
-        robotStatus.TriggerActive();
+        robotStatus.TriggerInActive(shooter::FalseTargetactive);
+        robotStatus.TriggerActive(shooter::TrueTargetactive);
+        superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);
+        superstructure.TriggerShootingStateFalse(shooter::FalseIsshooting);
     }
 }
