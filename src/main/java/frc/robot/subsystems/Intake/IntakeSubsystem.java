@@ -3,6 +3,7 @@ package frc.robot.subsystems.Intake;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.Arm.ArmIO;
@@ -20,16 +21,16 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void intake() {
-        roller.setVelocity(RotationsPerSecond.of(0.6));
+        roller.setVoltage(Volts.of(8));
         arm.setPosition(Radians.of(Math.PI));
     }
 
     public void outtake() {
-        roller.setVelocity(RotationsPerSecond.of(-0.6));
+        roller.setVoltage(Volts.of(-8));
     }
 
     public void back() {
-        roller.setVelocity(RotationsPerSecond.of(0.0));
+        roller.setVoltage(Volts.of(0.0));
         arm.setPosition(Radians.of(0.0));
     }
 }

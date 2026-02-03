@@ -23,7 +23,12 @@ public class RobotStatus extends SubsystemBase {
     private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; // 約 11.04
     private static final double MID_Y = FieldConstants.fieldWidth / 2.0; // 中線 Y = 4.105
     public final CommandSwerveDrivetrain drive;
+
     private final List<NeedResetPoseEvent> NeedResetPoseEvent = new ArrayList<>();
+
+    private final List<TargetInactive> targetInactives = new ArrayList<>();
+
+    private final List<Targetactive> targetactives = new ArrayList<>();
 
     public enum Area {
         CENTER,
@@ -67,8 +72,16 @@ public class RobotStatus extends SubsystemBase {
         }
     }
 
-    public void TiggerNeedResetPoseEvent(NeedResetPoseEvent event) {
+    public void TriggerNeedResetPoseEvent(NeedResetPoseEvent event) {
         NeedResetPoseEvent.add(event);
+    }
+
+    public void TriggerInActive(TargetInactive event) {
+        targetInactives.add(event);
+    }
+
+    public void TriggerActive(Targetactive event) {
+        targetactives.add(event);
     }
 
     public void updateOdometerStatus() {

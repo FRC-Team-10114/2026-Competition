@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hopper.WashingMechine;
+package frc.robot.subsystems.Hopper.Spindexer;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -8,16 +8,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import frc.robot.subsystems.Hopper.HopperConstant.WashingMechineConstants;
+import frc.robot.subsystems.Hopper.HopperConstant.SpindexerConstants;
 
-public class WashingMechineIOHardware implements WashingMechineIO {
+public class SpindexerIOHardware implements SpindexerIO {
 
     private final TalonFX mechineMotor;
 
     private final VoltageOut output;
 
-    public WashingMechineIOHardware() {
-        this.mechineMotor = new TalonFX(WashingMechineConstants.MECHINE_MOTOR_ID, "canivore");
+    public SpindexerIOHardware() {
+        this.mechineMotor = new TalonFX(SpindexerConstants.MECHINE_MOTOR_ID, "canivore");
         this.output = new VoltageOut(Volts.of(0)); 
 
         configure();
@@ -41,8 +41,8 @@ public class WashingMechineIOHardware implements WashingMechineIO {
                 .withInverted(InvertedValue.Clockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Brake);
         mechineConfig.CurrentLimits
-                .withStatorCurrentLimit(WashingMechineConstants.MECHINE_STATOR_CURRENT_LIMIT)
-                .withSupplyCurrentLimit(WashingMechineConstants.MECHINE_SUPPLY_CURRENT_LIMIT)
+                .withStatorCurrentLimit(SpindexerConstants.MECHINE_STATOR_CURRENT_LIMIT)
+                .withSupplyCurrentLimit(SpindexerConstants.MECHINE_SUPPLY_CURRENT_LIMIT)
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimitEnable(true);
         

@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.Intake.IntakeConstants.RollerConstants;
 
 public class RollerIOTalon implements RollerIO{
@@ -26,7 +27,7 @@ public class RollerIOTalon implements RollerIO{
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
+    public void setVoltage(Voltage voltage) {
         this.rollerMotor.setControl(output.withOutput(Volts.of(10)));
     }
     @Override

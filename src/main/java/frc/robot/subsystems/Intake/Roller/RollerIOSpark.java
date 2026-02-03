@@ -13,7 +13,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.Intake.IntakeConstants.RollerConstants;
 
 public class RollerIOSpark implements RollerIO {
@@ -29,8 +29,8 @@ public class RollerIOSpark implements RollerIO {
     }
 
     @Override
-    public void setVelocity(AngularVelocity velocity) {
-        this.rollerController.setSetpoint(velocity.baseUnitMagnitude(), ControlType.kVelocity);
+    public void setVoltage(Voltage voltage) {
+        this.rollerController.setSetpoint(voltage.baseUnitMagnitude(), ControlType.kVoltage);
     }
 
     @Override

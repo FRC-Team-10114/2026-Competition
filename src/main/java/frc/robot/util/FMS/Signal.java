@@ -2,10 +2,12 @@ package frc.robot.util.FMS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.RobotEvent.Event.*;
 
@@ -20,6 +22,20 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     private final double EndGame = 30.0;
 
     public Signal() {
+    }
+
+    public char getAllianceChar() {
+        char alliance;
+
+        if (DriverStation.getAlliance().get() == Alliance.Red) {
+            alliance = 'R';
+        } else if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            alliance = 'B';
+        } else {
+            alliance = 'N';
+        }
+
+        return alliance;
     }
 
     public char getInactive() {
@@ -44,6 +60,10 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     }
 
 
+    public boolean isInactive() {
+        return getAllianceChar() == getInactive();
+    }
+
     public void TargetInactive(TargetInactive event) {
         TargetInactive.add(event);
     }
@@ -52,6 +72,48 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
         Targetactive.add(event);
     }
 
+
+    public void publishActive() {
+        for(Targetactive listener : Targetactive){
+            listener.Targetactive();
+        }
+    }
+
+    public void publishInactive() {
+        for(TargetInactive listener : TargetInactive){
+            listener.TargetInactive();
+        }
+    }
+
+    public void CanGetPointAllience() {
+        if (isInRound(1)) {
+            if (!isInactive()) publishActive();
+            else publishInactive();
+        } else if (isInRound(2)) {
+            if (isInactive()) publishActive();
+            else publishInactive();
+        } else if (isInRound(3)) {
+            if (!isInactive()) publishActive();
+            else publishInactive();
+        } else if (isInRound(4)) {
+            if (isInactive()) publishActive();
+            else publishInactive();
+        } else {
+            publishActive();
+        }
+        
+    }
+
+    private boolean isInRound(int Round) {
+        if (DriverStation.getMatchTime() <= MatchTime - TRANSITION - (Round - 1 * this.Round) && 
+            DriverStation.getMatchTime() >= MatchTime - TRANSITION - (Round * this.Round)) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+  
     @Override
     public void periodic() {
 
