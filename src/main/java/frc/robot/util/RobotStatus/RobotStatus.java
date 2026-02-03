@@ -3,9 +3,12 @@ package frc.robot.util.RobotStatus;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
@@ -81,6 +84,28 @@ public class RobotStatus extends SubsystemBase {
         }
 
         m_wasClimbing = isNowClimbing;
+    }
+
+    public boolean isInMyAllianceZone() {
+        // 1. 取得目前 FMS 的聯盟顏色
+        Optional<Alliance> ally = DriverStation.getAlliance();
+
+        // 如果還沒連上 FMS 或讀不到顏色，預設回傳 false (安全起見)
+        if (ally.isEmpty()) {
+            return false;
+        }
+
+        // 2. 取得機器人目前在哪個區域
+        Area currentArea = getArea();
+
+        // 3. 進行比對
+        if (ally.get() == Alliance.Blue) {
+            // 我是藍隊，我在藍區嗎？
+            return currentArea == Area.BlueAlliance;
+        } else {
+            // 我是紅隊，我在紅區嗎？
+            return currentArea == Area.RedAlliance;
+        }
     }
 
     @Override

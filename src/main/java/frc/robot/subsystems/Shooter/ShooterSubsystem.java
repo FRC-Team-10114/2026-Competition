@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
@@ -38,6 +39,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double flywheelRPS = 0.0;
 
+    private boolean IsInAllience = true;
+
+    private boolean Targetactive = true;
+
     public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
         this.hood = hood;
@@ -53,23 +58,28 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        ShootingState state = this.shooterTargetChoose();
-
-        if (state != null) {
-
-            Rotation2d targetFieldAngle = state.turretFieldAngle();
-
-            Angle targetAngleUnit = Radians.of(targetFieldAngle.getRadians());
-
-            this.setTurretAngle(drive.getRotation(), targetAngleUnit);
-        }
-
         hood.setAngle(Radians.of(hoodPosition));
+    }
+    public void setIsInAllience(){
+        if(robotStatus.isInMyAllianceZone()){
+            IsInAllience = true;
+        }else{
+            IsInAllience = false;
+        }
+    }
+    public void TrueTargetactive(){
+        Targetactive = true;
+    }
+    public void FalseTargetactive(){
+        Targetactive = false;
+    }
 
-        Logger.recordOutput("Shooter/HoodAngle", hood.getAngle());
-        Logger.recordOutput("Shooter/TargetPosition", hoodPosition);
-        Logger.recordOutput("Shooter/flywheelgoal", flywheelRPS);
-        Logger.recordOutput("Shooter/flywheelRPSl", this.flywheel.getRPS());
+    public boolean SpinAllTime(){
+        if(Targetactive == true && IsInAllience == true){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public ShootingState shooterTargetChoose() {
@@ -78,23 +88,24 @@ public class ShooterSubsystem extends SubsystemBase {
         } else {
             return this.shooterCalculator.calculateShootingToHub();
         }
-    }
+    } 
 
-    // --- 設定狀態的 Command ---
+    public void SetShooterGoal() {
+        ShootingState state = this.shooterTargetChoose();
 
-    public void setShootingState(boolean shooting) {
-        if (shooting) {
-            this.currentShootState = ShootState.ACTIVE_SHOOTING;
-        } else {
-            this.currentShootState = ShootState.TRACKING;
-        }
-    }
+        Rotation2d targetFieldAngle = state.turretFieldAngle();
 
-    public Command aimCommand() {
-        return this.startEnd(
-                () -> setShootingState(true), // 按下開始：進入射擊模式 (開放極限)
-                () -> setShootingState(false) // 放開結束：回到追蹤模式 (縮小範圍)
-        );
+        Angle TurretTarget = Radians.of(targetFieldAngle.getRadians());
+
+        Angle HoodTarget = state.HoopAngle();
+
+        AngularVelocity FlywheelRPS = state.FlywheelRPS();
+
+        this.setHoodAngle(HoodTarget);
+
+        this.setRollerRPS(FlywheelRPS);
+
+        this.setTurretAngle(drive.getRotation(),TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -131,5 +142,20 @@ public class ShooterSubsystem extends SubsystemBase {
     public void flywheeldown() {
         this.flywheelRPS -= 50;
         this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
+    }
+
+    public void setShootingState(boolean shooting) {
+        if (shooting) {
+            this.currentShootState = ShootState.ACTIVE_SHOOTING;
+        } else {
+            this.currentShootState = ShootState.TRACKING;
+        }
+    }
+
+    public Command aimCommand() {
+        return this.startEnd(
+                () -> setShootingState(true), // 按下開始：進入射擊模式 (開放極限)
+                () -> setShootingState(false) // 放開結束：回到追蹤模式 (縮小範圍)
+        );
     }
 }

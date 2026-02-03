@@ -42,7 +42,7 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
         }
         return allience;
     }
-    
+
 
     public void TargetInactive(TargetInactive event) {
         TargetInactive.add(event);
@@ -50,19 +50,6 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
 
     public void Targetactive(Targetactive event) {
         Targetactive.add(event);
-    }
-
-    public void CanGetPointAllience() {
-        if (DriverStation.isAutonomous()) {
-            return;
-        }
-        if (DriverStation.getMatchTime() >= MatchTime - TRANSITION) {
-            for(Targetactive listener : Targetactive){
-                listener.Targetactive();
-        }else if(DriverStation.getMatchTime() >= MatchTime - TRANSITION - Round){
-
-        }
-        }
     }
 
     @Override
