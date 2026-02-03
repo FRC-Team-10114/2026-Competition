@@ -1,23 +1,23 @@
 package frc.robot.subsystems.Hopper;
 
+import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
 import frc.robot.subsystems.Hopper.Trigger.TriggerIO;
-import frc.robot.subsystems.Hopper.WashingMechine.WashingMechineIO;
 
 public class HopperSubsystem {
     
     private final TriggerIO trigger;
-    private final WashingMechineIO washingMechine;
+    private final SpindexerIO spindexer;
 
     public HopperSubsystem(
         TriggerIO trigger,
-        WashingMechineIO washingMechine
+        SpindexerIO spindexer
     ) {
         this.trigger = trigger;
-        this.washingMechine = washingMechine;
+        this.spindexer = spindexer;
     }
 
     public void warmUp() {
-        this.washingMechine.run();
+        this.spindexer.run();
     }
 
     public void load() {
@@ -28,7 +28,7 @@ public class HopperSubsystem {
         this.trigger.stop();
     }
 
-    public void stopWashing() {
-        this.washingMechine.stop();
+    public void stopSpin() {
+        this.spindexer.stop();
     }
 }

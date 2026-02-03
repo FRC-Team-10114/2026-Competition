@@ -26,10 +26,10 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Hopper.HopperSubsystem;
+import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
+import frc.robot.subsystems.Hopper.Spindexer.SpindexerIOHardware;
 import frc.robot.subsystems.Hopper.Trigger.TriggerIO;
 import frc.robot.subsystems.Hopper.Trigger.TriggerIOHardware;
-import frc.robot.subsystems.Hopper.WashingMechine.WashingMechineIO;
-import frc.robot.subsystems.Hopper.WashingMechine.WashingMechineIOHardware;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Intake.Arm.ArmIO;
 import frc.robot.subsystems.Intake.Arm.ArmIOTalon;
@@ -85,7 +85,7 @@ public class RobotContainer {
     private final RollerIO roller = new RollerIOTalon();
     private final IntakeSubsystem intake = new IntakeSubsystem(arm, roller);
 
-    private final WashingMechineIO washingMechine = new WashingMechineIOHardware();
+    private final SpindexerIO washingMechine = new SpindexerIOHardware();
     private final TriggerIO trigger = new TriggerIOHardware();
     private final HopperSubsystem hopper = new HopperSubsystem(trigger, washingMechine);
 
