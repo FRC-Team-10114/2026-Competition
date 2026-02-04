@@ -76,14 +76,6 @@ public class RobotStatus extends SubsystemBase {
         NeedResetPoseEvent.add(event);
     }
 
-    public void TriggerInActive(TargetInactive event) {
-        targetInactives.add(event);
-    }
-
-    public void TriggerActive(Targetactive event) {
-        targetactives.add(event);
-    }
-
     public void updateOdometerStatus() {
         boolean isNowClimbing = this.drive.isClimbing();
 
@@ -103,11 +95,6 @@ public class RobotStatus extends SubsystemBase {
         // 1. 取得目前 FMS 的聯盟顏色
         Optional<Alliance> ally = DriverStation.getAlliance();
 
-        // 如果還沒連上 FMS 或讀不到顏色，預設回傳 false (安全起見)
-        if (ally.isEmpty()) {
-            return false;
-        }
-
         // 2. 取得機器人目前在哪個區域
         Area currentArea = getArea();
 
@@ -126,5 +113,7 @@ public class RobotStatus extends SubsystemBase {
         this.getArea();
         this.getVerticalSide();
         this.updateOdometerStatus();
+        this.isInMyAllianceZone();
+        Logger.recordOutput("isInMyAllianceZone", isInMyAllianceZone());
     }
 }

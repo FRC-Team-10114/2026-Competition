@@ -86,7 +86,12 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     }
 
     public void CanGetPointAllience() {
-        if (isInRound(1)) {
+        if(DriverStation.isAutonomous()){
+            publishActive();
+        }
+        if(isTRANSITION()){
+            publishActive();
+        }else if (isInRound(1)) {
             if (!isInactive()) publishActive();
             else publishInactive();
         } else if (isInRound(2)) {
@@ -107,7 +112,13 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     private boolean isInRound(int Round) {
         if (DriverStation.getMatchTime() <= MatchTime - TRANSITION - (Round - 1 * this.Round) && 
             DriverStation.getMatchTime() >= MatchTime - TRANSITION - (Round * this.Round)) {
-
+            return true;
+        } else {
+            return false;
+        }
+    }
+        private boolean isTRANSITION() {
+        if (DriverStation.getMatchTime()  >= MatchTime - TRANSITION) {
             return true;
         } else {
             return false;
@@ -116,6 +127,6 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
   
     @Override
     public void periodic() {
-
+        CanGetPointAllience();
     }
 }

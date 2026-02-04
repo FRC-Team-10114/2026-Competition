@@ -46,6 +46,7 @@ import frc.robot.subsystems.Shooter.Turret.TurretHardware;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.util.FMS.Signal;
 import frc.robot.util.RobotStatus.RobotStatus;
 
 public class RobotContainer {
@@ -95,6 +96,7 @@ public class RobotContainer {
 
     private final superstructure superstructure = new superstructure(drivetrain, shooter, intake,
             hopper, autoAlign);
+    public final Signal signal = new Signal();
 
     public RobotContainer() {
 
@@ -137,20 +139,20 @@ public class RobotContainer {
 
         // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
-        // joystick.leftBumper().whileTrue(this.superstructure.shoot());
+        joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        joystick.a().onTrue(
-                Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        // joystick.a().onTrue(
+        //         Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        joystick.b().onTrue(
-                Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        // joystick.b().onTrue(
+        //         Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        joystick.leftBumper().onTrue(
-                Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+        // joystick.leftBumper().onTrue(
+        //         Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
 
-        joystick.rightBumper().onTrue(
-                Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
-        sysidTest();
+        // joystick.rightBumper().onTrue(
+        //         Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        // sysidTest();
     }
 
     public Command getAutonomousCommand() {
@@ -197,8 +199,8 @@ public class RobotContainer {
 
     private void configureEvents() {
         robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
-        robotStatus.TriggerInActive(shooter::FalseTargetactive);
-        robotStatus.TriggerActive(shooter::TrueTargetactive);
+        signal.TargetInactive(shooter::FalseTargetactive);
+        signal.Targetactive(shooter::TrueTargetactive);
         superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);
         superstructure.TriggerShootingStateFalse(shooter::FalseIsshooting);
     }
