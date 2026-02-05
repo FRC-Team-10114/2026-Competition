@@ -9,6 +9,4 @@ public interface HoodIO {
     // public void stop();
 
     public double getAngle();
-
-    public void reset();
 }

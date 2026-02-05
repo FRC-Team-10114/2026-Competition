@@ -43,7 +43,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private boolean test = false;
 
-    private Angle m_targetAngle = Degrees.of(0);
+    private Angle m_targetAngle = Degrees.of(50);
 
 
 
@@ -57,22 +57,16 @@ public class ShooterSubsystem extends SubsystemBase {
         this.robotStatus = robotStatus;
 
         this.turret.resetAngle();
-        this.hood.reset();
 
     }
 
     @Override
     public void periodic() {
         // SetShooterGoal();
-        Logger.recordOutput("Targetactive", Targetactive);
-        Logger.recordOutput("Isshooting", Isshooting);
-        Logger.recordOutput("SpinAllTime", SpinAllTime());
-        Logger.recordOutput("Canshoot?", test);
-        Logger.recordOutput("HoodAngle", hood.getAngle());
         Logger.recordOutput("HoodgoalAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
+        Logger.recordOutput("HoodAngle", this.hood.getAngle());
         hood.setAngle(m_targetAngle);
-        this.setRollerRPS(RotationsPerSecond.of(10));
     }
 
     public void TrueIsshooting() {
@@ -156,12 +150,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void flywheelup() {
         this.flywheelRPS += 10;
-        this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
+        this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
     public void flywheeldown() {
         this.flywheelRPS -= 10;
-        this.setRollerRPS(RotationsPerSecond.of(flywheelRPS));
+        this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
     public void setShootingState(boolean shooting) {

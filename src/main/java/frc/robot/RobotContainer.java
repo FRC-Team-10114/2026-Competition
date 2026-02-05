@@ -139,20 +139,20 @@ public class RobotContainer {
 
         // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
-        joystick.leftBumper().whileTrue(this.superstructure.shoot());
+        // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        // joystick.a().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        joystick.a().onTrue(
+                Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        // joystick.b().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        joystick.b().onTrue(
+                Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        // joystick.leftBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+        joystick.leftBumper().onTrue(
+                Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
 
-        // joystick.rightBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
-        // sysidTest();
+        joystick.rightBumper().onTrue(
+                Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        // // sysidTest();
     }
 
     public Command getAutonomousCommand() {

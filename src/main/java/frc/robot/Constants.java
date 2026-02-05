@@ -1,5 +1,8 @@
 package frc.robot;
 
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.google.gson.annotations.Until;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -52,6 +55,11 @@ public class Constants {
             public static final double bumpers = Units.inchesToMeters(73.0);
             public static final double hub = Units.inchesToMeters(47.0);
 
+            public static final double TRENCHWide = Units.inchesToMeters(65.65);
+            public static final double TRENCHdeep = Units.inchesToMeters(47.0);
+            public static final double HUB_distance_to_the_ALLIANCE_WALL = Units.inchesToMeters(158.6);
+
+
             public static final Translation3d topCenterPoint = new Translation3d(
                     layout.getTagPose(26).get().getX() + width / 2.0,
                     fieldWidth / 2.0, // Y 軸置中
@@ -79,11 +87,10 @@ public class Constants {
         };
     }
 
-
-
     public static final class LimelightConstants {
         public static final double MAX_GYRO_RATE = 1080;
     }
+
     public static final class PhotonVisionConstants {
 
         public record CameraConfig(String cameraName, Transform3d cameraLocation) {

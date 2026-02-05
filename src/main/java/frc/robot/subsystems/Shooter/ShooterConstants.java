@@ -17,7 +17,7 @@ public class ShooterConstants {
         public static final double Hood_MIN_RADS = Units.degreesToRadians(35);
 
         public static final double Hood_GEAR_RATIO = (1.0 / 0.0181);
-        public static final double HoodCancoder_GEAR_RATIO = (1.0 / 0.0956);
+        public static final double HoodCancoder_GEAR_RATIO_TOMotor = (1.0 / 0.0956);
 
         public static final double Flywheel_GEAR_RATIO = 1.0 / (12.0 / 16.0);
 }

@@ -1,16 +1,16 @@
 package frc.robot.util.RobotStatus;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.FieldConstants.siteConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.util.RobotEvent.Event.*;
 
@@ -22,6 +22,11 @@ public class RobotStatus extends SubsystemBase {
 
     private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; // 約 11.04
     private static final double MID_Y = FieldConstants.fieldWidth / 2.0; // 中線 Y = 4.105
+    private static final double HUB_distance_to_the_ALLIANCE_WALL = siteConstants.HUB_distance_to_the_ALLIANCE_WALL;
+    private static final double TRENCHWide = siteConstants.TRENCHWide;
+    private static final double TRENCHdeep = siteConstants.TRENCHdeep;
+
+
     public final CommandSwerveDrivetrain drive;
 
     private final List<NeedResetPoseEvent> NeedResetPoseEvent = new ArrayList<>();
@@ -106,6 +111,10 @@ public class RobotStatus extends SubsystemBase {
             // 我是紅隊，我在紅區嗎？
             return currentArea == Area.RedAlliance;
         }
+    }
+
+    public void IfInTRENCHE() {
+        
     }
 
     @Override
