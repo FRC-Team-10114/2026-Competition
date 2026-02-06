@@ -21,8 +21,7 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     private final double Round = 25.0;
     private final double EndGame = 30.0;
 
-    public Signal() {
-    }
+    public Signal() {}
 
     public char getAllianceChar() {
         char alliance;
@@ -58,7 +57,6 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
         }
         return allience;
     }
-
 
     public boolean isInactive() {
         return getAllianceChar() == getInactive();

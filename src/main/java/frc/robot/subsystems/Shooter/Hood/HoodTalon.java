@@ -38,7 +38,7 @@ public class HoodTalon implements HoodIO {
 
         CANcoderConfig();
 
-        configureMotors();
+        configure();
 
         initStartingPosition();
     }
@@ -52,6 +52,7 @@ public class HoodTalon implements HoodIO {
         m_request.Position = currentPos.getValueAsDouble();
     }
 
+    @Override
     public void CANcoderConfig() {
         var cfg = new CANcoderConfiguration();
 
@@ -65,42 +66,42 @@ public class HoodTalon implements HoodIO {
         Hoodcancoder.getConfigurator().apply(cfg);
     }
 
-    public void configureMotors() {
-        TalonFXConfiguration configs = new TalonFXConfiguration();
+    public void configure() {
+        var hoodConfig = new TalonFXConfiguration();
 
-        configs.CurrentLimits
+        hoodConfig.CurrentLimits
                 .withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(70.0)
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(40.0);
 
-        configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        hoodConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        configs.SoftwareLimitSwitch
+        hoodConfig.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
                 .withReverseSoftLimitThreshold(Degree.of(28)) // 下限25
                 .withForwardSoftLimitEnable(true)
                 .withForwardSoftLimitThreshold(Degree.of(55)); // 上限63
 
-        configs.Feedback
+        hoodConfig.Feedback
                 .withFeedbackRemoteSensorID(55)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
                 .withRotorToSensorRatio(rotorToSensorRatio)
                 .withSensorToMechanismRatio(sensorToMechRatio);
 
-        configs.Slot0.kP = 200.0;
-        configs.Slot0.kI = 0.0;
-        configs.Slot0.kD = 0.0;
+        hoodConfig.Slot0.kP = 200.0;
+        hoodConfig.Slot0.kI = 0.0;
+        hoodConfig.Slot0.kD = 0.0;
 
-        configs.Slot0.kG = 0.0;
-        configs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        hoodConfig.Slot0.kG = 0.0;
+        hoodConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
-        configs.MotionMagic
+        hoodConfig.MotionMagic
                 .withMotionMagicCruiseVelocity(DegreesPerSecond.of(720))
                 .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(1080));
 
-        HoodMotor.getConfigurator().apply(configs);
+        HoodMotor.getConfigurator().apply(hoodConfig);
     }
 
     @Override
