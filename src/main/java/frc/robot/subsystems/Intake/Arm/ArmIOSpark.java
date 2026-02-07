@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.ArmConstants;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -31,11 +32,11 @@ public class ArmIOSpark implements ArmIO {
 
     public ArmIOSpark() {
 
-        this.armMotor = new SparkMax(ArmConstants.MOTOR_ID, MotorType.kBrushless);
+        this.armMotor = new SparkMax(IDs.Intake.ARM_MOTOR, MotorType.kBrushless);
         this.armEncoder = armMotor.getEncoder();
         this.armContoller = armMotor.getClosedLoopController();
 
-        this.armAbsoluteEncoder = new CANcoder(ArmConstants.CANCODER_ID);
+        this.armAbsoluteEncoder = new CANcoder(IDs.Intake.ARM_CANCODER);
 
         configure();
         resetEncoder();

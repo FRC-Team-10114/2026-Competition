@@ -9,13 +9,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
 import static edu.wpi.first.units.Units.*;
 
 public class FlywheelHardware implements FlywheelIO {
 
-    private final TalonFX flywheel = new TalonFX(15);
+    private final TalonFX flywheel = new TalonFX(IDs.Shooter.FLYWHEEL_MOTOR);
 
     private final StatusSignal<AngularVelocity> velocitySignal = flywheel.getVelocity();
 

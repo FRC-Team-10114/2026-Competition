@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.RollerConstants;
 
 public class RollerIOTalon implements RollerIO{
@@ -21,7 +22,7 @@ public class RollerIOTalon implements RollerIO{
     private final VoltageOut output;
 
     public RollerIOTalon() {
-        this.rollerMotor = new TalonFX(RollerConstants.MOTOR_ID, "canivore");
+        this.rollerMotor = new TalonFX(IDs.Intake.ROLLER_MOTOR, "canivore");
         this.rollerVelocity = rollerMotor.getVelocity();
         this.output = new VoltageOut(Volts.of(0));
         configure();

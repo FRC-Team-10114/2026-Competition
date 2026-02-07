@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.ArmConstants;
 
 public class ArmIOTalon implements ArmIO {
@@ -25,10 +26,10 @@ public class ArmIOTalon implements ArmIO {
 
     public ArmIOTalon() {
 
-        this.armMotor = new TalonFX(ArmConstants.MOTOR_ID, "rio");
+        this.armMotor = new TalonFX(IDs.Intake.ARM_MOTOR, "rio");
         this.armPosition = armMotor.getPosition();
 
-        this.armAbsoluteEncoder = new CANcoder(ArmConstants.CANCODER_ID, "rio");
+        this.armAbsoluteEncoder = new CANcoder(IDs.Intake.ARM_CANCODER, "rio");
 
         this.armOutput = new MotionMagicVoltage(0.0);
 

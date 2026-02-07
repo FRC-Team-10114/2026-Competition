@@ -13,9 +13,6 @@ import edu.wpi.first.units.measure.Current;
 public class IntakeConstants {
 
     public static final class ArmConstants {
-        public static final int MOTOR_ID = 13;
-        public static final int CANCODER_ID = 15;
-
         public static final double GEAR_RATIO = 0.0;
         public static final double ELOCITY_CONVERSION_FACOTR = RadiansPerSecond
                 .convertFrom(GEAR_RATIO, RotationsPerSecond);
@@ -35,8 +32,6 @@ public class IntakeConstants {
     }
 
     public static final class RollerConstants {
-        public static final int MOTOR_ID = 22;
-
         public static final double[] PID = { 0.1, 0.0, 0.0 };
 
         public static final double CRUISE_VELOCITY = RadiansPerSecond.fromBaseUnits(10);
