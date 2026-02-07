@@ -6,12 +6,15 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.FieldConstants.siteConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
+import frc.robot.util.FIeldHelper.AllianceFlipUtil;
 import frc.robot.util.RobotEvent.Event.*;
 
 public class RobotStatus extends SubsystemBase {
@@ -25,7 +28,6 @@ public class RobotStatus extends SubsystemBase {
     private static final double HUB_distance_to_the_ALLIANCE_WALL = siteConstants.HUB_distance_to_the_ALLIANCE_WALL;
     private static final double TRENCHWide = siteConstants.TRENCHWide;
     private static final double TRENCHdeep = siteConstants.TRENCHdeep;
-
 
     public final CommandSwerveDrivetrain drive;
 
@@ -113,8 +115,50 @@ public class RobotStatus extends SubsystemBase {
         }
     }
 
-    public void IfInTRENCHE() {
-        
+    public boolean isInTrench() {
+        var currentPose = drive.getPose2d();
+
+        boolean inRight = isInside(currentPose,
+                siteConstants.Right_TRENCHE_Pose1,
+                siteConstants.Right_TRENCHE_Pose2,
+                siteConstants.Right_TRENCHE_Pose3);
+
+        boolean inLeft = isInside(currentPose,
+                siteConstants.Left_TRENCHE_Pose1,
+                siteConstants.Left_TRENCHE_Pose2,
+                siteConstants.Left_TRENCHE_Pose3);
+
+        boolean inRightFlipped = isInside(currentPose,
+                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose1),
+                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose2),
+                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose3));
+
+        boolean inLeftFlipped = isInside(currentPose,
+                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose1),
+                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose2),
+                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose3));
+
+        return inRight || inLeft || inRightFlipped || inLeftFlipped;
+    }
+
+    private boolean isInside(Pose2d robotPose, Pose2d... corners) {
+        double x = robotPose.getX();
+        double y = robotPose.getY();
+
+        // 初始化極大與極小值
+        double minX = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxY = Double.MIN_VALUE;
+
+        // 自動找出所有角落中的最大與最小範圍
+        for (Pose2d corner : corners) {
+            minX = Math.min(minX, corner.getX());
+            maxX = Math.max(maxX, corner.getX());
+            minY = Math.min(minY, corner.getY());
+            maxY = Math.max(maxY, corner.getY());
+        }
+        return (x >= minX && x <= maxX) && (y >= minY && y <= maxY);
     }
 
     @Override
@@ -123,6 +167,6 @@ public class RobotStatus extends SubsystemBase {
         this.getVerticalSide();
         this.updateOdometerStatus();
         this.isInMyAllianceZone();
-        Logger.recordOutput("isInMyAllianceZone", isInMyAllianceZone());
+        Logger.recordOutput("isInTrench", isInTrench());
     }
 }

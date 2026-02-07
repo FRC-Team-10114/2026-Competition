@@ -5,6 +5,8 @@ import com.google.gson.annotations.Until;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -59,7 +61,6 @@ public class Constants {
             public static final double TRENCHdeep = Units.inchesToMeters(47.0);
             public static final double HUB_distance_to_the_ALLIANCE_WALL = Units.inchesToMeters(158.6);
 
-
             public static final Translation3d topCenterPoint = new Translation3d(
                     layout.getTagPose(26).get().getX() + width / 2.0,
                     fieldWidth / 2.0, // Y 軸置中
@@ -75,6 +76,20 @@ public class Constants {
                     (fieldWidth / 2.0) - (bumpers / 2 + hub / 2), // Y 軸置中
                     height // 高度固定
             );
+
+            public static final Pose2d Right_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, 0.0, new Rotation2d(0.0));
+            public static final Pose2d Right_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+                    0.0, new Rotation2d(0.0));
+            public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, TRENCHdeep,
+                    new Rotation2d(0.0));
+
+            public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+                    FieldConstants.fieldWidth, new Rotation2d(0.0));
+            public static final Pose2d Left_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+                    FieldConstants.fieldWidth, new Rotation2d(0.0));
+            public static final Pose2d Left_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+                    FieldConstants.fieldWidth - TRENCHdeep,
+                    new Rotation2d(0.0));
         }
     }
 
