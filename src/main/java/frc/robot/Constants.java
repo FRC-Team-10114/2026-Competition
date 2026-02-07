@@ -82,12 +82,17 @@ public class Constants {
                     0.0, new Rotation2d(0.0));
             public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, TRENCHdeep,
                     new Rotation2d(0.0));
+            public static final Pose2d Right_TRENCHE_Pose4 = new  Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide, TRENCHdeep,
+                    new Rotation2d(0.0));
 
             public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
             public static final Pose2d Left_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
             public static final Pose2d Left_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+                    FieldConstants.fieldWidth - TRENCHdeep,
+                    new Rotation2d(0.0));
+            public static final Pose2d Left_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
                     FieldConstants.fieldWidth - TRENCHdeep,
                     new Rotation2d(0.0));
         }

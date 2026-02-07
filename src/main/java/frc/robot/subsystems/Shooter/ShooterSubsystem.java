@@ -22,6 +22,7 @@ import frc.robot.subsystems.Shooter.Hood.HoodIO;
 import frc.robot.subsystems.Shooter.Hood.HoodTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Shooter.Turret.TurretIONEO;
+import frc.robot.subsystems.Shooter.Turret.TurretIOTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO.ShootState;
 import frc.robot.util.RobotStatus.RobotStatus;
 
@@ -67,7 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return new ShooterSubsystem(
                 new HoodTalon(), 
                 new FlywheelHardware(), 
-                new TurretIONEO(), 
+                new TurretIOTalon(), 
                 new ShooterCalculator(drive, status), 
                 drive, 
                 status);

@@ -129,14 +129,14 @@ public class RobotStatus extends SubsystemBase {
                 siteConstants.Left_TRENCHE_Pose3);
 
         boolean inRightFlipped = isInside(currentPose,
-                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose1),
-                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose2),
-                AllianceFlipUtil.apply(siteConstants.Right_TRENCHE_Pose3));
+                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose1),
+                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose2),
+                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose3));
 
         boolean inLeftFlipped = isInside(currentPose,
-                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose1),
-                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose2),
-                AllianceFlipUtil.apply(siteConstants.Left_TRENCHE_Pose3));
+                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose1),
+                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose2),
+                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3));
 
         return inRight || inLeft || inRightFlipped || inLeftFlipped;
     }
