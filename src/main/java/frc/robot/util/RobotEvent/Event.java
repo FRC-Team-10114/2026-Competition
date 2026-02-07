@@ -25,4 +25,9 @@ public class Event {
     public interface ShootingStateFalse{
         void ShootingStateFalse();
     }
+
+    @FunctionalInterface
+    public interface LEDRainbow {
+        void LEDRainbow();
+    }
 }

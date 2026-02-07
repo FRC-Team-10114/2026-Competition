@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -28,6 +27,7 @@ import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Hopper.HopperSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
@@ -65,6 +65,8 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = ShooterSubsystem.create(drivetrain, robotStatus);
     private final IntakeSubsystem intake = IntakeSubsystem.create();
     private final HopperSubsystem hopper = HopperSubsystem.create();
+
+    private final LED led = new LED();
 
     private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
