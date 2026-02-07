@@ -42,7 +42,7 @@ import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
 import frc.robot.subsystems.Shooter.Hood.HoodTalon;
-import frc.robot.subsystems.Shooter.Turret.TurretHardware;
+import frc.robot.subsystems.Shooter.Turret.TurretIOTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
@@ -77,7 +77,7 @@ public class RobotContainer {
 
     private final Auto auto = new Auto(drivetrain);
 
-    private final TurretIO turret = new TurretHardware();
+    private final TurretIO turret = new TurretIOTalon();
     private final FlywheelIO flywheel = new FlywheelHardware();
     private final HoodIO hood = new HoodTalon();
     private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain, robotStatus);

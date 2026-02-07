@@ -17,7 +17,7 @@ import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
-import frc.robot.subsystems.Shooter.Turret.TurretHardware.ShootState;
+import frc.robot.subsystems.Shooter.Turret.TurretIOTalon.ShootState;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.util.RobotStatus.RobotStatus;
 
