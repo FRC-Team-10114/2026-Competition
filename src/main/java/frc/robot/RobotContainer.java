@@ -27,23 +27,8 @@ import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
 import frc.robot.subsystems.Drivetrain.TunerConstants;
 import frc.robot.subsystems.Hopper.HopperSubsystem;
-import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
-import frc.robot.subsystems.Hopper.Spindexer.SpindexerIOHardware;
-import frc.robot.subsystems.Hopper.Trigger.TriggerIO;
-import frc.robot.subsystems.Hopper.Trigger.TriggerIOHardware;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
-import frc.robot.subsystems.Intake.Arm.ArmIO;
-import frc.robot.subsystems.Intake.Arm.ArmIOTalon;
-import frc.robot.subsystems.Intake.Roller.RollerIO;
-import frc.robot.subsystems.Intake.Roller.RollerIOTalon;
-import frc.robot.subsystems.Shooter.ShooterCalculator;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
-import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
-import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
-import frc.robot.subsystems.Shooter.Hood.HoodIO;
-import frc.robot.subsystems.Shooter.Hood.HoodTalon;
-import frc.robot.subsystems.Shooter.Turret.TurretIOTalon;
-import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.FMS.Signal;
@@ -77,25 +62,14 @@ public class RobotContainer {
 
     private final Auto auto = new Auto(drivetrain);
 
-    private final TurretIO turret = new TurretIOTalon();
-    private final FlywheelIO flywheel = new FlywheelHardware();
-    private final HoodIO hood = new HoodTalon();
-    private final ShooterCalculator shooterCalculator = new ShooterCalculator(drivetrain, robotStatus);
-    private final ShooterSubsystem shooter = new ShooterSubsystem(hood, flywheel, turret, shooterCalculator, drivetrain,
-            robotStatus);
-
-    private final ArmIO arm = new ArmIOTalon();
-    private final RollerIO roller = new RollerIOTalon();
-    private final IntakeSubsystem intake = new IntakeSubsystem(arm, roller);
-
-    private final SpindexerIO washingMechine = new SpindexerIOHardware();
-    private final TriggerIO trigger = new TriggerIOHardware();
-    private final HopperSubsystem hopper = new HopperSubsystem(trigger, washingMechine);
+    private final ShooterSubsystem shooter = ShooterSubsystem.create(drivetrain, robotStatus);
+    private final IntakeSubsystem intake = IntakeSubsystem.create();
+    private final HopperSubsystem hopper = HopperSubsystem.create();
 
     private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
-    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake,
-            hopper, autoAlign);
+    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, autoAlign);
+    
     public final Signal signal = new Signal();
 
     public RobotContainer() {

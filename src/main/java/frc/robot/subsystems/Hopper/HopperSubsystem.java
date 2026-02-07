@@ -1,7 +1,9 @@
 package frc.robot.subsystems.Hopper;
 
 import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
+import frc.robot.subsystems.Hopper.Spindexer.SpindexerIOHardware;
 import frc.robot.subsystems.Hopper.Trigger.TriggerIO;
+import frc.robot.subsystems.Hopper.Trigger.TriggerIOHardware;
 
 public class HopperSubsystem {
     
@@ -14,6 +16,12 @@ public class HopperSubsystem {
     ) {
         this.trigger = trigger;
         this.spindexer = spindexer;
+    }
+
+    public static HopperSubsystem create() {
+        return new HopperSubsystem(
+                new TriggerIOHardware(), 
+                new SpindexerIOHardware());
     }
 
     public void warmUp() {
