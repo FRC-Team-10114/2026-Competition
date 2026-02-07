@@ -10,9 +10,8 @@ import com.ctre.phoenix6.controls.TwinkleAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IDs;
 import frc.robot.util.RobotEvent.Event.LEDRainbow;
 
 public class LED extends SubsystemBase {
@@ -24,11 +23,10 @@ public class LED extends SubsystemBase {
     private final ColorFlowAnimation colorFlowAnimation;
     private final TwinkleAnimation twinkleAnimation;
 
-
     private final List<LEDRainbow> Rainbow = new ArrayList<>();
 
     public LED() {
-        this.ledController = new CANdle(66);
+        this.ledController = new CANdle(IDs.LED.CANDLE, "canivore");
 
         this.rainbowAnimation = new RainbowAnimation(0, 50);
         this.fireAnimation = new FireAnimation(0, 50);

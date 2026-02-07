@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.IDs;
 
 public class ClimberIOSpark implements ClimberIO {
 
@@ -23,7 +24,7 @@ public class ClimberIOSpark implements ClimberIO {
     private final SparkClosedLoopController climberController;
 
     public ClimberIOSpark() {
-        this.climberMotor = new SparkFlex(ClimberConstants.MOTOR_ID, MotorType.kBrushless);
+        this.climberMotor = new SparkFlex(IDs.Climber.CLIMBER_MOTOR, MotorType.kBrushless);
         this.climberEncoder = climberMotor.getEncoder();
         this.climberController = climberMotor.getClosedLoopController();
 

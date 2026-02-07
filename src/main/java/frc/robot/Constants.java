@@ -144,5 +144,15 @@ public class Constants {
 
             public static final int ARM_CANCODER = 15;
         }
+        public static final class Hopper {
+            public static final int TRIGGER_MOTOR = 30;
+            public static final int SPINDEXER_MOTOR = 31;
+        }
+        public static final class Climber {
+            public static final int CLIMBER_MOTOR = 40;
+        }
+        public static final class LED {
+            public static final int CANDLE = 41;
+        }
     }
 }

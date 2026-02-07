@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Hopper.HopperConstant.SpindexerConstants;
 
 public class SpindexerIOHardware implements SpindexerIO {
@@ -17,7 +18,7 @@ public class SpindexerIOHardware implements SpindexerIO {
     private final VoltageOut output;
 
     public SpindexerIOHardware() {
-        this.mechineMotor = new TalonFX(SpindexerConstants.MECHINE_MOTOR_ID, "canivore");
+        this.mechineMotor = new TalonFX(IDs.Hopper.SPINDEXER_MOTOR, "canivore");
         this.output = new VoltageOut(Volts.of(0)); 
 
         configure();
