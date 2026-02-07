@@ -13,13 +13,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.util.MathHelper.EncoderWithGearRatio;
 import frc.robot.util.MathHelper.RobustCRTCalculator;
 
 public class TurretIOTalon extends TurretIO {
-    private final TalonFX turretMotor = new TalonFX(20);
-
+    private final TalonFX turretMotor;
     private final CANcoder master, slave;
 
     private final double gearRatio = 1.0;
@@ -34,8 +34,9 @@ public class TurretIOTalon extends TurretIO {
     private final MotionMagicVoltage m_request = new MotionMagicVoltage(Degree.of(0));
 
     public TurretIOTalon() {
-        this.master = new CANcoder(21);
-        this.slave = new CANcoder(22);
+        this.turretMotor = new TalonFX(IDs.Shooter.TURRET_MOTOR);
+        this.master = new CANcoder(IDs.Shooter.TURRET_MASTER_CANCODER);
+        this.slave = new CANcoder(IDs.Shooter.TURRET_SLAVE_CANCODER);
         this.configureMotors();
     }
 

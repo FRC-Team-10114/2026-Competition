@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
 public class HoodIONEO implements HoodIO {
@@ -29,12 +30,12 @@ public class HoodIONEO implements HoodIO {
     private final CANcoder cancoder;
 
     public HoodIONEO() {
-        motor = new SparkFlex(17, MotorType.kBrushless);
+        motor = new SparkFlex(IDs.Shooter.HOOD_MOTOR, MotorType.kBrushless);
 
         encoder = motor.getEncoder();
         pidController = motor.getClosedLoopController();
 
-        cancoder = new CANcoder(20);
+        cancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER);
         
         this.configure();
         this.CANcoderConfig();

@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
 public class HoodTalon implements HoodIO {
@@ -32,8 +33,8 @@ public class HoodTalon implements HoodIO {
             / ShooterConstants.HoodCancoder_GEAR_RATIO_TOMotor;
 
     public HoodTalon() {
-        this.HoodMotor = new TalonFX(22);
-        this.Hoodcancoder = new CANcoder(55);
+        this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR);
+        this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER);
         this.HoodPosition = HoodMotor.getPosition();
 
         CANcoderConfig();

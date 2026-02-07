@@ -82,12 +82,17 @@ public class Constants {
                     0.0, new Rotation2d(0.0));
             public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, TRENCHdeep,
                     new Rotation2d(0.0));
+            public static final Pose2d Right_TRENCHE_Pose4 = new  Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide, TRENCHdeep,
+                    new Rotation2d(0.0));
 
             public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
             public static final Pose2d Left_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
             public static final Pose2d Left_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+                    FieldConstants.fieldWidth - TRENCHdeep,
+                    new Rotation2d(0.0));
+            public static final Pose2d Left_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
                     FieldConstants.fieldWidth - TRENCHdeep,
                     new Rotation2d(0.0));
         }
@@ -122,4 +127,22 @@ public class Constants {
         public static final double maxYawRate = 720.0;// 最大可以接受的旋轉速度
     }
 
+    public static final class IDs {
+
+        public static final class Shooter {
+            public static final int FLYWHEEL_MOTOR = 15;
+            public static final int HOOD_MOTOR = 22;
+            public static final int TURRET_MOTOR = 20;
+
+            public static final int HOOD_CANCODER = 55;
+            public static final int TURRET_MASTER_CANCODER = 21;
+            public static final int TURRET_SLAVE_CANCODER = 22;
+        }  
+        public static final class Intake {
+            public static final int ARM_MOTOR = 13;
+            public static final int ROLLER_MOTOR = 22;
+
+            public static final int ARM_CANCODER = 15;
+        }
+    }
 }

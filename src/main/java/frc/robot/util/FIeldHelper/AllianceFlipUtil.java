@@ -44,4 +44,11 @@ public class AllianceFlipUtil {
         }
         return false;
     }
+        public static Pose2d Needapply(Pose2d pose) {
+            return new Pose2d(
+                FieldConstants.fieldLength - pose.getX(),
+                pose.getY(),
+                new Rotation2d(-pose.getRotation().getCos(), pose.getRotation().getSin()) // 角度也要翻轉 (180 - theta)
+            );
+    }
 }

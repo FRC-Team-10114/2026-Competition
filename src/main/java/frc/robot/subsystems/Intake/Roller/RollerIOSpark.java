@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.RollerConstants;
 
 public class RollerIOSpark implements RollerIO {
@@ -23,7 +24,7 @@ public class RollerIOSpark implements RollerIO {
     private final SparkClosedLoopController rollerController;
 
     public RollerIOSpark() {
-        this.rollerMotor = new SparkMax(RollerConstants.MOTOR_ID, MotorType.kBrushless);
+        this.rollerMotor = new SparkMax(IDs.Intake.ROLLER_MOTOR, MotorType.kBrushless);
         this.rollerEncoder = rollerMotor.getEncoder();
         this.rollerController = rollerMotor.getClosedLoopController();
     }
