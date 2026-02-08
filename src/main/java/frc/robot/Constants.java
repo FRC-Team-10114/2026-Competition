@@ -130,29 +130,29 @@ public class Constants {
     public static final class IDs {
 
         public static final class Shooter {
-            public static final int FLYWHEEL_MOTOR = 15;
-            public static final int HOOD_MOTOR = 22;
-            public static final int TURRET_MOTOR = 20;
+            public static final int FLYWHEEL_MOTOR = 13;
+            public static final int HOOD_MOTOR = 14;
+            public static final int TURRET_MOTOR = 15;
 
-            public static final int HOOD_CANCODER = 55;
-            public static final int TURRET_MASTER_CANCODER = 21;
-            public static final int TURRET_SLAVE_CANCODER = 22;
+            public static final int HOOD_CANCODER = 16;
+            public static final int TURRET_MASTER_CANCODER = 17;
+            public static final int TURRET_SLAVE_CANCODER = 18;
         }  
         public static final class Intake {
-            public static final int ARM_MOTOR = 13;
-            public static final int ROLLER_MOTOR = 22;
+            public static final int ARM_MOTOR = 19;
+            public static final int ROLLER_MOTOR = 20;
 
-            public static final int ARM_CANCODER = 15;
+            public static final int ARM_CANCODER = 21;
         }
         public static final class Hopper {
-            public static final int TRIGGER_MOTOR = 30;
-            public static final int SPINDEXER_MOTOR = 31;
+            public static final int TRIGGER_MOTOR = 22;
+            public static final int SPINDEXER_MOTOR = 23;
         }
         public static final class Climber {
-            public static final int CLIMBER_MOTOR = 40;
+            public static final int CLIMBER_MOTOR = 24;
         }
         public static final class LED {
-            public static final int CANDLE = 41;
+            public static final int CANDLE = 25;
         }
     }
 }
