@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.ArmConstants;
 
 public class ClimberIOTalon implements ClimberIO {
@@ -21,7 +22,7 @@ public class ClimberIOTalon implements ClimberIO {
     private final PositionVoltage output;
 
     public ClimberIOTalon() {
-        this.climberMotor = new TalonFX(ClimberConstants.MOTOR_ID, "canivore");
+        this.climberMotor = new TalonFX(IDs.Climber.CLIMBER_MOTOR, "canivore");
         this.climberPosition = climberMotor.getPosition();
         this.output = new PositionVoltage(0.0);
 

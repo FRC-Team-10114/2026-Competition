@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Hopper.HopperConstant.TriggerConstants;
 
 
@@ -18,7 +19,7 @@ public class TriggerIOHardware implements TriggerIO {
     private final VoltageOut output;
 
     public TriggerIOHardware() {
-        this.triggerMotor = new TalonFX(TriggerConstants.TRIGGER_MOTOR_ID, "canivore");
+        this.triggerMotor = new TalonFX(IDs.Hopper.TRIGGER_MOTOR, "canivore");
         this.output = new VoltageOut(0.0);
 
         configure();

@@ -37,4 +37,7 @@ public class Event {
     public interface NotInTrench {
         void NotInTrench();
     }
+    public interface LEDRainbow {
+        void LEDRainbow();
+    }
 }

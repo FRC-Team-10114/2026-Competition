@@ -11,8 +11,6 @@ import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ClimberConstants {
-
-    public static final int MOTOR_ID = 21;
     
     public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
