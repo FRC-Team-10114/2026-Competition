@@ -10,23 +10,33 @@ public class Event {
     }
 
     @FunctionalInterface
-    public interface TargetInactive{
+    public interface TargetInactive {
         void TargetInactive();
     }
+
     @FunctionalInterface
-    public interface Targetactive{
+    public interface Targetactive {
         void Targetactive();
     }
+
     @FunctionalInterface
-    public interface ShootingStateTrue{
+    public interface ShootingStateTrue {
         void ShootingStateTrue();
     }
+
     @FunctionalInterface
-    public interface ShootingStateFalse{
+    public interface ShootingStateFalse {
         void ShootingStateFalse();
     }
 
     @FunctionalInterface
+    public interface InTrench {
+        void InTrench();
+    }
+    @FunctionalInterface
+    public interface NotInTrench {
+        void NotInTrench();
+    }
     public interface LEDRainbow {
         void LEDRainbow();
     }

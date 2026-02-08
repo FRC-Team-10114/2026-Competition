@@ -129,7 +129,8 @@ public class RobotContainer {
         // joystick.rightBumper().onTrue(
         //         Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
         // // sysidTest();
-        joystick.leftBumper().whileTrue(superstructure.intakeCommand());
+        joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(), this.shooter));
+        joystick.rightBumper().whileTrue( Commands.run(() -> this.shooter.turretdown(), this.shooter));
     }
 
     public Command getAutonomousCommand() {
@@ -176,6 +177,8 @@ public class RobotContainer {
 
     private void configureEvents() {
         robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
+        robotStatus.TriggerInTrench(shooter::TrueInTrench);
+        robotStatus.TriggerNotInTrench(shooter::FalsInTrench);
         signal.TargetInactive(shooter::FalseTargetactive);
         signal.Targetactive(shooter::TrueTargetactive);
         superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);

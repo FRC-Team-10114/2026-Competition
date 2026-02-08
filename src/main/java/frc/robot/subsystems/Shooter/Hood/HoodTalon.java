@@ -81,9 +81,9 @@ public class HoodTalon implements HoodIO {
 
         hoodConfig.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(Degree.of(28)) // 下限25
+                .withReverseSoftLimitThreshold(ShooterConstants.Hood_MIN_RADS)
                 .withForwardSoftLimitEnable(true)
-                .withForwardSoftLimitThreshold(Degree.of(55)); // 上限63
+                .withForwardSoftLimitThreshold(ShooterConstants.Hood_MAX_RADS);
 
         hoodConfig.Feedback
                 .withFeedbackRemoteSensorID(55)

@@ -83,17 +83,6 @@ public class superstructure extends SubsystemBase {
         }
     }
 
-    public Command shoot() {
-        return aimCommand();
-    }
-
-    public Command aimCommand() {
-        return this.startEnd(
-                () -> setShootingStateTrue(), // 按下開始：進入射擊模式 (開放極限)
-                () -> setShootingStateFalse() // 放開結束：回到追蹤模式 (縮小範圍)
-        );
-    }
-
     @Override
     public void periodic() {
     }

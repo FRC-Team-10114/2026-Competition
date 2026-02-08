@@ -7,7 +7,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.google.gson.annotations.Until;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,7 +26,6 @@ import frc.robot.subsystems.Shooter.Hood.HoodIO;
 import frc.robot.subsystems.Shooter.Hood.HoodTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
 import frc.robot.subsystems.Shooter.Turret.TurretIONEO;
-import frc.robot.subsystems.Shooter.Turret.TurretIOTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO.ShootState;
 import frc.robot.util.RobotStatus.RobotStatus;
 
@@ -34,8 +37,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private final ShooterCalculator shooterCalculator;
     private final CommandSwerveDrivetrain drive;
 
-    private double hoodPosition = Radians.convertFrom(40, Degrees);
-
     private ShootState currentShootState = ShootState.TRACKING;
 
     private final RobotStatus robotStatus;
@@ -46,11 +47,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private boolean Isshooting = false;
 
-    private boolean test = false;
+    private boolean InTrench = false;
 
     private Angle m_targetAngle = Degrees.of(25);
 
-
+    private Angle turretAngle = Radians.of(0);
 
     public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
@@ -60,17 +61,15 @@ public class ShooterSubsystem extends SubsystemBase {
         this.shooterCalculator = shooterCalculator;
         this.drive = drive;
         this.robotStatus = robotStatus;
-
-        this.turret.resetAngle();
     }
 
     public static ShooterSubsystem create(CommandSwerveDrivetrain drive, RobotStatus status) {
         return new ShooterSubsystem(
-                new HoodTalon(), 
-                new FlywheelHardware(), 
-                new TurretIOTalon(), 
-                new ShooterCalculator(drive, status), 
-                drive, 
+                new HoodTalon(),
+                new FlywheelHardware(),
+                new TurretIONEO(),
+                new ShooterCalculator(drive, status),
+                drive,
                 status);
     }
 
@@ -80,6 +79,9 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("HoodgoalAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("HoodAngle", this.hood.getAngle());
+        Logger.recordOutput("InTrench", InTrench);
+        Logger.recordOutput("Turretangle", this.turret.getAngle());
+        Logger.recordOutput("Turretgoal", turretAngle);
         hood.setAngle(m_targetAngle);
     }
 
@@ -97,6 +99,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void FalseTargetactive() {
         Targetactive = false;
+    }
+
+    public void TrueInTrench() {
+        InTrench = true;
+    }
+
+    public void FalsInTrench() {
+        InTrench = false;
     }
 
     public boolean SpinAllTime() {
@@ -134,20 +144,21 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setHoodAngle(Angle targetRad) {
-        this.hood.setAngle(targetRad);
+        if (InTrench) {
+            this.hood.setAngle(ShooterConstants.Hood_MIN_RADS);
+        } else {
+            this.hood.setAngle(targetRad);
+        }
     }
 
     public void setRollerRPS(AngularVelocity velocity) {
         if (SpinAllTime() || Isshooting) {
-            test = true;
             this.flywheel.setRPS(velocity);
-        } else {
-            test = false;
         }
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
-        
+
         this.turret.setAngle(robotAngle, targetRad, currentShootState);
 
     }
@@ -172,18 +183,21 @@ public class ShooterSubsystem extends SubsystemBase {
         this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
-    public void setShootingState(boolean shooting) {
-        if (shooting) {
+    public void turretup() {
+        this.turretAngle = turretAngle.plus(Radians.of(Units.degreesToRadians(3.0)));
+        this.turret.setAngle(new Rotation2d(0), turretAngle , currentShootState);
+    }
+
+    public void turretdown() {
+        this.turretAngle = turretAngle.minus(Radians.of(Units.degreesToRadians(3.0)));
+        this.turret.setAngle(new Rotation2d(0), turretAngle, currentShootState);
+    }
+
+    public void setShootingState() {
+        if (Isshooting) {
             this.currentShootState = ShootState.ACTIVE_SHOOTING;
         } else {
             this.currentShootState = ShootState.TRACKING;
         }
-    }
-
-    public Command aimCommand() {
-        return this.startEnd(
-                () -> setShootingState(true), // 按下開始：進入射擊模式 (開放極限)
-                () -> setShootingState(false) // 放開結束：回到追蹤模式 (縮小範圍)
-        );
     }
 }
