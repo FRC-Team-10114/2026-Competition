@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -56,7 +57,7 @@ public class RobotContainer {
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
     public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
-    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.newCam);
+    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.cameraTransforms);
 
     private final Field2d field = new Field2d();
 

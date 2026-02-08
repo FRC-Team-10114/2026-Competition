@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Map;
+
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.google.gson.annotations.Until;
 
@@ -77,12 +79,14 @@ public class Constants {
                     height // 高度固定
             );
 
-            public static final Pose2d Right_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, 0.0, new Rotation2d(0.0));
+            public static final Pose2d Right_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, 0.0,
+                    new Rotation2d(0.0));
             public static final Pose2d Right_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
                     0.0, new Rotation2d(0.0));
             public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, TRENCHdeep,
                     new Rotation2d(0.0));
-            public static final Pose2d Right_TRENCHE_Pose4 = new  Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide, TRENCHdeep,
+            public static final Pose2d Right_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+                    TRENCHdeep,
                     new Rotation2d(0.0));
 
             public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
@@ -113,18 +117,22 @@ public class Constants {
 
     public static final class PhotonVisionConstants {
 
-        public record CameraConfig(String cameraName, Transform3d cameraLocation) {
-        }
-
-        public static final CameraConfig newCam = new CameraConfig(
-                "NewCam",
-                new Transform3d(
-                        new Translation3d(0.0, 0.0, 0.0),
-                        new Rotation3d(0, 0, 0)));
+        public static final Map<String, Transform3d> cameraTransforms = Map.of(
+                "RightOV", new Transform3d(
+                        // 位置不變 (車尾右側)
+                        new Translation3d(-0.20979456, -0.13607890, 0.15952705),
+                        // 🛠️ 修改這裡：原本是 180-30，改成 180+30 (即 -150度)
+                        new Rotation3d(0.0, 0.0, Math.toRadians(180 + 30))),
+                "LeftOV", new Transform3d(
+                        // 位置不變 (車尾左側)
+                        new Translation3d(-0.20979456, 0.13607890, 0.15952705),
+                        // 🛠️ 修改這裡：原本是 -180+30，改成 -180-30 (即 150度)
+                        new Rotation3d(0.0, 0.0, Math.toRadians(-180 - 30))));
 
         public static final double borderPixels = 15.0; // 拒絕貼邊緣的角點（避免畸變/遮擋）
         public static final double maxSingleTagDistanceMeters = Units.feetToMeters(6.0); // 單tag最遠可接受距離
         public static final double maxYawRate = 720.0;// 最大可以接受的旋轉速度
+        public static final double maxZ = 0.5; //最高接受誤差高度
     }
 
     public static final class IDs {
@@ -137,20 +145,24 @@ public class Constants {
             public static final int HOOD_CANCODER = 55;
             public static final int TURRET_MASTER_CANCODER = 21;
             public static final int TURRET_SLAVE_CANCODER = 22;
-        }  
+        }
+
         public static final class Intake {
             public static final int ARM_MOTOR = 13;
             public static final int ROLLER_MOTOR = 22;
 
             public static final int ARM_CANCODER = 15;
         }
+
         public static final class Hopper {
             public static final int TRIGGER_MOTOR = 30;
             public static final int SPINDEXER_MOTOR = 31;
         }
+
         public static final class Climber {
             public static final int CLIMBER_MOTOR = 40;
         }
+
         public static final class LED {
             public static final int CANDLE = 41;
         }
