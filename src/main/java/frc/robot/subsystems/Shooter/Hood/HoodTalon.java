@@ -32,6 +32,8 @@ public class HoodTalon implements HoodIO {
     private final double sensorToMechRatio = ShooterConstants.Hood_GEAR_RATIO
             / ShooterConstants.HoodCancoder_GEAR_RATIO_TOMotor;
 
+    private double latestTargetDegrees = 0.0;
+
     public HoodTalon() {
         this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR);
         this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER);
@@ -107,6 +109,7 @@ public class HoodTalon implements HoodIO {
 
     @Override
     public void setAngle(Angle angle) {
+        this.latestTargetDegrees = angle.in(Degrees);
         HoodMotor.setControl(m_request.withPosition(angle));
     }
 
@@ -115,5 +118,19 @@ public class HoodTalon implements HoodIO {
         this.HoodPosition.refresh();
 
         return this.HoodPosition.getValue().in(Degrees);
+    }
+    @Override
+    public boolean isAtSetPosition() {
+        // 3. 務必刷新訊號，確保讀到的是最新位置
+        this.HoodPosition.refresh();
+
+        // 4. 取得當前實際角度
+        double currentDegrees = this.HoodPosition.getValue().in(Degrees);
+
+        // 5. 計算誤差絕對值 (目標 - 實際)
+        double error = Math.abs(this.latestTargetDegrees - currentDegrees);
+
+        // 6. 只要誤差小於 2 度，就回傳 true (允許開火)
+        return error < 2.0;
     }
 }

@@ -7,4 +7,6 @@ public interface FlywheelIO {
     public void setRPS(AngularVelocity RPS);
 
     public AngularVelocity getRPS();
+
+    public boolean isAtSetPosition();
 }
