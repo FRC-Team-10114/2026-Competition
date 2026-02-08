@@ -1,8 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix6.controls.StaticBrake;
-import com.google.gson.annotations.Until;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -116,8 +113,26 @@ public class Constants {
         public record CameraConfig(String cameraName, Transform3d cameraLocation) {
         }
 
-        public static final CameraConfig newCam = new CameraConfig(
-                "NewCam",
+        public static final CameraConfig FrontLeft = new CameraConfig(
+                "FrontLeft",
+                new Transform3d(
+                        new Translation3d(0.0, 0.0, 0.0),
+                        new Rotation3d(0, 0, 0)));
+
+        public static final CameraConfig FrontRight = new CameraConfig(
+                "FrontRight",
+                new Transform3d(
+                        new Translation3d(0.0, 0.0, 0.0),
+                        new Rotation3d(0, 0, 0)));
+
+        public static final CameraConfig BackLeft = new CameraConfig(
+                "BackLeft",
+                new Transform3d(
+                        new Translation3d(0.0, 0.0, 0.0),
+                        new Rotation3d(0, 0, 0)));
+        
+        public static final CameraConfig BackRight = new CameraConfig(
+                "BackRight",
                 new Transform3d(
                         new Translation3d(0.0, 0.0, 0.0),
                         new Rotation3d(0, 0, 0)));

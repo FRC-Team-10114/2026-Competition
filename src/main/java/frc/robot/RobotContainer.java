@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.commands.Auto;
 import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
@@ -56,7 +57,9 @@ public class RobotContainer {
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
     public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
-    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.newCam);
+    public final PhotonVision photonVision = new PhotonVision(
+            drivetrain, 
+            PhotonVisionConstants.FrontLeft);
 
     private final Field2d field = new Field2d();
 
@@ -87,7 +90,6 @@ public class RobotContainer {
         log();
 
         // Warmup PathPlanner to avoid Java pauses
-        // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     }
 
