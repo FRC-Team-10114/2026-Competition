@@ -11,4 +11,6 @@ public interface HoodIO {
     public void CANcoderConfig();
 
     public void configure();
+
+    public boolean isAtSetPosition();
 }

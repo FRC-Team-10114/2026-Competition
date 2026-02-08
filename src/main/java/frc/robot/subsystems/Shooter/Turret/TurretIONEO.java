@@ -38,6 +38,8 @@ public class TurretIONEO extends TurretIO {
 
         private final CANcoder masterCANcoder, slaveCANcoder;
 
+        private double currentTargetRads = 0.0;
+
         public TurretIONEO() {
                 this.turretMotor = new SparkFlex(40, MotorType.kBrushless);
                 this.turretController = turretMotor.getClosedLoopController();
@@ -49,12 +51,17 @@ public class TurretIONEO extends TurretIO {
                 configureMotors();
                 resetAngle();
                 this.lastSetpointRads = getAngle().in(Radians);
+                this.currentTargetRads = this.lastSetpointRads;
         }
 
         @Override
         public void setAngle(Rotation2d robotHeading, Angle targetRad, ShootState state) {
-                this.turretController.setSetpoint(this.Calculate(robotHeading, targetRad, state).in(Radians),
-                                ControlType.kPosition);
+
+                double target = this.Calculate(robotHeading, targetRad, state).in(Radians);
+
+                this.currentTargetRads = target;
+
+                this.turretController.setSetpoint(target, ControlType.kMAXMotionPositionControl);
         }
 
         @Override
@@ -70,6 +77,19 @@ public class TurretIONEO extends TurretIO {
                 double angle = RobustCRTCalculator.calculateAbsolutePosition(master, slave);
                 turretEncoder.setPosition(0.0);
         }
+
+        @Override
+        public boolean isAtSetPosition() {
+        // 1. 取得目前角度 (因為設定了 Factor，這裡是弧度)
+        double currentRads = this.turretEncoder.getPosition();
+
+        // 2. 計算誤差 (弧度)
+        double errorRads = Math.abs(this.currentTargetRads - currentRads);
+
+        // 3. 將 2 度轉成弧度來比較
+        // 2 degrees ~= 0.035 radians
+        return errorRads < Units.degreesToRadians(2.0);
+    }
 
         @Override
         public Angle getAngle() {

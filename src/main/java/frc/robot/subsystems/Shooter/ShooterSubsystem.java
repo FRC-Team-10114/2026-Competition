@@ -82,6 +82,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("InTrench", InTrench);
         Logger.recordOutput("Turretangle", this.turret.getAngle());
         Logger.recordOutput("Turretgoal", turretAngle);
+        Logger.recordOutput("shooterisAtSetPosition", isAtSetPosition());
         hood.setAngle(m_targetAngle);
     }
 
@@ -161,6 +162,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
         this.turret.setAngle(robotAngle, targetRad, currentShootState);
 
+    }
+    public boolean isAtSetPosition(){
+        return (this.hood.isAtSetPosition() && this.turret.isAtSetPosition() && this.flywheel.isAtSetPosition());
     }
 
     // TEST METHOD
