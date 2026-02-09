@@ -26,7 +26,7 @@ public class SpindexerIOHardware implements SpindexerIO {
 
     @Override
     public void run() {
-        this.mechineMotor.setControl(output.withOutput(Volts.of( 10)));
+        this.mechineMotor.setControl(output.withOutput(Volts.of(-5)));
     }
 
     @Override

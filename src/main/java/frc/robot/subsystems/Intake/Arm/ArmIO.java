@@ -4,9 +4,9 @@ import edu.wpi.first.units.measure.Angle;
 
 public interface ArmIO {
 
-    public void setPosition(Angle position);
+    public void setPosition(double position);
 
-    public Angle getPosition();
+    public double getPosition();
 
     public void resetEncoder();
 

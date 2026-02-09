@@ -15,7 +15,7 @@ public abstract class TurretIO {
         TRACKING // 純追蹤/待機：使用縮小範圍 (Soft Limits)
     }
 
-    protected double lastSetpointRads = 0.0;
+    public double lastSetpointRads = 0.0;
 
     public abstract void setAngle(Rotation2d robotHeading, Angle targetRad, ShootState state);
 

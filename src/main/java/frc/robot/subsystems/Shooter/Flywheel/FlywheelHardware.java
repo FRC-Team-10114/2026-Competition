@@ -16,7 +16,7 @@ import static edu.wpi.first.units.Units.*;
 
 public class FlywheelHardware implements FlywheelIO {
 
-    private final TalonFX flywheel = new TalonFX(IDs.Shooter.FLYWHEEL_MOTOR);
+    private final TalonFX flywheel = new TalonFX(IDs.Shooter.FLYWHEEL_MOTOR, "canivore");
 
     private final StatusSignal<AngularVelocity> velocitySignal = flywheel.getVelocity();
 

@@ -119,27 +119,25 @@ public class Constants {
 
         public static final Map<String, Transform3d> cameraTransforms = Map.of(
                 "RightOV", new Transform3d(
-                        // 位置不變 (車尾右側)
-                        new Translation3d(-0.20979456, -0.13607890, 0.15952705),
-                        // 🛠️ 修改這裡：原本是 180-30，改成 180+30 (即 -150度)
-                        new Rotation3d(0.0, 0.0, Math.toRadians(180 + 30))),
+                        //右側
+                        new Translation3d(0.3113271, -0.3113278, 0.1838034),
+                        new Rotation3d(0.0, Units.degreesToRadians(30.0), Units.degreesToRadians(45.0))),
                 "LeftOV", new Transform3d(
-                        // 位置不變 (車尾左側)
-                        new Translation3d(-0.20979456, 0.13607890, 0.15952705),
-                        // 🛠️ 修改這裡：原本是 -180+30，改成 -180-30 (即 150度)
-                        new Rotation3d(0.0, 0.0, Math.toRadians(-180 - 30))));
+                        //左側
+                        new Translation3d(0.3113271, 0.3113278, 0.1838034),
+                        new Rotation3d(0.0, Units.degreesToRadians(30.0), Units.degreesToRadians(-45.0))));
 
         public static final double borderPixels = 15.0; // 拒絕貼邊緣的角點（避免畸變/遮擋）
         public static final double maxSingleTagDistanceMeters = Units.feetToMeters(6.0); // 單tag最遠可接受距離
         public static final double maxYawRate = 720.0;// 最大可以接受的旋轉速度
-        public static final double maxZ = 0.5; //最高接受誤差高度
+        public static final double maxZ = 0.5; //最大高度
     }
 
     public static final class IDs {
 
         public static final class Shooter {
             public static final int FLYWHEEL_MOTOR = 15;
-            public static final int HOOD_MOTOR = 22;
+            public static final int HOOD_MOTOR = 25;
             public static final int TURRET_MOTOR = 20;
 
             public static final int HOOD_CANCODER = 55;
@@ -149,7 +147,7 @@ public class Constants {
 
         public static final class Intake {
             public static final int ARM_MOTOR = 13;
-            public static final int ROLLER_MOTOR = 22;
+            public static final int ROLLER_MOTOR = 23;
 
             public static final int ARM_CANCODER = 15;
         }
