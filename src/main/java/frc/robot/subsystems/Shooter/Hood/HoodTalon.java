@@ -35,8 +35,8 @@ public class HoodTalon implements HoodIO {
     private double latestTargetDegrees = 0.0;
 
     public HoodTalon() {
-        this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR);
-        this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER);
+        this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR, "canivore");
+        this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER, "canivore");
         this.HoodPosition = HoodMotor.getPosition();
 
         CANcoderConfig();
@@ -61,7 +61,7 @@ public class HoodTalon implements HoodIO {
 
         double targetSensorRotations = Units.degreesToRotations(25.0) * sensorToMechRatio;
 
-        cfg.MagnetSensor.MagnetOffset = 0.447998046875 + targetSensorRotations;
+        cfg.MagnetSensor.MagnetOffset = 0.065673828125 + targetSensorRotations;
 
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -93,7 +93,7 @@ public class HoodTalon implements HoodIO {
                 .withRotorToSensorRatio(rotorToSensorRatio)
                 .withSensorToMechanismRatio(sensorToMechRatio);
 
-        hoodConfig.Slot0.kP = 200.0;
+        hoodConfig.Slot0.kP = 160.0;
         hoodConfig.Slot0.kI = 0.0;
         hoodConfig.Slot0.kD = 0.0;
 

@@ -38,10 +38,48 @@ public class superstructure extends SubsystemBase {
 
     // Intake Methods
 
-    public Command intakeCommand() {
-        return Commands.startEnd(
-                intake::intake,
-                intake::back);
+    public Command intake() {
+        return Commands.parallel(
+            Commands.runOnce(intake::rollerStart),
+            Commands.runOnce(intake::armDown),
+            Commands.runOnce(hopper::warmUp, hopper));
+    }
+    public Command stopintake(){
+        return Commands.parallel(Commands.runOnce(intake::rollerEnd),
+        Commands.runOnce(hopper::stopSpin, hopper));
+    }
+
+public Command shootCommand() {
+    // 使用 run() 來建立一個持續執行的 Command
+    return Commands.run(() -> {
+        // 1. 設定射擊狀態 (通知 Shooter 開始加速/瞄準)
+        // 建議這個放在 initialize 或這裡都可以，確保狀態是 True
+        this.setShootingStateTrue();
+
+        // 2. 【關鍵】在每一幀動態檢查是否到位
+        if (shooter.isAtSetPosition()) {
+            // ✅ 轉速/角度到位 -> 進彈 (射擊)
+            hopper.load();
+            hopper.warmUp();
+        } else {
+            // ⏳ 還沒到位 -> 只是預熱/攪拌 (防止卡彈)
+            hopper.warmUp(); 
+        }
+    }, hopper) // ⚠️ 非常重要：必須宣告 require hopper 子系統，防止與其他 hopper 指令衝突
+    
+    // 3. 當放開按鈕或指令結束時 -> 復原狀態並停馬達
+    .finallyDo(() -> {
+        this.setShootingStateFalse();
+        hopper.stopAll();
+    });
+}
+
+
+    public Command stopShoot() {
+        return Commands.parallel(
+            Commands.runOnce(hopper::stopAll),
+            Commands.runOnce(this::setShootingStateFalse)
+        );
     }
 
     // Hopper Methods
@@ -51,7 +89,7 @@ public class superstructure extends SubsystemBase {
     }
 
     public Command stopWashCommand() {
-        return Commands.run(hopper::stopSpin);
+        return Commands.runOnce(hopper::stopSpin);
     }
 
     public Command loadCommand() {
@@ -77,7 +115,8 @@ public class superstructure extends SubsystemBase {
             listener.ShootingStateTrue();
         }
     }
-        public void setShootingStateFalse() {
+
+    public void setShootingStateFalse() {
         for (ShootingStateFalse listener : ShootingStateFalse) {
             listener.ShootingStateFalse();
         }
@@ -85,5 +124,6 @@ public class superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
+        this.hopper.warmUp();
     }
 }

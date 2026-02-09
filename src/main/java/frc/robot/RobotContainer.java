@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -57,7 +58,8 @@ public class RobotContainer {
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
     public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
-    public final PhotonVision photonVision = new PhotonVision(drivetrain, Constants.PhotonVisionConstants.cameraTransforms);
+    public final PhotonVision photonVision = new PhotonVision(drivetrain,
+            Constants.PhotonVisionConstants.cameraTransforms);
 
     private final Field2d field = new Field2d();
 
@@ -72,7 +74,7 @@ public class RobotContainer {
     private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
     private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, autoAlign);
-    
+
     public final Signal signal = new Signal();
 
     public RobotContainer() {
@@ -90,6 +92,8 @@ public class RobotContainer {
         // Warmup PathPlanner to avoid Java pauses
         // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+        // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
 
     public PhotonVision getphotonVision() {
@@ -112,26 +116,36 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // joystick.start().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
+        joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
         // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        // joystick.a().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        joystick.x().whileTrue(
+                Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        // joystick.b().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        joystick.b().whileTrue(
+                Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        // joystick.leftBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+        joystick.leftBumper().whileTrue(Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
 
-        // joystick.rightBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        joystick.rightBumper().whileTrue(
+                Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+
+        joystick.leftTrigger().whileTrue(superstructure.intake())
+                .onFalse(superstructure.stopintake());
+
+        joystick.rightTrigger().whileTrue(superstructure.shootCommand())
+                .onFalse(superstructure.stopShoot());
         // // sysidTest();
-        joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(), this.shooter));
-        joystick.rightBumper().whileTrue( Commands.run(() -> this.shooter.turretdown(), this.shooter));
+        // joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(),
+        // this.shooter));
+        // joystick.rightBumper().whileTrue( Commands.run(() ->
+        // this.shooter.turretdown(), this.shooter));
+
+        joystick.a().onTrue(superstructure.intake())
+                .onFalse(superstructure.stopintake());
     }
 
     public Command getAutonomousCommand() {

@@ -9,6 +9,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -65,6 +66,13 @@ public class PhotonVision extends SubsystemBase {
     @Override
     public void periodic() {
         updateVision();
+        for (CamWrapper cw : cams) {
+            // 記錄每一台相機的連線狀態
+            Logger.recordOutput("PhotonVision/Connected/" + cw.name, cw.cam.isConnected());
+            
+            // 記錄是否有看到目標 (這也能輔助判斷 Pipeline 是否有在跑)
+            Logger.recordOutput("PhotonVision/HasTargets/" + cw.name, cw.cam.getLatestResult().hasTargets());
+        }
     }
 
     public void NeedResetPoseEvent() {
@@ -118,21 +126,21 @@ public class PhotonVision extends SubsystemBase {
                      resolutionY = cw.cam.getCameraMatrix().get().getNumRows();
                 }
 
-                for (var tgt : targets) {
-                    var corners = tgt.getDetectedCorners();
-                    if (corners != null) {
-                        for (var corner : corners) {
-                            if (corner.x < borderPixels || corner.y < borderPixels ||
-                                corner.x > resolutionX - borderPixels ||
-                                corner.y > resolutionY - borderPixels) {
-                                cornerNearEdge = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (cornerNearEdge) break;
-                }
-                if (cornerNearEdge) continue;
+                // for (var tgt : targets) {
+                //     var corners = tgt.getDetectedCorners();
+                //     if (corners != null) {
+                //         for (var corner : corners) {
+                //             if (corner.x < borderPixels || corner.y < borderPixels ||
+                //                 corner.x > resolutionX - borderPixels ||
+                //                 corner.y > resolutionY - borderPixels) {
+                //                 cornerNearEdge = true;
+                //                 break;
+                //             }
+                //         }
+                //     }
+                //     if (cornerNearEdge) break;
+                // }
+                // if (cornerNearEdge) continue;
 
                 // ---------------------------------------------------------
                 // 計算 Tag 數量與平均距離
@@ -178,6 +186,7 @@ public class PhotonVision extends SubsystemBase {
                 // ---------------------------------------------------------
                 // 發送至 Drivetrain
                 // ---------------------------------------------------------
+                Logger.recordOutput("cameraRobotPose3d", cameraRobotPose3d.toPose2d());
                 drivetrain.addVisionMeasurement(
                     cameraRobotPose3d.toPose2d(), 
                     resultTimeSec, // 直接使用 PhotonVision 的 Timestamp
@@ -250,5 +259,23 @@ public class PhotonVision extends SubsystemBase {
 
     private boolean filterByZ(Pose3d pose3d) {
         return Math.abs(pose3d.getZ()) < PhotonVisionConstants.maxZ;
+    }
+    public boolean isCameraConnected(String cameraName) {
+        for (CamWrapper cw : cams) {
+            if (cw.name.equals(cameraName)) {
+                return cw.cam.isConnected();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 檢查是否至少有一台相機連線正常
+     */
+    public boolean isAnyCameraConnected() {
+        for (CamWrapper cw : cams) {
+            if (cw.cam.isConnected()) return true;
+        }
+        return false;
     }
 }

@@ -75,7 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // SetShooterGoal();
+        SetShooterGoal();
         Logger.recordOutput("HoodgoalAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("HoodAngle", this.hood.getAngle());
@@ -137,11 +137,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
         AngularVelocity FlywheelRPS = state.FlywheelRPS();
 
-        this.setHoodAngle(HoodTarget);
+        // this.setHoodAngle(HoodTarget);
 
-        this.setRollerRPS(FlywheelRPS);
+        // this.setRollerRPS(FlywheelRPS);
 
-        this.setTurretAngle(drive.getRotation(), TurretTarget);
+        // this.setTurretAngle(drive.getRotation(), TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -170,30 +170,30 @@ public class ShooterSubsystem extends SubsystemBase {
     // TEST METHOD
 
     public void hoodUp() {
-        m_targetAngle = m_targetAngle.plus(Degrees.of(5));
+        m_targetAngle = m_targetAngle.plus(Degrees.of(1));
     }
 
     public void hoodDown() {
-        m_targetAngle = m_targetAngle.minus(Degrees.of(5));
+        m_targetAngle = m_targetAngle.minus(Degrees.of(1));
     }
 
     public void flywheelup() {
-        this.flywheelRPS += 10;
+        this.flywheelRPS += 1;
         this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
     public void flywheeldown() {
-        this.flywheelRPS -= 10;
+        this.flywheelRPS -= 1;
         this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     }
 
     public void turretup() {
-        this.turretAngle = turretAngle.plus(Radians.of(Units.degreesToRadians(3.0)));
+        this.turretAngle = turretAngle.plus(Radians.of(Units.degreesToRadians(5.0)));
         this.turret.setAngle(new Rotation2d(0), turretAngle , currentShootState);
     }
 
     public void turretdown() {
-        this.turretAngle = turretAngle.minus(Radians.of(Units.degreesToRadians(3.0)));
+        this.turretAngle = turretAngle.minus(Radians.of(Units.degreesToRadians(5.0)));
         this.turret.setAngle(new Rotation2d(0), turretAngle, currentShootState);
     }
 

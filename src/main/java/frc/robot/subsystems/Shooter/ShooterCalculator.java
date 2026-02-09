@@ -145,6 +145,8 @@ public class ShooterCalculator {
                 Logger.recordOutput("ToHubsimturretPosition",
                                 new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
 
+                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
+
                 return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),rollMap.get(lookaheadTurretToTargetDistance));
         }
 
