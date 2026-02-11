@@ -36,6 +36,10 @@ public class superstructure extends SubsystemBase {
         this.autoAlign = autoAlign;
     }
 
+    public Command autoshooter(){
+       return shootCommand();
+    }
+
     // Intake Methods
 
     public Command intake() {

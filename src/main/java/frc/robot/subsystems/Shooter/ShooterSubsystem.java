@@ -76,14 +76,10 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SetShooterGoal();
-        Logger.recordOutput("HoodgoalAngle", m_targetAngle);
-        Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("HoodAngle", this.hood.getAngle());
-        Logger.recordOutput("InTrench", InTrench);
         Logger.recordOutput("Turretangle", this.turret.getAngle());
-        Logger.recordOutput("Turretgoal", turretAngle);
-        Logger.recordOutput("shooterisAtSetPosition", isAtSetPosition());
-        hood.setAngle(m_targetAngle);
+        Logger.recordOutput("isInTrench", InTrench);
+
     }
 
     public void TrueIsshooting() {
@@ -137,11 +133,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
         AngularVelocity FlywheelRPS = state.FlywheelRPS();
 
-        // this.setHoodAngle(HoodTarget);
+        this.setHoodAngle(HoodTarget);
 
-        // this.setRollerRPS(FlywheelRPS);
+        this.setRollerRPS(FlywheelRPS);
 
-        // this.setTurretAngle(drive.getRotation(), TurretTarget);
+        this.setTurretAngle(drive.getRotation(), TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -164,7 +160,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
     public boolean isAtSetPosition(){
-        return (this.hood.isAtSetPosition() && this.turret.isAtSetPosition() && this.flywheel.isAtSetPosition());
+        return true;
     }
 
     // TEST METHOD

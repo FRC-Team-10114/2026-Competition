@@ -1,3 +1,5 @@
+
+
 /*
  * Original code from Littleton Robotics (Team 6328) - 2026 Season
  * Modified by Team [10114]
@@ -7,6 +9,7 @@
 package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
@@ -53,9 +56,8 @@ public class ShooterCalculator {
                                 InverseInterpolator.forDouble(),
                                 (start, end, t) -> {
                                         // 1. 把單位轉成 double (用 Radians 或 Degrees 都可以，統一就好)
-                                        double startVal = start.in(Radians);
-                                        double endVal = end.in(Radians);
-
+                                        double startVal = start.in(Degree);
+                                        double endVal = end.in(Degree);
                                         // 2. 算數學插值 (start + (end - start) * t)
                                         double result = MathUtil.interpolate(startVal, endVal, t);
 
@@ -71,15 +73,23 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                hoodMap.put(2.0, Radians.of(15.0));
+                hoodMap.put(1.417688 , Degree.of(28));
+                // hoodMap.put(1.958727 , Degree.of(27));
+                // hoodMap.put(2.037921 , Degree.of(30));
+                // hoodMap.put(3.081015 , Degree.of(35));
+                hoodMap.put(5.129568 , Degree.of(40));
 
-                rollMap.put(2.0, RotationsPerSecond.of(10));
+                rollMap.put(1.417688 , RotationsPerSecond.of(30));
+                // rollMap.put(1.958727 , RotationsPerSecond.of(30));
+                // rollMap.put(2.037921 , RotationsPerSecond.of(30));
+                // rollMap.put(3.081015 , RotationsPerSecond.of(38));
+                rollMap.put(5.129568 , RotationsPerSecond.of(45));
 
-                timeOfFlightMap.put(5.68, 1.16);
-                timeOfFlightMap.put(4.55, 1.12);
-                timeOfFlightMap.put(3.15, 1.11);
-                timeOfFlightMap.put(1.88, 1.09);
-                timeOfFlightMap.put(1.38, 0.90);
+                timeOfFlightMap.put(1.417688, 0.95);
+                // timeOfFlightMap.put(1.958727, 1.00);
+                // timeOfFlightMap.put(2.037921, 1.05);
+                // timeOfFlightMap.put(3.081015, 1.09);
+                timeOfFlightMap.put(5.129568, 1.15);
         }
 
         public record ShootingState(

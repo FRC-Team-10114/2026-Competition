@@ -8,11 +8,14 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -77,6 +80,8 @@ public class RobotContainer {
 
     public final Signal signal = new Signal();
 
+    public final SendableChooser<Command> autoChooser;
+
     public RobotContainer() {
 
         // Swerve Drivetrain Current & Voltage Test
@@ -88,6 +93,13 @@ public class RobotContainer {
         configureEvents();
 
         log();
+
+        NamedCommands.registerCommand("intakeDown", superstructure.intake());
+        NamedCommands.registerCommand("shoot", superstructure.autoshooter());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("chooser", autoChooser);
 
         // Warmup PathPlanner to avoid Java pauses
         // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
@@ -118,38 +130,42 @@ public class RobotContainer {
 
         joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
+        joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        joystick.x().whileTrue(
-                Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        // joystick.x().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        joystick.b().whileTrue(
-                Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        // joystick.b().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        joystick.leftBumper().whileTrue(Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+        // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
+        // this.shooter.flywheelup(), this.shooter));
 
-        joystick.rightBumper().whileTrue(
-                Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        // joystick.rightBumper().whileTrue(
+        // Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
 
         joystick.leftTrigger().whileTrue(superstructure.intake())
                 .onFalse(superstructure.stopintake());
 
         joystick.rightTrigger().whileTrue(superstructure.shootCommand())
                 .onFalse(superstructure.stopShoot());
+        joystick.leftBumper().onTrue(
+                Commands.run(() -> robotStatus.xtrue()))
+                .onFalse(Commands.run(robotStatus::xfalse));
         // // sysidTest();
         // joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(),
         // this.shooter));
         // joystick.rightBumper().whileTrue( Commands.run(() ->
         // this.shooter.turretdown(), this.shooter));
 
-        joystick.a().onTrue(superstructure.intake())
-                .onFalse(superstructure.stopintake());
+        // joystick.a().onTrue(superstructure.intake())
+        // .onFalse(superstructure.stopintake());
     }
 
     public Command getAutonomousCommand() {
-        return this.auto.auto();
+        return this.autoChooser.getSelected();
 
     }
 

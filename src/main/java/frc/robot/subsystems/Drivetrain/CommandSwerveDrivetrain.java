@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.Drivetrain.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.util.FIeldHelper.AllianceFlipUtil;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -401,18 +402,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Pose2d targetPose = tagetPose2d;
 
         PathConstraints constraints = new PathConstraints(
-                3.0, 4.0,
+                2.0, 2.0,
                 Units.degreesToRadians(540), Units.degreesToRadians(720));
 
         Command pathfindingCommand = AutoBuilder.pathfindToPose(
                 targetPose,
                 constraints,
-                3.0);
+                0.0);
         return Commands.sequence(pathfindingCommand);
     }
 
     public void resetPosetotest() {
-        this.resetPose(new Pose2d(3.560225248336792, 4.027120113372803, getRotation()));
+        this.resetPose(AllianceFlipUtil.apply(new Pose2d(3.560225248336792, 4.027120113372803, getRotation())));
     }
     public double getPitchDegrees() {
         // 取得俯仰角 (度數)

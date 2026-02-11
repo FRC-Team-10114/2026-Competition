@@ -175,7 +175,7 @@ public class PhotonVision extends SubsystemBase {
                     // 一般模式
                     if (numTags >= 2) {
                         // 多 Tag：信任度高
-                        stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(5));
+                        stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(99999));
                     } else {
                         // 單 Tag：信任度隨距離下降
                         double distErr = 0.5 * Math.pow(avgDist, 2);

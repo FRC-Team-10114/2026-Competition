@@ -21,6 +21,8 @@ public class RobotStatus extends SubsystemBase {
 
     public EventObject eventObject = new EventObject(getClass());
 
+    private boolean xx = false;
+
     private static final double BLUE_ZONE_LIMIT = 5.50;
 
     private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; // 約 11.04
@@ -131,6 +133,13 @@ public class RobotStatus extends SubsystemBase {
             }
         }
     }
+    public void xtrue(){
+        this.xx = true;
+    }  
+
+    public void xfalse() {
+        this.xx = false;
+    }
 
     public boolean isInTrench() {
         var currentPose = drive.getPose2d();
@@ -155,7 +164,7 @@ public class RobotStatus extends SubsystemBase {
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose2),
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3));
 
-        return inRight || inLeft || inRightFlipped || inLeftFlipped;
+        return inRight || inLeft || inRightFlipped || inLeftFlipped || xx;
     }
 
     private boolean isInside(Pose2d robotPose, Pose2d... corners) {
@@ -185,5 +194,7 @@ public class RobotStatus extends SubsystemBase {
         this.updateOdometerStatus();
         this.isInMyAllianceZone();
         this.isInTrenchEvent();
+
+        Logger.recordOutput("xx", xx);
     }
 }
