@@ -43,6 +43,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double flywheelRPS = 0.0;
 
+    private AngularVelocity flywheelgoal;
+
     private boolean Targetactive = true;
 
     private boolean Isshooting = false;
@@ -133,9 +135,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
         AngularVelocity FlywheelRPS = state.FlywheelRPS();
 
-        this.setHoodAngle(HoodTarget);
+        FlywheelRPS = flywheelgoal;
 
-        this.setRollerRPS(FlywheelRPS);
+        this.setHoodAngle(HoodTarget);
 
         this.setTurretAngle(drive.getRotation(), TurretTarget);
     }
@@ -148,10 +150,13 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
-    public void setRollerRPS(AngularVelocity velocity) {
-        if (SpinAllTime() || Isshooting) {
-            this.flywheel.setRPS(velocity);
-        }
+    // public void setRollerRPS(AngularVelocity velocity) {
+    //     if (SpinAllTime() || Isshooting) {
+    //         this.flywheel.setRPS(velocity);
+    //     }
+    // }
+        public void setRollerRPS() {
+            this.flywheel.setRPS(flywheelgoal);
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
@@ -160,7 +165,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
     public boolean isAtSetPosition(){
-        return true;
+        return flywheel.isAtSetPosition();
     }
 
     // TEST METHOD

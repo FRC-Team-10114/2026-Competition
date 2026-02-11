@@ -93,7 +93,7 @@ public class HoodTalon implements HoodIO {
                 .withRotorToSensorRatio(rotorToSensorRatio)
                 .withSensorToMechanismRatio(sensorToMechRatio);
 
-        hoodConfig.Slot0.kP = 160.0;
+        hoodConfig.Slot0.kP = 180.0;
         hoodConfig.Slot0.kI = 0.0;
         hoodConfig.Slot0.kD = 0.0;
 
@@ -101,8 +101,8 @@ public class HoodTalon implements HoodIO {
         hoodConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
         hoodConfig.MotionMagic
-                .withMotionMagicCruiseVelocity(DegreesPerSecond.of(720))
-                .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(1080));
+                .withMotionMagicCruiseVelocity(DegreesPerSecond.of(1080))
+                .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(3600));
 
         HoodMotor.getConfigurator().apply(hoodConfig);
     }

@@ -8,26 +8,33 @@ import frc.robot.subsystems.Hopper.Trigger.TriggerIOHardware;
 import frc.robot.subsystems.Hopper.Trigger.TriggereNEO;
 
 public class HopperSubsystem extends SubsystemBase {
-    
+
     private final TriggerIO trigger;
     private final SpindexerIO spindexer;
 
     public HopperSubsystem(
-        TriggerIO trigger,
-        SpindexerIO spindexer
-    ) {
+            TriggerIO trigger,
+            SpindexerIO spindexer) {
         this.trigger = trigger;
         this.spindexer = spindexer;
     }
 
     public static HopperSubsystem create() {
         return new HopperSubsystem(
-                new TriggerIOHardware(), 
+                new TriggerIOHardware(),
                 new SpindexerIOHardware());
     }
 
     public void warmUp() {
-        this.spindexer.run();
+        this.spindexer.run(-7);
+    }
+
+    public void stopSpin() {
+        this.spindexer.stop();
+    }
+
+    public void warmUpforshoot() {
+        this.spindexer.run(-10);
     }
 
     public void load() {
@@ -38,12 +45,9 @@ public class HopperSubsystem extends SubsystemBase {
         this.trigger.stop();
     }
 
-    public void stopSpin() {
-        this.spindexer.stop();
-    }
-
     public void stopAll() {
         this.stopTrigger();
+        this.stopSpin();
     }
 
     @Override
