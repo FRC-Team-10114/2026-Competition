@@ -2,7 +2,7 @@ package frc.robot.subsystems.Hopper.Spindexer;
 
 public interface SpindexerIO {
     
-    public void run();
+    public void run(double vlot);
 
     public void stop();
 

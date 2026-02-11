@@ -130,30 +130,30 @@ public class RobotContainer {
 
         joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
+        // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        // joystick.x().whileTrue(
-        // Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        joystick.x().whileTrue(
+        Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        // joystick.b().whileTrue(
-        // Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        joystick.b().whileTrue(
+        Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
-        // this.shooter.flywheelup(), this.shooter));
+        joystick.leftBumper().whileTrue(Commands.runOnce(() ->
+        this.shooter.flywheelup(), this.shooter));
 
-        // joystick.rightBumper().whileTrue(
-        // Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        joystick.rightBumper().whileTrue(
+        Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
 
         joystick.leftTrigger().whileTrue(superstructure.intake())
                 .onFalse(superstructure.stopintake());
 
-        joystick.rightTrigger().whileTrue(superstructure.shootCommand())
-                .onFalse(superstructure.stopShoot());
-        joystick.leftBumper().onTrue(
-                Commands.run(() -> robotStatus.xtrue()))
-                .onFalse(Commands.run(robotStatus::xfalse));
+        // joystick.rightTrigger().whileTrue(superstructure.shootCommand())
+        //         .onFalse(superstructure.stopShoot());
+        // joystick.leftBumper().onTrue(
+        //         Commands.run(() -> robotStatus.xtrue()))
+        //         .onFalse(Commands.run(robotStatus::xfalse));
         // // sysidTest();
         // joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(),
         // this.shooter));
