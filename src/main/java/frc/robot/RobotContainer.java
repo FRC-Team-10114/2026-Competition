@@ -130,7 +130,7 @@ public class RobotContainer {
 
         joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
+        joystick.a().whileTrue(this.superstructure.DriveToTrench());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
@@ -149,8 +149,8 @@ public class RobotContainer {
         joystick.leftTrigger().whileTrue(superstructure.intake())
                 .onFalse(superstructure.stopintake());
 
-        // joystick.rightTrigger().whileTrue(superstructure.shootCommand())
-        //         .onFalse(superstructure.stopShoot());
+        joystick.rightTrigger().whileTrue(superstructure.shootCommand())
+                .onFalse(superstructure.stopShoot());
         // joystick.leftBumper().onTrue(
         //         Commands.run(() -> robotStatus.xtrue()))
         //         .onFalse(Commands.run(robotStatus::xfalse));

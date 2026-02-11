@@ -108,23 +108,23 @@ public class PhotonVision extends SubsystemBase {
                 // ---------------------------------------------------------
                 // 過濾 B：Z 軸高度檢查
                 // ---------------------------------------------------------
-                if (!filterByZ(cameraRobotPose3d))
-                    continue;
+                // if (!filterByZ(cameraRobotPose3d))
+                //     continue;
 
                 // ---------------------------------------------------------
                 // 過濾 C：邊緣檢測 (防止畸變)
                 // ---------------------------------------------------------
-                boolean cornerNearEdge = false;
-                var targets = result.getTargets();
-                // 獲取相機解析度 (假設 Constant 有定義，或是預設值)
-                double resolutionX = 1280; // 範例值，請改為 cw.cam.getCameraMatrix() 獲取或 Constants
-                double resolutionY = 720;  // 範例值
+                // boolean cornerNearEdge = false;
+                // var targets = result.getTargets();
+                // // 獲取相機解析度 (假設 Constant 有定義，或是預設值)
+                // double resolutionX = 1280; // 範例值，請改為 cw.cam.getCameraMatrix() 獲取或 Constants
+                // double resolutionY = 720;  // 範例值
 
-                // 嘗試動態獲取解析度，若失敗則忽略右下邊界檢查
-                if(cw.cam.getCameraMatrix().isPresent()) {
-                     resolutionX = cw.cam.getCameraMatrix().get().getNumCols();
-                     resolutionY = cw.cam.getCameraMatrix().get().getNumRows();
-                }
+                // // 嘗試動態獲取解析度，若失敗則忽略右下邊界檢查
+                // if(cw.cam.getCameraMatrix().isPresent()) {
+                //      resolutionX = cw.cam.getCameraMatrix().get().getNumCols();
+                //      resolutionY = cw.cam.getCameraMatrix().get().getNumRows();
+                // }
 
                 // for (var tgt : targets) {
                 //     var corners = tgt.getDetectedCorners();
@@ -186,7 +186,7 @@ public class PhotonVision extends SubsystemBase {
                 // ---------------------------------------------------------
                 // 發送至 Drivetrain
                 // ---------------------------------------------------------
-                Logger.recordOutput("cameraRobotPose3d", cameraRobotPose3d.toPose2d());
+                Logger.recordOutput("cameraRobotPose", cameraRobotPose3d.toPose2d());
                 drivetrain.addVisionMeasurement(
                     cameraRobotPose3d.toPose2d(), 
                     resultTimeSec, // 直接使用 PhotonVision 的 Timestamp

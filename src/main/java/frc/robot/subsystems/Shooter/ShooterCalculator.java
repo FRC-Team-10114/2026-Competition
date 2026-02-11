@@ -1,5 +1,4 @@
 
-
 /*
  * Original code from Littleton Robotics (Team 6328) - 2026 Season
  * Modified by Team [10114]
@@ -44,9 +43,7 @@ public class ShooterCalculator {
         private final double phaseDelay = 0.03 + time_error;
         public static Transform3d robotToTurret = new Transform3d(0.2, 0.0, 0.44, Rotation3d.kZero);
 
-
         private static final Angle Hood_MAX_RADS = ShooterConstants.Hood_MAX_RADS;
-
 
         public ShooterCalculator(CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
                 this.drive = drive;
@@ -73,30 +70,29 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                hoodMap.put(1.417688 , Degree.of(28));
-                // hoodMap.put(1.958727 , Degree.of(27));
-                // hoodMap.put(2.037921 , Degree.of(30));
-                // hoodMap.put(3.081015 , Degree.of(35));
-                hoodMap.put(5.129568 , Degree.of(40));
+                rollMap.put(0.946764, RotationsPerSecond.of(30));
+                rollMap.put(1.357783, RotationsPerSecond.of(31));
+                rollMap.put(1.871859, RotationsPerSecond.of(35));
+                rollMap.put(2.352487, RotationsPerSecond.of(37));
+                rollMap.put(3.060079, RotationsPerSecond.of(38));
 
-                rollMap.put(1.417688 , RotationsPerSecond.of(30));
-                // rollMap.put(1.958727 , RotationsPerSecond.of(30));
-                // rollMap.put(2.037921 , RotationsPerSecond.of(30));
-                // rollMap.put(3.081015 , RotationsPerSecond.of(38));
-                rollMap.put(5.129568 , RotationsPerSecond.of(45));
+                hoodMap.put(0.946764, Degree.of(29));
+                hoodMap.put(1.357783, Degree.of(32));
+                hoodMap.put(1.871859, Degree.of(35));
+                hoodMap.put(2.352487, Degree.of(40));
+                hoodMap.put(3.060079, Degree.of(44));
 
-                timeOfFlightMap.put(1.417688, 0.95);
-                // timeOfFlightMap.put(1.958727, 1.00);
-                // timeOfFlightMap.put(2.037921, 1.05);
-                // timeOfFlightMap.put(3.081015, 1.09);
-                timeOfFlightMap.put(5.129568, 1.15);
+                timeOfFlightMap.put(0.946764, 0.87);
+                timeOfFlightMap.put(1.357783, 0.94);
+                timeOfFlightMap.put(1.871859, 1.05);
+                timeOfFlightMap.put(2.352487, 1.1);
+                timeOfFlightMap.put(3.060079, 1.15);
         }
 
         public record ShootingState(
                         Rotation2d turretFieldAngle, // 砲塔該瞄準的「場地角度」
                         Angle HoopAngle, // 用來查表的「有效距離
-                        AngularVelocity FlywheelRPS
-        ) {
+                        AngularVelocity FlywheelRPS) {
         }
 
         public ShootingState calculateShootingToHub() {
@@ -157,7 +153,8 @@ public class ShooterCalculator {
 
                 Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
-                return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),rollMap.get(lookaheadTurretToTargetDistance));
+                return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),
+                                rollMap.get(lookaheadTurretToTargetDistance));
         }
 
         // -------------------------------------------------------------------------------------------------------------------

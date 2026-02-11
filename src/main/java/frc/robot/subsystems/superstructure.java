@@ -16,6 +16,8 @@ public class superstructure extends SubsystemBase {
 
     private final CommandSwerveDrivetrain drive;
 
+    private boolean ifshoot = true;
+
     private final IntakeSubsystem intake;
     private final ShooterSubsystem shooter;
     private final HopperSubsystem hopper;
@@ -36,49 +38,50 @@ public class superstructure extends SubsystemBase {
         this.autoAlign = autoAlign;
     }
 
-    public Command autoshooter(){
-       return shootCommand();
+    public Command autoshooter() {
+        return shootCommand();
     }
 
     // Intake Methods
 
     public Command intake() {
         return Commands.parallel(
-            Commands.runOnce(intake::rollerStart),
-            Commands.runOnce(intake::armDown),
-            Commands.runOnce(hopper::warmUp, hopper));
+                Commands.runOnce(intake::rollerStart),
+                Commands.runOnce(intake::armDown),
+                Commands.runOnce(hopper::warmUp, hopper));
     }
-    public Command stopintake(){
+
+    public Command stopintake() {
         return Commands.parallel(Commands.runOnce(intake::rollerEnd),
-        Commands.runOnce(hopper::stopSpin, hopper));
+                Commands.runOnce(hopper::stopSpin, hopper));
     }
 
-public Command shootCommand() {
-    // 使用 run() 來建立一個持續執行的 Command
-    return Commands.run(() -> {
-        this.setShootingStateTrue();
+    public Command shootCommand() {
+        return Commands.run(() -> {
+            this.setShootingStateTrue();
 
-        if (shooter.isAtSetPosition()) {
-            // ✅ 轉速/角度到位 -> 進彈 (射擊)
-            hopper.load();
-            hopper.warmUp();
-        } else {
-            hopper.warmUp(); 
-        }
-    }, hopper)
-    
-    .finallyDo(() -> {
-        this.setShootingStateFalse();
-        hopper.stopAll();
-    });
-}
+            if (shooter.isAtSetPosition()) {
+                // ✅ 轉速/角度到位 -> 進彈 (射擊)
+                hopper.load();
+                hopper.warmUp();
+                this.shooter.setRollerRPS();
+            } else {
+                this.shooter.setRollerRPS();
+                hopper.warmUp();
+            }
+        }, hopper)
 
+                .finallyDo(() -> {
+                    this.setShootingStateFalse();
+                    hopper.stopAll();
+                    this.shooter.stopRoller();
+                });
+    }
 
     public Command stopShoot() {
         return Commands.parallel(
-            Commands.runOnce(hopper::stopAll),
-            Commands.runOnce(this::setShootingStateFalse)
-        );
+                Commands.runOnce(hopper::stopAll),
+                Commands.runOnce(this::setShootingStateFalse));
     }
 
     // Hopper Methods
@@ -123,6 +126,5 @@ public Command shootCommand() {
 
     @Override
     public void periodic() {
-        this.hopper.warmUp();
     }
 }
