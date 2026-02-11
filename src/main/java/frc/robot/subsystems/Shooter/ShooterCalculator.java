@@ -42,7 +42,7 @@ public class ShooterCalculator {
         public static Transform3d robotToTurret = new Transform3d(0.2, 0.0, 0.44, Rotation3d.kZero);
 
 
-        private static final Angle Hood_MAX_RADS = Radians.of(ShooterConstants.Hood_MAX_RADS);
+        private static final Angle Hood_MAX_RADS = ShooterConstants.Hood_MAX_RADS;
 
 
         public ShooterCalculator(CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
@@ -144,6 +144,8 @@ public class ShooterCalculator {
                                                 robotToTurret.getRotation().toRotation2d()));
                 Logger.recordOutput("ToHubsimturretPosition",
                                 new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
+
+                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
                 return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),rollMap.get(lookaheadTurretToTargetDistance));
         }

@@ -25,17 +25,14 @@ public class RobotStatus extends SubsystemBase {
 
     private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; // 約 11.04
     private static final double MID_Y = FieldConstants.fieldWidth / 2.0; // 中線 Y = 4.105
-    private static final double HUB_distance_to_the_ALLIANCE_WALL = siteConstants.HUB_distance_to_the_ALLIANCE_WALL;
-    private static final double TRENCHWide = siteConstants.TRENCHWide;
-    private static final double TRENCHdeep = siteConstants.TRENCHdeep;
 
     public final CommandSwerveDrivetrain drive;
 
     private final List<NeedResetPoseEvent> NeedResetPoseEvent = new ArrayList<>();
 
-    private final List<TargetInactive> targetInactives = new ArrayList<>();
+    private final List<InTrench> InTrench = new ArrayList<>();
 
-    private final List<Targetactive> targetactives = new ArrayList<>();
+    private final List<NotInTrench> NotInTrench = new ArrayList<>();
 
     public enum Area {
         CENTER,
@@ -83,6 +80,14 @@ public class RobotStatus extends SubsystemBase {
         NeedResetPoseEvent.add(event);
     }
 
+    public void TriggerInTrench(InTrench event) {
+        InTrench.add(event);
+    }
+
+    public void TriggerNotInTrench(NotInTrench event) {
+        NotInTrench.add(event);
+    }
+
     public void updateOdometerStatus() {
         boolean isNowClimbing = this.drive.isClimbing();
 
@@ -112,6 +117,18 @@ public class RobotStatus extends SubsystemBase {
         } else {
             // 我是紅隊，我在紅區嗎？
             return currentArea == Area.RedAlliance;
+        }
+    }
+
+    public void isInTrenchEvent() {
+        if (isInTrench()) {
+            for (InTrench listener : InTrench) {
+                listener.InTrench();
+            }
+        } else {
+            for (NotInTrench listener : NotInTrench) {
+                listener.NotInTrench();
+            }
         }
     }
 
@@ -167,6 +184,6 @@ public class RobotStatus extends SubsystemBase {
         this.getVerticalSide();
         this.updateOdometerStatus();
         this.isInMyAllianceZone();
-        Logger.recordOutput("isInTrench", isInTrench());
+        this.isInTrenchEvent();
     }
 }

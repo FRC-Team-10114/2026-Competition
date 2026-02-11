@@ -27,7 +27,7 @@ public class TriggerIOHardware implements TriggerIO {
 
     @Override
     public void run() {
-        this.triggerMotor.setControl(this.output.withOutput(Volt.of(10)).withEnableFOC(false));
+        this.triggerMotor.setControl(this.output.withOutput(Volt.of(7)).withEnableFOC(false));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class TriggerIOHardware implements TriggerIO {
         var triggerConfig = new TalonFXConfiguration();
 
         triggerConfig.MotorOutput
-                .withInverted(InvertedValue.Clockwise_Positive)
+                .withInverted(InvertedValue.CounterClockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Brake);
         triggerConfig.CurrentLimits
                 .withStatorCurrentLimit(TriggerConstants.TRIGGER_STATOR_CURRENT_LIMIT)

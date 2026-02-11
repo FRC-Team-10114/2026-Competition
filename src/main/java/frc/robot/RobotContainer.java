@@ -8,18 +8,22 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.commands.Auto;
 import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
@@ -57,9 +61,8 @@ public class RobotContainer {
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
     public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
-    public final PhotonVision photonVision = new PhotonVision(
-            drivetrain, 
-            PhotonVisionConstants.FrontLeft);
+    public final PhotonVision photonVision = new PhotonVision(drivetrain,
+            Constants.PhotonVisionConstants.cameraTransforms);
 
     private final Field2d field = new Field2d();
 
@@ -74,8 +77,10 @@ public class RobotContainer {
     private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
     private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, autoAlign);
-    
+
     public final Signal signal = new Signal();
+
+    public final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
 
@@ -89,8 +94,18 @@ public class RobotContainer {
 
         log();
 
+        NamedCommands.registerCommand("intakeDown", superstructure.intake());
+        NamedCommands.registerCommand("shoot", superstructure.autoshooter());
+
+        autoChooser = AutoBuilder.buildAutoChooser();
+
+        SmartDashboard.putData("chooser", autoChooser);
+
         // Warmup PathPlanner to avoid Java pauses
+        // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+        // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
 
     public PhotonVision getphotonVision() {
@@ -113,29 +128,44 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // joystick.start().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
+        joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        // joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
+        joystick.rightBumper().whileTrue(this.superstructure.DriveToTrench());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        // joystick.a().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        // joystick.x().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        // joystick.b().onTrue(
-        //         Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        // joystick.b().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        // joystick.leftBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheelup(), this.shooter));
+        // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
+        // this.shooter.flywheelup(), this.shooter));
 
-        // joystick.rightBumper().onTrue(
-        //         Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        // joystick.rightBumper().whileTrue(
+        // Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+
+        joystick.leftTrigger().whileTrue(superstructure.intake())
+                .onFalse(superstructure.stopintake());
+
+        joystick.rightTrigger().whileTrue(superstructure.shootCommand())
+                .onFalse(superstructure.stopShoot());
+        joystick.leftBumper().onTrue(
+                Commands.run(() -> robotStatus.xtrue()))
+                .onFalse(Commands.run(robotStatus::xfalse));
         // // sysidTest();
-        joystick.leftBumper().whileTrue(superstructure.intakeCommand());
+        // joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(),
+        // this.shooter));
+        // joystick.rightBumper().whileTrue( Commands.run(() ->
+        // this.shooter.turretdown(), this.shooter));
+
+        // joystick.a().onTrue(superstructure.intake())
+        // .onFalse(superstructure.stopintake());
     }
 
     public Command getAutonomousCommand() {
-        return this.auto.auto();
+        return this.autoChooser.getSelected();
 
     }
 
@@ -178,6 +208,8 @@ public class RobotContainer {
 
     private void configureEvents() {
         robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
+        robotStatus.TriggerInTrench(shooter::TrueInTrench);
+        robotStatus.TriggerNotInTrench(shooter::FalsInTrench);
         signal.TargetInactive(shooter::FalseTargetactive);
         signal.Targetactive(shooter::TrueTargetactive);
         superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);

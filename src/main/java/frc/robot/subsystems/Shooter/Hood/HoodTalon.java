@@ -32,9 +32,11 @@ public class HoodTalon implements HoodIO {
     private final double sensorToMechRatio = ShooterConstants.Hood_GEAR_RATIO
             / ShooterConstants.HoodCancoder_GEAR_RATIO_TOMotor;
 
+    private double latestTargetDegrees = 0.0;
+
     public HoodTalon() {
-        this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR);
-        this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER);
+        this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR, "canivore");
+        this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER, "canivore");
         this.HoodPosition = HoodMotor.getPosition();
 
         CANcoderConfig();
@@ -59,7 +61,7 @@ public class HoodTalon implements HoodIO {
 
         double targetSensorRotations = Units.degreesToRotations(25.0) * sensorToMechRatio;
 
-        cfg.MagnetSensor.MagnetOffset = 0.447998046875 + targetSensorRotations;
+        cfg.MagnetSensor.MagnetOffset = 0.065673828125 + targetSensorRotations;
 
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -81,9 +83,9 @@ public class HoodTalon implements HoodIO {
 
         hoodConfig.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(Degree.of(28)) // 下限25
+                .withReverseSoftLimitThreshold(ShooterConstants.Hood_MIN_RADS)
                 .withForwardSoftLimitEnable(true)
-                .withForwardSoftLimitThreshold(Degree.of(55)); // 上限63
+                .withForwardSoftLimitThreshold(ShooterConstants.Hood_MAX_RADS);
 
         hoodConfig.Feedback
                 .withFeedbackRemoteSensorID(55)
@@ -91,7 +93,7 @@ public class HoodTalon implements HoodIO {
                 .withRotorToSensorRatio(rotorToSensorRatio)
                 .withSensorToMechanismRatio(sensorToMechRatio);
 
-        hoodConfig.Slot0.kP = 200.0;
+        hoodConfig.Slot0.kP = 160.0;
         hoodConfig.Slot0.kI = 0.0;
         hoodConfig.Slot0.kD = 0.0;
 
@@ -107,6 +109,7 @@ public class HoodTalon implements HoodIO {
 
     @Override
     public void setAngle(Angle angle) {
+        this.latestTargetDegrees = angle.in(Degrees);
         HoodMotor.setControl(m_request.withPosition(angle));
     }
 
@@ -115,5 +118,19 @@ public class HoodTalon implements HoodIO {
         this.HoodPosition.refresh();
 
         return this.HoodPosition.getValue().in(Degrees);
+    }
+    @Override
+    public boolean isAtSetPosition() {
+        // 3. 務必刷新訊號，確保讀到的是最新位置
+        this.HoodPosition.refresh();
+
+        // 4. 取得當前實際角度
+        double currentDegrees = this.HoodPosition.getValue().in(Degrees);
+
+        // 5. 計算誤差絕對值 (目標 - 實際)
+        double error = Math.abs(this.latestTargetDegrees - currentDegrees);
+
+        // 6. 只要誤差小於 2 度，就回傳 true (允許開火)
+        return error < 2.0;
     }
 }
