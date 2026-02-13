@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
+import frc.robot.subsystems.Shooter.Trigger.TriggerIO;
+import frc.robot.subsystems.Shooter.Trigger.TriggerIOHardware;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
@@ -36,6 +38,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TurretIO turret;
     private final ShooterCalculator shooterCalculator;
     private final CommandSwerveDrivetrain drive;
+    private final TriggerIO trigger;
 
     private ShootState currentShootState = ShootState.TRACKING;
 
@@ -55,7 +58,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private Angle turretAngle = Radians.of(0);
 
-    public ShooterSubsystem(HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
+    public ShooterSubsystem(TriggerIO trigger, HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
         this.hood = hood;
         this.flywheel = flywheel;
@@ -63,10 +66,12 @@ public class ShooterSubsystem extends SubsystemBase {
         this.shooterCalculator = shooterCalculator;
         this.drive = drive;
         this.robotStatus = robotStatus;
+        this.trigger = trigger;
     }
 
     public static ShooterSubsystem create(CommandSwerveDrivetrain drive, RobotStatus status) {
         return new ShooterSubsystem(
+            new TriggerIOHardware(),
                 new HoodTalon(),
                 new FlywheelHardware(),
                 new TurretIONEO(),
@@ -79,11 +84,10 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         SetShooterGoal();
         Logger.recordOutput("HoodAngle", this.hood.getAngle());
-        Logger.recordOutput("Turretangle", this.turret.getAngle());
+        Logger.recordOutput("flywheelRPS", this.flywheel.getRPS());
         Logger.recordOutput("m_targetAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
-        this.hood.setAngle(m_targetAngle);
 
     }
 
@@ -140,9 +144,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
         flywheelgoal = FlywheelRPS;
 
-        // this.setHoodAngle(HoodTarget);
+        this.setHoodAngle(HoodTarget);
 
         this.setTurretAngle(drive.getRotation(), TurretTarget);
+
+        Logger.recordOutput("HoodTarget", HoodTarget);
+
+        Logger.recordOutput("flywheelgoal", flywheelgoal);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -158,12 +166,16 @@ public class ShooterSubsystem extends SubsystemBase {
     // this.flywheel.setRPS(velocity);
     // }
     // }
-    public void setRollerRPS() {
+    public void shoot() {
         this.flywheel.setRPS(flywheelgoal);
+        if(isAtSetPosition()){
+            this.trigger.run();
+        }
     }
 
-    public void stopRoller() {
+    public void stopShoot() {
         this.flywheel.setRPS(RotationsPerSecond.of(0));
+        this.trigger.stop();
     }
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
@@ -212,5 +224,15 @@ public class ShooterSubsystem extends SubsystemBase {
         } else {
             this.currentShootState = ShootState.TRACKING;
         }
+
     }
+    // public Command startCommand() {
+    //     return this.hood.startCommand();
+    // }
+    // public Command stopCommand(){
+    //     return this.hood.stopCommand();
+    //     }
+    // public Command sysIdTest(){
+    //     return this.hood.sysIdTest();
+    // }
 }

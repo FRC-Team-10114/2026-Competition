@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hopper.Trigger;
+package frc.robot.subsystems.Shooter.Trigger;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;

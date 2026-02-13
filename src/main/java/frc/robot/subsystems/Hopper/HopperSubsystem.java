@@ -3,30 +3,26 @@ package frc.robot.subsystems.Hopper;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
 import frc.robot.subsystems.Hopper.Spindexer.SpindexerIOHardware;
-import frc.robot.subsystems.Hopper.Trigger.TriggerIO;
-import frc.robot.subsystems.Hopper.Trigger.TriggerIOHardware;
-import frc.robot.subsystems.Hopper.Trigger.TriggereNEO;
+import frc.robot.subsystems.Shooter.Trigger.TriggerIO;
+import frc.robot.subsystems.Shooter.Trigger.TriggerIOHardware;
+import frc.robot.subsystems.Shooter.Trigger.TriggereNEO;
 
 public class HopperSubsystem extends SubsystemBase {
 
-    private final TriggerIO trigger;
     private final SpindexerIO spindexer;
 
     public HopperSubsystem(
-            TriggerIO trigger,
             SpindexerIO spindexer) {
-        this.trigger = trigger;
         this.spindexer = spindexer;
     }
 
     public static HopperSubsystem create() {
         return new HopperSubsystem(
-                new TriggerIOHardware(),
                 new SpindexerIOHardware());
     }
 
     public void warmUp() {
-        this.spindexer.run(-7);
+        this.spindexer.run(-2);
     }
 
     public void stopSpin() {
@@ -34,19 +30,10 @@ public class HopperSubsystem extends SubsystemBase {
     }
 
     public void warmUpforshoot() {
-        this.spindexer.run(-10);
-    }
-
-    public void load() {
-        this.trigger.run();
-    }
-
-    public void stopTrigger() {
-        this.trigger.stop();
+        this.spindexer.run(-7);
     }
 
     public void stopAll() {
-        this.stopTrigger();
         this.stopSpin();
     }
 

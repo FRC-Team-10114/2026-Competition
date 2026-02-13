@@ -95,7 +95,9 @@ public class RobotContainer {
         log();
 
         NamedCommands.registerCommand("intakeDown", superstructure.intake());
-        NamedCommands.registerCommand("shoot", superstructure.autoshooter());
+        NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(3.5));
+        NamedCommands.registerCommand("nostopshoot", superstructure.autoshooter());
+        NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -116,6 +118,10 @@ public class RobotContainer {
         return this.auto;
     }
 
+    public CommandSwerveDrivetrain getDrivetrain() {
+        return this.drivetrain;
+    }
+
     private void configureBindings() {
 
         drivetrain.setDefaultCommand(
@@ -130,30 +136,32 @@ public class RobotContainer {
 
         joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        joystick.a().whileTrue(this.superstructure.DriveToTrench());
+        joystick.leftBumper().whileTrue(this.superstructure.DriveToTrench());
+
+        joystick.leftTrigger().whileTrue((superstructure.intake()))
+                .onFalse(superstructure.stopintake());
+        joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
+                .onFalse(this.superstructure.stopShoot());
+
+        // ---------------------------------------test-------------------------------------------------
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
-        joystick.x().whileTrue(
-        Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        // joystick.x().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
 
-        joystick.b().whileTrue(
-        Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        // joystick.b().whileTrue(
+        // Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
 
-        joystick.leftBumper().whileTrue(Commands.runOnce(() ->
-        this.shooter.flywheelup(), this.shooter));
+        // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
+        // this.shooter.flywheelup(), this.shooter));
 
-        joystick.rightBumper().whileTrue(
-        Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
+        // joystick.rightBumper().whileTrue(
+        // Commands.runOnce(() -> this.shooter.flywheeldown(), this.shooter));
 
-        joystick.leftTrigger().whileTrue(superstructure.intake())
-                .onFalse(superstructure.stopintake());
-
-        joystick.rightTrigger().whileTrue(superstructure.shootCommand())
-                .onFalse(superstructure.stopShoot());
         // joystick.leftBumper().onTrue(
-        //         Commands.run(() -> robotStatus.xtrue()))
-        //         .onFalse(Commands.run(robotStatus::xfalse));
+        // Commands.run(() -> robotStatus.xtrue()))
+        // .onFalse(Commands.run(robotStatus::xfalse));
         // // sysidTest();
         // joystick.leftBumper().whileTrue( Commands.run(() -> this.shooter.turretup(),
         // this.shooter));
@@ -162,6 +170,11 @@ public class RobotContainer {
 
         // joystick.a().onTrue(superstructure.intake())
         // .onFalse(superstructure.stopintake());
+
+        // -----------------------sysid-------------------------------
+        // joystick.x().onTrue(this.shooter.startCommand());
+        // joystick.a().onTrue(this.shooter.stopCommand());
+        // joystick.rightBumper().onTrue(this.shooter.sysIdTest());
     }
 
     public Command getAutonomousCommand() {
@@ -176,10 +189,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     }
 

@@ -5,63 +5,51 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Path 1"
+            "name": "intakeDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopshoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Path 2"
+            "pathName": "test1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Path 3"
+            "pathName": "test2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopshoot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Path 4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 6"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 7"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Path 8"
+            "pathName": "test3"
           }
         }
       ]
@@ -69,5 +57,5 @@
   },
   "resetOdom": true,
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

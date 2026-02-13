@@ -37,7 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void rollerStart() {
-        this.roller.setVoltage(Volts.of(6));
+        this.roller.setVoltage(Volts.of(4));
     }
 
     public void rollerEnd() {

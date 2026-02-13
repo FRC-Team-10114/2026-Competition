@@ -16,7 +16,7 @@ public class superstructure extends SubsystemBase {
 
     private final CommandSwerveDrivetrain drive;
 
-    private boolean ifshoot = true;
+    private boolean isshoot = true;
 
     private final IntakeSubsystem intake;
     private final ShooterSubsystem shooter;
@@ -48,12 +48,12 @@ public class superstructure extends SubsystemBase {
         return Commands.parallel(
                 Commands.runOnce(intake::rollerStart),
                 Commands.runOnce(intake::armDown),
-                Commands.runOnce(hopper::warmUp, hopper));
+                Commands.runOnce(hopper::warmUp));
     }
 
     public Command stopintake() {
         return Commands.parallel(Commands.runOnce(intake::rollerEnd),
-                Commands.runOnce(hopper::stopSpin, hopper));
+                Commands.runOnce(this.hopper::stopAll, this.hopper));
     }
 
     public Command shootCommand() {
@@ -61,43 +61,26 @@ public class superstructure extends SubsystemBase {
             this.setShootingStateTrue();
 
             if (shooter.isAtSetPosition()) {
-                // ✅ 轉速/角度到位 -> 進彈 (射擊)
-                hopper.load();
-                hopper.warmUp();
-                this.shooter.setRollerRPS();
+                hopper.warmUpforshoot();
+                this.shooter.shoot();
             } else {
-                this.shooter.setRollerRPS();
-                hopper.warmUp();
+                this.shooter.shoot();
+                hopper.warmUpforshoot();
             }
         }, hopper)
 
                 .finallyDo(() -> {
                     this.setShootingStateFalse();
                     hopper.stopAll();
-                    this.shooter.stopRoller();
+                    this.shooter.stopShoot();
                 });
     }
 
     public Command stopShoot() {
         return Commands.parallel(
                 Commands.runOnce(hopper::stopAll),
-                Commands.runOnce(this::setShootingStateFalse));
-    }
-
-    // Hopper Methods
-
-    public Command warmUpCommand() {
-        return Commands.runOnce(hopper::warmUp);
-    }
-
-    public Command stopWashCommand() {
-        return Commands.runOnce(hopper::stopSpin);
-    }
-
-    public Command loadCommand() {
-        return Commands.startEnd(
-                hopper::load,
-                hopper::stopTrigger);
+                Commands.runOnce(this::setShootingStateFalse),
+                Commands.runOnce(this.shooter::stopShoot, this.shooter));
     }
 
     public Command DriveToTrench() {

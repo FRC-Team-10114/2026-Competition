@@ -9,6 +9,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+
+import com.google.gson.annotations.Until;
+
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 
@@ -52,7 +55,7 @@ public class PhotonVision extends SubsystemBase {
         this.drivetrain = drive;
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-        PhotonVisionConstants.cameraTransforms.forEach((name, transform) -> {
+        cameraTransforms.forEach((name, transform) -> {
             PhotonCamera cam = new PhotonCamera(name);
             PhotonPoseEstimator estimator = new PhotonPoseEstimator(
                     fieldLayout,
@@ -69,7 +72,7 @@ public class PhotonVision extends SubsystemBase {
         for (CamWrapper cw : cams) {
             // 記錄每一台相機的連線狀態
             Logger.recordOutput("PhotonVision/Connected/" + cw.name, cw.cam.isConnected());
-            
+
             // 記錄是否有看到目標 (這也能輔助判斷 Pipeline 是否有在跑)
             Logger.recordOutput("PhotonVision/HasTargets/" + cw.name, cw.cam.getLatestResult().hasTargets());
         }
@@ -84,7 +87,7 @@ public class PhotonVision extends SubsystemBase {
         for (CamWrapper cw : cams) {
             // 讀取未讀取的結果 (處理高幀率)
             for (PhotonPipelineResult result : cw.cam.getAllUnreadResults()) {
-                
+
                 // 基礎資訊更新
                 if (result.hasTargets()) {
                     m_lastTagId = result.getBestTarget().getFiducialId();
@@ -109,7 +112,7 @@ public class PhotonVision extends SubsystemBase {
                 // 過濾 B：Z 軸高度檢查
                 // ---------------------------------------------------------
                 // if (!filterByZ(cameraRobotPose3d))
-                //     continue;
+                // continue;
 
                 // ---------------------------------------------------------
                 // 過濾 C：邊緣檢測 (防止畸變)
@@ -118,27 +121,27 @@ public class PhotonVision extends SubsystemBase {
                 // var targets = result.getTargets();
                 // // 獲取相機解析度 (假設 Constant 有定義，或是預設值)
                 // double resolutionX = 1280; // 範例值，請改為 cw.cam.getCameraMatrix() 獲取或 Constants
-                // double resolutionY = 720;  // 範例值
+                // double resolutionY = 800; // 範例值
 
                 // // 嘗試動態獲取解析度，若失敗則忽略右下邊界檢查
                 // if(cw.cam.getCameraMatrix().isPresent()) {
-                //      resolutionX = cw.cam.getCameraMatrix().get().getNumCols();
-                //      resolutionY = cw.cam.getCameraMatrix().get().getNumRows();
+                // resolutionX = cw.cam.getCameraMatrix().get().getNumCols();
+                // resolutionY = cw.cam.getCameraMatrix().get().getNumRows();
                 // }
 
                 // for (var tgt : targets) {
-                //     var corners = tgt.getDetectedCorners();
-                //     if (corners != null) {
-                //         for (var corner : corners) {
-                //             if (corner.x < borderPixels || corner.y < borderPixels ||
-                //                 corner.x > resolutionX - borderPixels ||
-                //                 corner.y > resolutionY - borderPixels) {
-                //                 cornerNearEdge = true;
-                //                 break;
-                //             }
-                //         }
-                //     }
-                //     if (cornerNearEdge) break;
+                // var corners = tgt.getDetectedCorners();
+                // if (corners != null) {
+                // for (var corner : corners) {
+                // if (corner.x < borderPixels || corner.y < borderPixels ||
+                // corner.x > resolutionX - borderPixels ||
+                // corner.y > resolutionY - borderPixels) {
+                // cornerNearEdge = true;
+                // break;
+                // }
+                // }
+                // }
+                // if (cornerNearEdge) break;
                 // }
                 // if (cornerNearEdge) continue;
 
@@ -150,17 +153,20 @@ public class PhotonVision extends SubsystemBase {
                 for (var tgt : est.targetsUsed) {
                     avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
                 }
-                if (numTags > 0) avgDist /= numTags;
+                if (numTags > 0)
+                    avgDist /= numTags;
 
                 // ---------------------------------------------------------
                 // 過濾 D：單 Tag 有效性檢查
                 // ---------------------------------------------------------
                 if (numTags < 2) {
                     // 如果只有一個 Tag，距離太遠則丟棄
-                    if (avgDist > maxSingleTagDistanceMeters) continue;
-                    
+                    if (avgDist > maxSingleTagDistanceMeters)
+                        continue;
+
                     // 如果只有一個 Tag，Ambiguity 太高則丟棄
-                    if (result.getBestTarget() != null && result.getBestTarget().getPoseAmbiguity() > 0.2) continue;
+                    if (result.getBestTarget() != null && result.getBestTarget().getPoseAmbiguity() > 0.2)
+                        continue;
                 }
 
                 // ---------------------------------------------------------
@@ -169,29 +175,28 @@ public class PhotonVision extends SubsystemBase {
                 Vector<N3> stdDevs;
                 if (this.NeedResetPose) {
                     // 強制重置模式：給予極高信任度
-                    stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(1));
+                    stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(2));
                     this.NeedResetPose = false; // 重置旗標
                 } else {
                     // 一般模式
                     if (numTags >= 2) {
                         // 多 Tag：信任度高
-                        stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(99999));
+                        stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(4));
                     } else {
                         // 單 Tag：信任度隨距離下降
                         double distErr = 0.5 * Math.pow(avgDist, 2);
-                        stdDevs = VecBuilder.fill(distErr, distErr, 100.0); // 旋轉信任度給低一點
+                        stdDevs = VecBuilder.fill(distErr, distErr, 99999.0); // 旋轉信任度給低一點
                     }
                 }
 
                 // ---------------------------------------------------------
                 // 發送至 Drivetrain
                 // ---------------------------------------------------------
-                Logger.recordOutput("cameraRobotPose", cameraRobotPose3d.toPose2d());
+                Logger.recordOutput("cameraRobotPose", cameraRobotPose3d);
                 drivetrain.addVisionMeasurement(
-                    cameraRobotPose3d.toPose2d(), 
-                    resultTimeSec, // 直接使用 PhotonVision 的 Timestamp
-                    stdDevs
-                );
+                        cameraRobotPose3d.toPose2d(),
+                        resultTimeSec, // 直接使用 PhotonVision 的 Timestamp
+                        stdDevs);
             }
         }
     }
@@ -199,59 +204,65 @@ public class PhotonVision extends SubsystemBase {
     /**
      * 用於自動階段初始化或特殊情況，尋找最可信的 Vision Pose 並強制覆蓋 Odometry
      */
-    public boolean resetPoseToVision() {
-        Pose2d bestPose = null;
-        double minScore = 99999.0; // 分數越低越好
-        
-        for (CamWrapper cw : cams) {
-            PhotonPipelineResult result = cw.cam.getLatestResult();
-            if (!result.hasTargets()) continue;
+    // public boolean resetPoseToVision() {
+    //     Pose2d bestPose = null;
+    //     double minScore = 99999.0; // 分數越低越好
 
-            Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
-            if (poseOpt.isEmpty()) continue;
+    //     for (CamWrapper cw : cams) {
+    //         PhotonPipelineResult result = cw.cam.getLatestResult();
+    //         if (!result.hasTargets())
+    //             continue;
 
-            EstimatedRobotPose est = poseOpt.get();
-            Pose3d pose3d = est.estimatedPose;
+    //         Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
+    //         if (poseOpt.isEmpty())
+    //             continue;
 
-            // 1. 高度檢查
-            if (Math.abs(pose3d.getZ()) > 0.5) continue;
+    //         EstimatedRobotPose est = poseOpt.get();
+    //         Pose3d pose3d = est.estimatedPose;
 
-            // 2. 計算 Tag 資訊
-            int numTags = est.targetsUsed.size();
-            double avgDist = 0.0;
-            for (var tgt : est.targetsUsed) {
-                avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
-            }
-            if (numTags > 0) avgDist /= numTags;
+    //         // 1. 高度檢查
+    //         if (Math.abs(pose3d.getZ()) > 0.5)
+    //             continue;
 
-            // 3. 過濾模糊單 Tag
-            if (numTags == 1) {
-                var bestTarget = result.getBestTarget();
-                if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2) continue;
-            }
+    //         // 2. 計算 Tag 資訊
+    //         int numTags = est.targetsUsed.size();
+    //         double avgDist = 0.0;
+    //         for (var tgt : est.targetsUsed) {
+    //             avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
+    //         }
+    //         if (numTags > 0)
+    //             avgDist /= numTags;
 
-            // 4. 評分 (多 Tag 優先，近距離優先)
-            double currentScore;
-            if (numTags >= 2) {
-                currentScore = avgDist; // 多 Tag 直接比距離
-            } else {
-                currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
-            }
+    //         // 3. 過濾模糊單 Tag
+    //         if (numTags == 1) {
+    //             var bestTarget = result.getBestTarget();
+    //             if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
+    //                 continue;
+    //         }
 
-            // 更新最佳結果
-            if (currentScore < minScore) {
-                minScore = currentScore;
-                bestPose = pose3d.toPose2d();
-            }
-        }
+    //         // 4. 評分 (多 Tag 優先，近距離優先)
+    //         double currentScore;
+    //         if (numTags >= 2) {
+    //             currentScore = avgDist; // 多 Tag 直接比距離
+    //         } else {
+    //             currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
+    //         }
 
-        if (bestPose != null) {
-            drivetrain.resetPose(bestPose);
-            return true;
-        }
+    //         // 更新最佳結果
+    //         if (currentScore < minScore) {
+    //             minScore = currentScore;
+    //             bestPose = pose3d.toPose2d();
+    //         }
+    //     }
 
-        return false;
-    }
+    //     if (bestPose != null) {
+    //         Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(), this.drivetrain.getRotation());
+    //         drivetrain.resetPose(resetPose2d);
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
 
     public int getAprilTagId() {
         return m_lastTagId;
@@ -260,6 +271,7 @@ public class PhotonVision extends SubsystemBase {
     private boolean filterByZ(Pose3d pose3d) {
         return Math.abs(pose3d.getZ()) < PhotonVisionConstants.maxZ;
     }
+
     public boolean isCameraConnected(String cameraName) {
         for (CamWrapper cw : cams) {
             if (cw.name.equals(cameraName)) {
@@ -274,7 +286,8 @@ public class PhotonVision extends SubsystemBase {
      */
     public boolean isAnyCameraConnected() {
         for (CamWrapper cw : cams) {
-            if (cw.cam.isConnected()) return true;
+            if (cw.cam.isConnected())
+                return true;
         }
         return false;
     }
