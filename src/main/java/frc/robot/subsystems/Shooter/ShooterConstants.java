@@ -10,11 +10,11 @@ import edu.wpi.first.units.measure.Angle;
 public class ShooterConstants {
         public static Transform3d robotToTurret = new Transform3d(0.10167023632566, -0.00000037052800,  0.26373899694824, Rotation3d.kZero);
 
-        public static final double HARD_MIN_RADS = Units.degreesToRadians(-220.0);
-        public static final double HARD_MAX_RADS = Units.degreesToRadians(220.0);
+        public static final double HARD_MIN_RADS = Units.degreesToRadians(-250.0);
+        public static final double HARD_MAX_RADS = Units.degreesToRadians(250.0);
 
-        public static final double SOFT_MIN_RADS = Units.degreesToRadians(-190.0);
-        public static final double SOFT_MAX_RADS = Units.degreesToRadians(190.0);
+        public static final double SOFT_MIN_RADS = Units.degreesToRadians(-220.0);
+        public static final double SOFT_MAX_RADS = Units.degreesToRadians(220.0);
 
         public static final Angle Hood_MAX_RADS = Degree.of(55); // 上限63
         public static final Angle Hood_MIN_RADS = Degree.of(30); // 下限25

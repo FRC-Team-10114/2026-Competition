@@ -88,6 +88,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("m_targetAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
+        // this.hood.setAngle(m_targetAngle);
 
     }
 

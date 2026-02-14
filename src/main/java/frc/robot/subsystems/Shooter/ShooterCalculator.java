@@ -9,6 +9,7 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
@@ -70,23 +71,29 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                rollMap.put(0.796222, RotationsPerSecond.of(30));
-                rollMap.put(1.545207, RotationsPerSecond.of(31));
+                rollMap.put(0.796222, RotationsPerSecond.of(30.0));
+                rollMap.put(1.545207, RotationsPerSecond.of(31.0));
                 rollMap.put(2.148772, RotationsPerSecond.of(33.5));
+                rollMap.put(2.590749, RotationsPerSecond.of(34.0));
                 rollMap.put(3.062585, RotationsPerSecond.of(38.5));
-                rollMap.put(4.189529, RotationsPerSecond.of(42.8));
+                rollMap.put(4.099106, RotationsPerSecond.of(41.0));
+                rollMap.put(5.074542, RotationsPerSecond.of(46.0));
 
-                hoodMap.put(0.796222, Degree.of(30));
-                hoodMap.put(1.545207, Degree.of(32));
-                hoodMap.put(2.148772, Degree.of(33));
-                hoodMap.put(3.062585, Degree.of(37));
-                hoodMap.put(4.228888, Degree.of(40));
+                hoodMap.put(0.796222, Degree.of(30.0));
+                hoodMap.put(1.545207, Degree.of(32.0));
+                hoodMap.put(2.148772, Degree.of(33.0));
+                hoodMap.put(2.590749, Degree.of(33.5));
+                hoodMap.put(3.062585, Degree.of(37.0));
+                hoodMap.put(4.099106, Degree.of(40.0));
+                hoodMap.put(5.074542, Degree.of(43.0));
 
                 timeOfFlightMap.put(0.796222, 0.84);
                 timeOfFlightMap.put(1.545207, 0.98);
                 timeOfFlightMap.put(2.148772, 1.16);
+                timeOfFlightMap.put(2.590749, 1.16);
                 timeOfFlightMap.put(3.062585, 1.2);
-                timeOfFlightMap.put(4.228888, 1.82);
+                timeOfFlightMap.put(4.099106, 1.21);
+                timeOfFlightMap.put(5.074542, 1.32);
         }
 
         public record ShootingState(

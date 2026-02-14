@@ -134,7 +134,7 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
+        // joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
         joystick.leftBumper().whileTrue(this.superstructure.DriveToTrench());
 
