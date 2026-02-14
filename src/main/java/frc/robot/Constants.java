@@ -62,6 +62,7 @@ public class Constants {
             public static final double TRENCHWide = Units.inchesToMeters(65.65);
             public static final double TRENCHdeep = Units.inchesToMeters(47.0);
             public static final double HUB_distance_to_the_ALLIANCE_WALL = Units.inchesToMeters(158.6);
+            public static final double Swerve = Units.inchesToMeters(27.0 + 27/2);
 
             public static final Translation3d topCenterPoint = new Translation3d(
                     layout.getTagPose(26).get().getX() + width / 2.0,
@@ -79,24 +80,24 @@ public class Constants {
                     height // 高度固定
             );
 
-            public static final Pose2d Right_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, 0.0,
+            public static final Pose2d Right_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL - Swerve, 0.0,
                     new Rotation2d(0.0));
-            public static final Pose2d Right_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+            public static final Pose2d Right_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide + Swerve,
                     0.0, new Rotation2d(0.0));
-            public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL, TRENCHdeep,
+            public static final Pose2d Right_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL - Swerve, TRENCHdeep,
                     new Rotation2d(0.0));
-            public static final Pose2d Right_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+            public static final Pose2d Right_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide + Swerve,
                     TRENCHdeep,
                     new Rotation2d(0.0));
 
-            public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+            public static final Pose2d Left_TRENCHE_Pose1 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL - Swerve,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
-            public static final Pose2d Left_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+            public static final Pose2d Left_TRENCHE_Pose2 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide + Swerve,
                     FieldConstants.fieldWidth, new Rotation2d(0.0));
-            public static final Pose2d Left_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL,
+            public static final Pose2d Left_TRENCHE_Pose3 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL - Swerve,
                     FieldConstants.fieldWidth - TRENCHdeep,
                     new Rotation2d(0.0));
-            public static final Pose2d Left_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide,
+            public static final Pose2d Left_TRENCHE_Pose4 = new Pose2d(HUB_distance_to_the_ALLIANCE_WALL + TRENCHWide + Swerve,
                     FieldConstants.fieldWidth - TRENCHdeep,
                     new Rotation2d(0.0));
         }
@@ -121,11 +122,11 @@ public class Constants {
                 "RightOV", new Transform3d(
                         //右側
                         new Translation3d(0.3113271, -0.3113278, 0.1838034),
-                        new Rotation3d(0.0, Units.degreesToRadians(30.0), Units.degreesToRadians(315.0))),
+                        new Rotation3d(0.0, Units.degreesToRadians(-30.0), Units.degreesToRadians(-45.0))),
                 "LeftOV", new Transform3d(
                         //左側
                         new Translation3d(0.3113271, 0.3113278, 0.1838034),
-                        new Rotation3d(0.0, Units.degreesToRadians(30.0), Units.degreesToRadians(-315.0))));
+                        new Rotation3d(0.0, Units.degreesToRadians(-30.0), Units.degreesToRadians(45.0))));
 
         public static final double borderPixels = 15.0; // 拒絕貼邊緣的角點（避免畸變/遮擋）
         public static final double maxSingleTagDistanceMeters = Units.feetToMeters(6.0); // 單tag最遠可接受距離

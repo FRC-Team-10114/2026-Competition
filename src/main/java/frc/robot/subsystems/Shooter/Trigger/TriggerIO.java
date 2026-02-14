@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hopper.Trigger;
+package frc.robot.subsystems.Shooter.Trigger;
 
 public interface TriggerIO {
 

@@ -13,8 +13,11 @@ import com.ctre.phoenix6.HootAutoReplay;
 
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.FIeldHelper.AllianceFlipUtil;
 
 public class Robot extends LoggedRobot {
     private Command m_autonomousCommand;
@@ -47,6 +50,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         Pathfinding.setPathfinder(new LocalADStarAK());
+        if (AllianceFlipUtil.shouldFlip()) {
+            m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(Math.PI)));
+        } else {
+            m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)));
+        }
     }
 
     @Override
@@ -61,16 +69,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
-        boolean success = m_robotContainer.getphotonVision().resetPoseToVision();
-
-        // 4. 鎖存邏輯 (Latch Logic)：
-        // 只要成功過一次 (success == true)，m_hasVisionLocalized 就變成 true 並且保持住
-        // 這樣就算比賽開始前一秒剛好有人擋住鏡頭，只要前幾秒有對準過，我們依然相信視覺的結果
-        if (success) {
-            IfResetPose = true;
-        }
-        Logger.recordOutput("Robot/VisionResetSuccess", success);
-        Logger.recordOutput("Robot/HasLocalized", IfResetPose);
     }
 
     @Override

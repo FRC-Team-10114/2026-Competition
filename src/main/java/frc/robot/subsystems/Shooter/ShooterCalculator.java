@@ -9,6 +9,7 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 import org.littletonrobotics.junction.Logger;
@@ -59,7 +60,7 @@ public class ShooterCalculator {
                                         double result = MathUtil.interpolate(startVal, endVal, t);
 
                                         // 3. 把 double 包回 Angle 物件
-                                        return Radians.of(result);
+                                        return Degree.of(result);
                                 });
                 rollMap = new InterpolatingTreeMap<>(
                                 InverseInterpolator.forDouble(),
@@ -70,23 +71,29 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                rollMap.put(0.946764, RotationsPerSecond.of(30));
-                rollMap.put(1.357783, RotationsPerSecond.of(31));
-                rollMap.put(1.871859, RotationsPerSecond.of(35));
-                rollMap.put(2.352487, RotationsPerSecond.of(37));
-                rollMap.put(3.060079, RotationsPerSecond.of(38));
+                rollMap.put(0.796222, RotationsPerSecond.of(30.0));
+                rollMap.put(1.545207, RotationsPerSecond.of(31.0));
+                rollMap.put(2.148772, RotationsPerSecond.of(33.5));
+                rollMap.put(2.590749, RotationsPerSecond.of(34.0));
+                rollMap.put(3.062585, RotationsPerSecond.of(38.5));
+                rollMap.put(4.099106, RotationsPerSecond.of(41.0));
+                rollMap.put(5.074542, RotationsPerSecond.of(46.0));
 
-                hoodMap.put(0.946764, Degree.of(29));
-                hoodMap.put(1.357783, Degree.of(32));
-                hoodMap.put(1.871859, Degree.of(35));
-                hoodMap.put(2.352487, Degree.of(40));
-                hoodMap.put(3.060079, Degree.of(44));
+                hoodMap.put(0.796222, Degree.of(30.0));
+                hoodMap.put(1.545207, Degree.of(32.0));
+                hoodMap.put(2.148772, Degree.of(33.0));
+                hoodMap.put(2.590749, Degree.of(33.5));
+                hoodMap.put(3.062585, Degree.of(37.0));
+                hoodMap.put(4.099106, Degree.of(40.0));
+                hoodMap.put(5.074542, Degree.of(43.0));
 
-                timeOfFlightMap.put(0.946764, 0.87);
-                timeOfFlightMap.put(1.357783, 0.94);
-                timeOfFlightMap.put(1.871859, 1.05);
-                timeOfFlightMap.put(2.352487, 1.1);
-                timeOfFlightMap.put(3.060079, 1.15);
+                timeOfFlightMap.put(0.796222, 0.84);
+                timeOfFlightMap.put(1.545207, 0.98);
+                timeOfFlightMap.put(2.148772, 1.16);
+                timeOfFlightMap.put(2.590749, 1.16);
+                timeOfFlightMap.put(3.062585, 1.2);
+                timeOfFlightMap.put(4.099106, 1.21);
+                timeOfFlightMap.put(5.074542, 1.32);
         }
 
         public record ShootingState(
@@ -112,13 +119,25 @@ public class ShooterCalculator {
                 Translation2d target = AllianceFlipUtil.apply(siteConstants.topCenterPoint.toTranslation2d());
                 double turretToTargetDistance = target.getDistance(turretPosition.getTranslation());
 
+                // 1. 取得場地速度
                 ChassisSpeeds robotVelocity = drive.getFieldVelocity();
                 double robotAngle = estimatedPose.getRotation().getRadians();
 
+                // ⭐️ [新增] 翻轉速度向量：修復紅隊走射方向反向的問題
+                // 在紅隊時，將速度向量反轉，讓補償方向正確抵銷
+                if (AllianceFlipUtil.shouldFlip()) {
+                        robotVelocity = new ChassisSpeeds(
+                                        -robotVelocity.vxMetersPerSecond,
+                                        -robotVelocity.vyMetersPerSecond,
+                                        robotVelocity.omegaRadiansPerSecond);
+                }
+
+                // 2. 計算 Turret 的場地速度 (包含機器人旋轉帶來的切線速度)
                 double turretVelocityX = robotVelocity.vxMetersPerSecond
                                 + robotVelocity.omegaRadiansPerSecond
                                                 * (robotToTurret.getY() * Math.cos(robotAngle)
                                                                 - robotToTurret.getX() * Math.sin(robotAngle));
+
                 double turretVelocityY = robotVelocity.vyMetersPerSecond
                                 + robotVelocity.omegaRadiansPerSecond
                                                 * (robotToTurret.getX() * Math.cos(robotAngle)
@@ -148,10 +167,16 @@ public class ShooterCalculator {
                                 new Transform2d(
                                                 robotToTurret.getTranslation().toTranslation2d(),
                                                 robotToTurret.getRotation().toRotation2d()));
+
                 Logger.recordOutput("ToHubsimturretPosition",
                                 new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
 
                 Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
+
+                // 3. 最後的鏡像翻轉 (保持你原本的邏輯，用於修正靜態瞄準)
+                if (AllianceFlipUtil.shouldFlip()) {
+                        targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
+                }
 
                 return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),
                                 rollMap.get(lookaheadTurretToTargetDistance));
@@ -188,6 +213,13 @@ public class ShooterCalculator {
                 // 5. 計算砲塔的場地速度 (Turret Field Velocity)
                 ChassisSpeeds robotVelocity = drive.getFieldVelocity();
                 double robotAngle = estimatedPose.getRotation().getRadians();
+
+                if (AllianceFlipUtil.shouldFlip()) {
+                        robotVelocity = new ChassisSpeeds(
+                                        -robotVelocity.vxMetersPerSecond,
+                                        -robotVelocity.vyMetersPerSecond,
+                                        robotVelocity.omegaRadiansPerSecond);
+                }
 
                 // V_turret = V_robot + (Omega x Radius)
                 // 這是為了算出機器人旋轉時，砲塔本身被甩動的速度
@@ -226,6 +258,11 @@ public class ShooterCalculator {
 
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
+
+                if (AllianceFlipUtil.shouldFlip()) {
+                        // 修正：先取出 double 做運算，再轉回 Rotation2d
+                        targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
+                }
 
                 Pose2d simturretPosition = estimatedPose.transformBy(
                                 new Transform2d(

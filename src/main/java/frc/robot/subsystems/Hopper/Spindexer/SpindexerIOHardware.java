@@ -40,7 +40,7 @@ public class SpindexerIOHardware implements SpindexerIO {
 
         mechineConfig.MotorOutput
                 .withInverted(InvertedValue.Clockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Brake);
+                .withNeutralMode(NeutralModeValue.Coast);
         mechineConfig.CurrentLimits
                 .withStatorCurrentLimit(SpindexerConstants.MECHINE_STATOR_CURRENT_LIMIT)
                 .withSupplyCurrentLimit(SpindexerConstants.MECHINE_SUPPLY_CURRENT_LIMIT)
