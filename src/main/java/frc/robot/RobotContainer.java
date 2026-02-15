@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Auto;
 import frc.robot.subsystems.superstructure;
+import frc.robot.subsystems.Dashboard.Dashboard;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.SwerveDrivetrainTest;
@@ -80,6 +81,8 @@ public class RobotContainer {
 
     public final Signal signal = new Signal();
 
+    private final Dashboard dashboard = new Dashboard(signal);
+
     public final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
@@ -98,6 +101,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(3.5));
         NamedCommands.registerCommand("nostopshoot", superstructure.autoshooter());
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
+        NamedCommands.registerCommand("isIn", Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
