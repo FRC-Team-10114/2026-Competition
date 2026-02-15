@@ -88,8 +88,6 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("m_targetAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
-        // this.hood.setAngle(m_targetAngle);
-
     }
 
     public void TrueIsshooting() {
@@ -161,12 +159,7 @@ public class ShooterSubsystem extends SubsystemBase {
             this.hood.setAngle(targetRad);
         }
     }
-
-    // public void setRollerRPS(AngularVelocity velocity) {
-    // if (SpinAllTime() || Isshooting) {
-    // this.flywheel.setRPS(velocity);
-    // }
-    // }
+    
     public void shoot() {
         this.flywheel.setRPS(flywheelgoal);
         if(isAtSetPosition()){

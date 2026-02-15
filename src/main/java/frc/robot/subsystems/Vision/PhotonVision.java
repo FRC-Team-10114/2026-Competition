@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
@@ -53,6 +54,13 @@ public class PhotonVision extends SubsystemBase {
 
     public PhotonVision(CommandSwerveDrivetrain drive, Map<String, Transform3d> cameraTransforms) {
         this.drivetrain = drive;
+
+        // 加入這行檢查：如果是在模擬模式，直接 return，不要初始化相機
+        if (Robot.isSimulation()) {
+            System.out.println("模擬模式：跳過 PhotonVision 初始化以避免崩潰");
+            return;
+        }
+
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
         cameraTransforms.forEach((name, transform) -> {
@@ -205,63 +213,64 @@ public class PhotonVision extends SubsystemBase {
      * 用於自動階段初始化或特殊情況，尋找最可信的 Vision Pose 並強制覆蓋 Odometry
      */
     // public boolean resetPoseToVision() {
-    //     Pose2d bestPose = null;
-    //     double minScore = 99999.0; // 分數越低越好
+    // Pose2d bestPose = null;
+    // double minScore = 99999.0; // 分數越低越好
 
-    //     for (CamWrapper cw : cams) {
-    //         PhotonPipelineResult result = cw.cam.getLatestResult();
-    //         if (!result.hasTargets())
-    //             continue;
+    // for (CamWrapper cw : cams) {
+    // PhotonPipelineResult result = cw.cam.getLatestResult();
+    // if (!result.hasTargets())
+    // continue;
 
-    //         Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
-    //         if (poseOpt.isEmpty())
-    //             continue;
+    // Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
+    // if (poseOpt.isEmpty())
+    // continue;
 
-    //         EstimatedRobotPose est = poseOpt.get();
-    //         Pose3d pose3d = est.estimatedPose;
+    // EstimatedRobotPose est = poseOpt.get();
+    // Pose3d pose3d = est.estimatedPose;
 
-    //         // 1. 高度檢查
-    //         if (Math.abs(pose3d.getZ()) > 0.5)
-    //             continue;
+    // // 1. 高度檢查
+    // if (Math.abs(pose3d.getZ()) > 0.5)
+    // continue;
 
-    //         // 2. 計算 Tag 資訊
-    //         int numTags = est.targetsUsed.size();
-    //         double avgDist = 0.0;
-    //         for (var tgt : est.targetsUsed) {
-    //             avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
-    //         }
-    //         if (numTags > 0)
-    //             avgDist /= numTags;
+    // // 2. 計算 Tag 資訊
+    // int numTags = est.targetsUsed.size();
+    // double avgDist = 0.0;
+    // for (var tgt : est.targetsUsed) {
+    // avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
+    // }
+    // if (numTags > 0)
+    // avgDist /= numTags;
 
-    //         // 3. 過濾模糊單 Tag
-    //         if (numTags == 1) {
-    //             var bestTarget = result.getBestTarget();
-    //             if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
-    //                 continue;
-    //         }
+    // // 3. 過濾模糊單 Tag
+    // if (numTags == 1) {
+    // var bestTarget = result.getBestTarget();
+    // if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
+    // continue;
+    // }
 
-    //         // 4. 評分 (多 Tag 優先，近距離優先)
-    //         double currentScore;
-    //         if (numTags >= 2) {
-    //             currentScore = avgDist; // 多 Tag 直接比距離
-    //         } else {
-    //             currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
-    //         }
+    // // 4. 評分 (多 Tag 優先，近距離優先)
+    // double currentScore;
+    // if (numTags >= 2) {
+    // currentScore = avgDist; // 多 Tag 直接比距離
+    // } else {
+    // currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
+    // }
 
-    //         // 更新最佳結果
-    //         if (currentScore < minScore) {
-    //             minScore = currentScore;
-    //             bestPose = pose3d.toPose2d();
-    //         }
-    //     }
+    // // 更新最佳結果
+    // if (currentScore < minScore) {
+    // minScore = currentScore;
+    // bestPose = pose3d.toPose2d();
+    // }
+    // }
 
-    //     if (bestPose != null) {
-    //         Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(), this.drivetrain.getRotation());
-    //         drivetrain.resetPose(resetPose2d);
-    //         return true;
-    //     }
+    // if (bestPose != null) {
+    // Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(),
+    // this.drivetrain.getRotation());
+    // drivetrain.resetPose(resetPose2d);
+    // return true;
+    // }
 
-    //     return false;
+    // return false;
     // }
 
     public int getAprilTagId() {
