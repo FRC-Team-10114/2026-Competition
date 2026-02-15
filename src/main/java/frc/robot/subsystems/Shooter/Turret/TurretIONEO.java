@@ -21,7 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.util.MathHelper.EncoderWithGearRatio;
+import frc.robot.util.MathHelper.PositionWithGearRatio;
 import frc.robot.util.MathHelper.RobustCRTCalculator;
 
 public class TurretIONEO extends TurretIO {
@@ -61,11 +61,11 @@ public class TurretIONEO extends TurretIO {
 
         @Override
         public void resetAngle() {
-                EncoderWithGearRatio master = new EncoderWithGearRatio(
+                PositionWithGearRatio master = new PositionWithGearRatio(
                                 this.masterCANcoder.getPosition().getValueAsDouble(),
                                 30);
 
-                EncoderWithGearRatio slave = new EncoderWithGearRatio(
+                PositionWithGearRatio slave = new PositionWithGearRatio(
                                 this.slaveCANcoder.getPosition().getValueAsDouble(),
                                 31);
 

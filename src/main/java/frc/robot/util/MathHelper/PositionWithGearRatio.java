@@ -1,6 +1,6 @@
 package frc.robot.util.MathHelper;
 
-public class EncoderWithGearRatio {
+public class PositionWithGearRatio {
 
     public final double position;
     public final int gearRatio;
@@ -9,7 +9,7 @@ public class EncoderWithGearRatio {
      * @param position  當前編碼器位置
      * @param gearRatio 物理齒數
      */
-    public EncoderWithGearRatio(double position, int gearRatio) {
+    public PositionWithGearRatio(double position, int gearRatio) {
         this.position = position;
         this.gearRatio = gearRatio;
     }

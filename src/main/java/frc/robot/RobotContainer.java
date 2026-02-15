@@ -61,7 +61,7 @@ public class RobotContainer {
 
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
+    // public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
     public final PhotonVision photonVision = new PhotonVision(drivetrain,
             Constants.PhotonVisionConstants.cameraTransforms);
 
@@ -87,7 +87,7 @@ public class RobotContainer {
 
     public RobotContainer() {
 
-        // Swerve Drivetrain Current & Voltage Test
+        // Swerve Drivetrain Current Test
         for (int i = 0; i < 4; i++)
             this.tests[i] = new SwerveDrivetrainTest(drivetrain, i);
 
