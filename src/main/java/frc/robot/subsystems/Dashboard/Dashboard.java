@@ -19,6 +19,10 @@ public class Dashboard extends SubsystemBase {
     private boolean endgameAlertTriggered = false;
 
     private boolean timeAlert = false;
+    
+    private String status = "Waiting";
+
+    private final String[] statusArray = {"Round 1", "Round 2", "Round 3", "Round 4"};
 
     private final double MatchTime = 140.0;
     private final double TRANSITION = 10.0;
@@ -33,7 +37,11 @@ public class Dashboard extends SubsystemBase {
     @Override
     public void periodic() {
         updateMatchData();
-        updateRoundTime();
+        try {
+            updateRoundTime();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
         logDashboardData();
     }
 
@@ -44,8 +52,9 @@ public class Dashboard extends SubsystemBase {
     private void logDashboardData() {
         Logger.recordOutput("Dashboard/MatchTime", matchTime);
         Logger.recordOutput("Dashboard/RoundTime", roundTime);
-        Logger.recordOutput("Dashboard/IsFMSConnected", fms.Active());
+        Logger.recordOutput("Dashboard/isActive", fms.Active());
         Logger.recordOutput("Dashboard/TimeAlert", timeAlert);
+        Logger.recordOutput("Dashboard/Status", status);
 
         Logger.recordOutput("Dashboard/BatteryVoltage", RobotController.getBatteryVoltage());
 
@@ -70,20 +79,25 @@ public class Dashboard extends SubsystemBase {
     private void updateRoundTime() {
         if (DriverStation.isAutonomous()) {
             roundTime = DriverStation.getMatchTime();
+            status = "Autonomous";
             return;
-        } else if (fms.isTRANSITION()) {
-            roundTime = DriverStation.getMatchTime() - matchTime;
+        }
+        if (DriverStation.getMatchTime() >= MatchTime - TRANSITION) {
+            roundTime = DriverStation.getMatchTime() - (MatchTime - TRANSITION);
+            status = "Transition";
             return;
-        } else if (DriverStation.getMatchTime() <= 30) {
-            roundTime = DriverStation.getMatchTime();
-        } else {
-            for (int round = 1; round <= 4; round++) {
-                if (fms.isInRound(round)) {
-                    roundTime = DriverStation.getMatchTime() - matchTime - TRANSITION - (round - 1) * Round;
-                    return;
-                }
+        }
+        for (int round = 1; round <= 4; round++) {
+            if (fms.isInRound(round)) {
+                roundTime = DriverStation.getMatchTime() - 30 - ((4-round) * Round);
+                status = statusArray[round - 1];
+                return;
             }
         }
+
+        roundTime = this.matchTime;
+        status = "End Game";
+        return;
     }
 
     public void timeAlert() {
