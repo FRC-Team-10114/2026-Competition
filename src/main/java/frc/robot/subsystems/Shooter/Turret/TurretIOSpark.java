@@ -24,7 +24,7 @@ import frc.robot.subsystems.Shooter.ShooterConstants;
 import frc.robot.util.MathHelper.PositionWithGearRatio;
 import frc.robot.util.MathHelper.RobustCRTCalculator;
 
-public class TurretIONEO extends TurretIO {
+public class TurretIOSpark extends TurretIO {
 
         private final double gearRatio = 96.0 / 16.0 * 3.0;
 
@@ -39,7 +39,7 @@ public class TurretIONEO extends TurretIO {
         private double currentTargetRads = 0.0;
         private final CANcoder masterCANcoder, slaveCANcoder;
 
-        public TurretIONEO() {
+        public TurretIOSpark() {
                 this.turretMotor = new SparkFlex(40, MotorType.kBrushless);
                 this.turretController = turretMotor.getClosedLoopController();
                 this.turretEncoder = turretMotor.getEncoder();

@@ -1,14 +1,17 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.Degree;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 
 public class ShooterConstants {
-        public static Transform3d robotToTurret = new Transform3d(0.10167023632566, -0.00000037052800,  0.26373899694824, Rotation3d.kZero);
+        public static Transform3d robotToTurret = new Transform3d(0.10167023632566, -0.00000037052800, 0.26373899694824,
+                        Rotation3d.kZero);
 
         public static final double HARD_MIN_RADS = Units.degreesToRadians(-250.0);
         public static final double HARD_MAX_RADS = Units.degreesToRadians(250.0);
@@ -23,4 +26,9 @@ public class ShooterConstants {
         public static final double HoodCancoder_GEAR_RATIO_TOMotor = (1.0 / 0.0956);
 
         public static final double Flywheel_GEAR_RATIO = 1.0 / (12.0 / 16.0);
+
+        public static final class TriggerConstants {
+                public static final Current TRIGGER_STATOR_CURRENT_LIMIT = Amp.of(60);
+                public static final Current TRIGGER_SUPPLY_CURRENT_LIMIT = Amp.of(50);
+        }
 }
