@@ -35,21 +35,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
+            "pathName": "test3.0"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "stopshoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "test3"
           }
         }
       ]
