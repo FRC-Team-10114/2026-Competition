@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 import com.google.gson.annotations.Until;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -150,6 +151,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("HoodTarget", HoodTarget);
 
         Logger.recordOutput("flywheelgoal", flywheelgoal);
+
+        Logger.recordOutput("TurretTarget", TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {

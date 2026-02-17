@@ -11,7 +11,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -20,10 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Auto;
 import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Dashboard.Dashboard;
@@ -35,7 +32,6 @@ import frc.robot.subsystems.Hopper.HopperSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
-import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.FMS.Signal;
 import frc.robot.util.RobotStatus.RobotStatus;
@@ -61,7 +57,8 @@ public class RobotContainer {
 
     public final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    // public final Limelight limelight = new Limelight(drivetrain, "limelight-left");
+    // public final Limelight limelight = new Limelight(drivetrain,
+    // "limelight-left");
     public final PhotonVision photonVision = new PhotonVision(drivetrain,
             Constants.PhotonVisionConstants.cameraTransforms);
 
@@ -101,7 +98,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(3.5));
         NamedCommands.registerCommand("nostopshoot", superstructure.autoshooter());
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
-        NamedCommands.registerCommand("isIn", Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
+        NamedCommands.registerCommand("isIn",
+                Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
 
         autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -113,19 +111,6 @@ public class RobotContainer {
 
         // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
-
-    public PhotonVision getphotonVision() {
-        return this.photonVision;
-    }
-
-    public Auto getauto() {
-        return this.auto;
-    }
-
-    public CommandSwerveDrivetrain getDrivetrain() {
-        return this.drivetrain;
-    }
-
     private void configureBindings() {
 
         drivetrain.setDefaultCommand(
@@ -181,6 +166,28 @@ public class RobotContainer {
         // joystick.rightBumper().onTrue(this.shooter.sysIdTest());
     }
 
+    private void configureEvents() {
+        robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
+        robotStatus.TriggerInTrench(shooter::TrueInTrench);
+        robotStatus.TriggerNotInTrench(shooter::FalsInTrench);
+        signal.TargetInactive(shooter::FalseTargetactive);
+        signal.Targetactive(shooter::TrueTargetactive);
+        superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);
+        superstructure.TriggerShootingStateFalse(shooter::FalseIsshooting);
+    }
+
+    public PhotonVision getPhotonVisionInstance() {
+        return this.photonVision;
+    }
+
+    public Auto getAutoInstance() {
+        return this.auto;
+    }
+
+    public CommandSwerveDrivetrain getDrivetrainInstance() {
+        return this.drivetrain;
+    }
+
     public Command getAutonomousCommand() {
         return this.autoChooser.getSelected();
 
@@ -221,15 +228,5 @@ public class RobotContainer {
             field.getObject("path").setPoses(poses);
         });
 
-    }
-
-    private void configureEvents() {
-        robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
-        robotStatus.TriggerInTrench(shooter::TrueInTrench);
-        robotStatus.TriggerNotInTrench(shooter::FalsInTrench);
-        signal.TargetInactive(shooter::FalseTargetactive);
-        signal.Targetactive(shooter::TrueTargetactive);
-        superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);
-        superstructure.TriggerShootingStateFalse(shooter::FalseIsshooting);
     }
 }

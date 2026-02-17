@@ -20,7 +20,8 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     private final double TRANSITION = 10.0;
     private final double Round = 25.0;
 
-    public Signal() {}
+    public Signal() {
+    }
 
     public char getAllianceChar() {
         char alliance;
@@ -69,82 +70,98 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
         Targetactive.add(event);
     }
 
-
     public void publishActive() {
-        for(Targetactive listener : Targetactive){
+        for (Targetactive listener : Targetactive) {
             listener.Targetactive();
         }
     }
 
     public void publishInactive() {
-        for(TargetInactive listener : TargetInactive){
+        for (TargetInactive listener : TargetInactive) {
             listener.TargetInactive();
         }
     }
 
     public void CanGetPointAllience() {
-        if(DriverStation.isAutonomous()){
+        if (DriverStation.isAutonomous()) {
             publishActive();
         }
-        if(isTRANSITION()){
+        if (isTRANSITION()) {
             publishActive();
-        }else if (isInRound(1)) {
-            if (!isInactive()) publishActive();
-            else publishInactive();
+        } else if (isInRound(1)) {
+            if (!isInactive())
+                publishActive();
+            else
+                publishInactive();
         } else if (isInRound(2)) {
-            if (isInactive()) publishActive();
-            else publishInactive();
+            if (isInactive())
+                publishActive();
+            else
+                publishInactive();
         } else if (isInRound(3)) {
-            if (!isInactive()) publishActive();
-            else publishInactive();
+            if (!isInactive())
+                publishActive();
+            else
+                publishInactive();
         } else if (isInRound(4)) {
-            if (isInactive()) publishActive();
-            else publishInactive();
+            if (isInactive())
+                publishActive();
+            else
+                publishInactive();
         } else {
             publishActive();
         }
-        
+
     }
 
     public boolean Active() {
-        if(DriverStation.isAutonomous()){
+        if (DriverStation.isAutonomous()) {
             return true;
         }
-        if(isTRANSITION()){
+        if (isTRANSITION()) {
             return true;
-        }else if (isInRound(1)) {
-            if (!isInactive()) return true;
-            else return false;
+        } else if (isInRound(1)) {
+            if (!isInactive())
+                return true;
+            else
+                return false;
         } else if (isInRound(2)) {
-            if (isInactive()) return true;
-            else return false;
+            if (isInactive())
+                return true;
+            else
+                return false;
         } else if (isInRound(3)) {
-            if (!isInactive()) return true;
-            else return false;
+            if (!isInactive())
+                return true;
+            else
+                return false;
         } else if (isInRound(4)) {
-            if (isInactive()) return true;
-            else return false;
+            if (isInactive())
+                return true;
+            else
+                return false;
         } else {
             return true;
         }
     }
 
     public boolean isInRound(int Round) {
-        if (DriverStation.getMatchTime() <= MatchTime - TRANSITION - (Round - 1 * this.Round) && 
-            DriverStation.getMatchTime() >= MatchTime - TRANSITION - (Round * this.Round)) {
+        if (DriverStation.getMatchTime() <= MatchTime - TRANSITION - (Round - 1 * this.Round) &&
+                DriverStation.getMatchTime() >= MatchTime - TRANSITION - (Round * this.Round)) {
             return true;
         } else {
             return false;
         }
     }
-        private boolean isTRANSITION() {
-        if (DriverStation.getMatchTime()  >= MatchTime - TRANSITION) {
+
+    public boolean isTRANSITION() {
+        if (DriverStation.getMatchTime() >= MatchTime - TRANSITION) {
             return true;
         } else {
             return false;
         }
     }
-  
+
     @Override
     public void periodic() {
         CanGetPointAllience();
