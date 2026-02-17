@@ -38,9 +38,10 @@ import frc.robot.util.RobotStatus.RobotStatus;
 
 public class RobotContainer {
 
-    private double MaxSpeed = (4 / 5.47) * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private double MaxTeleOpSpeed = MaxSpeed;
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+    // Constants for tuning
+    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private final double MaxTeleOpSpeed = (4.5 / 5.29) * MaxSpeed;
+    private final double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond);
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxTeleOpSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
@@ -48,23 +49,20 @@ public class RobotContainer {
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
-
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
+    final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
+    private final Telemetry logger = new Telemetry(this.drivetrain.getState());
+    private final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    public final RobotStatus robotStatus = new RobotStatus(drivetrain);
+    private final Auto auto = new Auto(drivetrain);
+    private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
-    // public final Limelight limelight = new Limelight(drivetrain,
-    // "limelight-left");
     public final PhotonVision photonVision = new PhotonVision(drivetrain,
             Constants.PhotonVisionConstants.cameraTransforms);
 
     private final Field2d field = new Field2d();
-
-    private final Auto auto = new Auto(drivetrain);
 
     private final ShooterSubsystem shooter = ShooterSubsystem.create(drivetrain, robotStatus);
     private final IntakeSubsystem intake = IntakeSubsystem.create();
@@ -72,9 +70,8 @@ public class RobotContainer {
 
     private final LED led = new LED();
 
-    private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
-    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, autoAlign);
+    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, led, autoAlign);
 
     public final Signal signal = new Signal();
 
@@ -111,12 +108,13 @@ public class RobotContainer {
 
         // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
+
     private void configureBindings() {
 
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> drive
-                        .withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                        .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed)
+                        .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
@@ -132,7 +130,7 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
 
-        // ---------------------------------------test-------------------------------------------------
+        // ---------------------------------------test Method-------------------------------------------------
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
@@ -160,7 +158,7 @@ public class RobotContainer {
         // joystick.a().onTrue(superstructure.intake())
         // .onFalse(superstructure.stopintake());
 
-        // -----------------------sysid-------------------------------
+        // -----------------------sysid Method-------------------------------
         // joystick.x().onTrue(this.shooter.startCommand());
         // joystick.a().onTrue(this.shooter.stopCommand());
         // joystick.rightBumper().onTrue(this.shooter.sysIdTest());

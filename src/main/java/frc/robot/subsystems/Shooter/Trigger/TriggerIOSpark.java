@@ -12,12 +12,12 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
-public class TriggereNEO implements TriggerIO {
+public class TriggerIOSpark implements TriggerIO {
     private final SparkFlex TriggertMotor;
     private final SparkClosedLoopController TriggerController;
     private final RelativeEncoder TriggerEncoder;
 
-    public TriggereNEO() {
+    public TriggerIOSpark() {
         this.TriggertMotor = new SparkFlex(50, MotorType.kBrushless);
         this.TriggerController = TriggertMotor.getClosedLoopController();
         this.TriggerEncoder = TriggertMotor.getEncoder();

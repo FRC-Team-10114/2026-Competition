@@ -144,7 +144,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 這裡一定要加 break，不然會跑去執行 RIGHT 的邏輯
+                break;
 
             case RIGHT:
                 switch (roundOneDo) {
@@ -163,7 +163,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 補上 break
+                break;
 
             case CENTER:
                 switch (roundOneDo) {
@@ -182,7 +182,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 補上 break
+                break;
         }
 
         // 4. 決定第二輪任務 (修正變數指派錯誤)
@@ -205,7 +205,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 補上 break
+                break;
 
             case RIGHT:
                 switch (roundTwoDo) {
@@ -224,7 +224,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 補上 break
+                break;
 
             case CENTER:
                 switch (roundTwoDo) {
@@ -243,7 +243,7 @@ public class Auto {
                     case NONE:
                         break;
                 }
-                break; // ✅ 補上 break
+                break;
         }
 
         // 5. 串聯執行

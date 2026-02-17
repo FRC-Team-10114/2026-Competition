@@ -54,10 +54,9 @@ public class PhotonVision extends SubsystemBase {
 
     public PhotonVision(CommandSwerveDrivetrain drive, Map<String, Transform3d> cameraTransforms) {
         this.drivetrain = drive;
-
-        // 加入這行檢查：如果是在模擬模式，直接 return，不要初始化相機
+        
         if (Robot.isSimulation()) {
-            System.out.println("模擬模式：跳過 PhotonVision 初始化以避免崩潰");
+            System.out.println("Simulation mode detected - Skipping PhotonVision initialization");
             return;
         }
 

@@ -68,14 +68,6 @@ public class Dashboard extends SubsystemBase {
         timeAlert();
     }
 
-    private void checkTimeAlerts() {
-        if (DriverStation.isTeleop() && matchTime > 0 && matchTime <= 20.0) {
-            Logger.recordOutput("Dashboard/Alerts/Endgame", true); // 可以綁定 Dashboard 讓畫面閃爍
-        } else {
-            Logger.recordOutput("Dashboard/Alerts/Endgame", false);
-        }
-    }
-
     private void updateRoundTime() {
         if (DriverStation.isAutonomous()) {
             roundTime = DriverStation.getMatchTime();
