@@ -45,6 +45,7 @@ public class RobotStatus extends SubsystemBase {
     }
 
     public boolean NeedResetPose = false;
+  
     private boolean m_wasClimbing = false;
     
     // 新增：用於狀態改變檢測 (Edge Detection)
@@ -79,6 +80,10 @@ public class RobotStatus extends SubsystemBase {
     public void updateOdometerStatus() {
         boolean isNowClimbing = this.drive.isClimbing(); // 確保 drive 有此方法
 
+
+        if (m_wasClimbing && !isNowClimbing) {
+
+            for (NeedResetPoseEvent listener : NeedResetPoseEvent) {
         // 下降邊緣偵測 (Falling Edge): 剛從爬升狀態結束
         if (m_wasClimbing && !isNowClimbing) {
             for (NeedResetPoseEvent listener : needResetPoseEvents) {

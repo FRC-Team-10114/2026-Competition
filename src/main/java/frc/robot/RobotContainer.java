@@ -35,6 +35,8 @@ import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.FMS.Signal;
 import frc.robot.util.RobotStatus.RobotStatus;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class RobotContainer {
 

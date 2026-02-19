@@ -119,12 +119,8 @@ public class ShooterCalculator {
                 Translation2d target = AllianceFlipUtil.apply(siteConstants.topCenterPoint.toTranslation2d());
                 double turretToTargetDistance = target.getDistance(turretPosition.getTranslation());
 
-                // 1. 取得場地速度
                 ChassisSpeeds robotVelocity = drive.getFieldVelocity();
                 double robotAngle = estimatedPose.getRotation().getRadians();
-
-                // ⭐️ [新增] 翻轉速度向量：修復紅隊走射方向反向的問題
-                // 在紅隊時，將速度向量反轉，讓補償方向正確抵銷
                 if (AllianceFlipUtil.shouldFlip()) {
                         robotVelocity = new ChassisSpeeds(
                                         -robotVelocity.vxMetersPerSecond,
