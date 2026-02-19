@@ -3,8 +3,8 @@ package frc.robot.util.MathHelper;
 public class RobustCRTCalculator {
 
     public static double calculateAbsolutePosition(
-        EncoderWithGearRatio master, 
-        EncoderWithGearRatio slave
+        PositionWithGearRatio master, 
+        PositionWithGearRatio slave
         ) {
 
         double diff = master.position - slave.position;

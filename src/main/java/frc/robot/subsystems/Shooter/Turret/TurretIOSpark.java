@@ -21,10 +21,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.util.MathHelper.EncoderWithGearRatio;
+import frc.robot.util.MathHelper.PositionWithGearRatio;
 import frc.robot.util.MathHelper.RobustCRTCalculator;
 
-public class TurretIONEO extends TurretIO {
+public class TurretIOSpark extends TurretIO {
 
         private final double gearRatio = 96.0 / 16.0 * 3.0;
 
@@ -39,7 +39,7 @@ public class TurretIONEO extends TurretIO {
         private double currentTargetRads = 0.0;
         private final CANcoder masterCANcoder, slaveCANcoder;
 
-        public TurretIONEO() {
+        public TurretIOSpark() {
                 this.turretMotor = new SparkFlex(40, MotorType.kBrushless);
                 this.turretController = turretMotor.getClosedLoopController();
                 this.turretEncoder = turretMotor.getEncoder();
@@ -61,11 +61,11 @@ public class TurretIONEO extends TurretIO {
 
         @Override
         public void resetAngle() {
-                EncoderWithGearRatio master = new EncoderWithGearRatio(
+                PositionWithGearRatio master = new PositionWithGearRatio(
                                 this.masterCANcoder.getPosition().getValueAsDouble(),
                                 30);
 
-                EncoderWithGearRatio slave = new EncoderWithGearRatio(
+                PositionWithGearRatio slave = new PositionWithGearRatio(
                                 this.slaveCANcoder.getPosition().getValueAsDouble(),
                                 31);
 

@@ -1,6 +1,5 @@
 package frc.robot.util.RobotStatus;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
@@ -21,20 +20,18 @@ public class RobotStatus extends SubsystemBase {
 
     public EventObject eventObject = new EventObject(getClass());
 
-    private boolean xx = false;
+    // 優化變數命名：用於除錯強制設定 Trench 狀態
+    private boolean debugForceTrench = false;
 
     private static final double BLUE_ZONE_LIMIT = 5.50;
-
-    private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; // 約 11.04
-    private static final double MID_Y = FieldConstants.fieldWidth / 2.0; // 中線 Y = 4.105
+    private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; 
+    private static final double MID_Y = FieldConstants.fieldWidth / 2.0; 
 
     public final CommandSwerveDrivetrain drive;
 
-    private final List<NeedResetPoseEvent> NeedResetPoseEvent = new ArrayList<>();
-
-    private final List<InTrench> InTrench = new ArrayList<>();
-
-    private final List<NotInTrench> NotInTrench = new ArrayList<>();
+    private final List<NeedResetPoseEvent> needResetPoseEvents = new ArrayList<>();
+    private final List<InTrench> inTrenchEvents = new ArrayList<>();
+    private final List<NotInTrench> notInTrenchEvents = new ArrayList<>();
 
     public enum Area {
         CENTER,
@@ -48,8 +45,13 @@ public class RobotStatus extends SubsystemBase {
     }
 
     public boolean NeedResetPose = false;
-
+  
     private boolean m_wasClimbing = false;
+    
+    // 新增：用於狀態改變檢測 (Edge Detection)
+    private boolean m_lastInTrench = false;
+    // 新增：用於降低 Log 頻率
+    private int logCounter = 0;
 
     public RobotStatus(CommandSwerveDrivetrain drive) {
         this.drive = drive;
@@ -57,140 +59,145 @@ public class RobotStatus extends SubsystemBase {
 
     public VerticalSide getVerticalSide() {
         double Y = drive.getPose2d().getY();
-        if (Y > MID_Y) {
-            return VerticalSide.TOP;
-        } else {
-            return VerticalSide.BOTTOM;
-        }
+        return (Y > MID_Y) ? VerticalSide.TOP : VerticalSide.BOTTOM;
     }
 
     public Area getArea() {
         double x = drive.getPose2d().getX();
-
-        if (x < BLUE_ZONE_LIMIT) {
-            return Area.BlueAlliance;
-        } else if (x > RED_ZONE_START) {
-            return Area.RedAlliance;
-        } else {
-            return Area.CENTER;
-        }
+        if (x < BLUE_ZONE_LIMIT) return Area.BlueAlliance;
+        if (x > RED_ZONE_START) return Area.RedAlliance;
+        return Area.CENTER;
     }
 
-    public void TriggerNeedResetPoseEvent(NeedResetPoseEvent event) {
-        NeedResetPoseEvent.add(event);
-    }
+    // --- 事件註冊區 ---
+    public void TriggerNeedResetPoseEvent(NeedResetPoseEvent event) { needResetPoseEvents.add(event); }
+    public void TriggerInTrench(InTrench event) { inTrenchEvents.add(event); }
+    public void TriggerNotInTrench(NotInTrench event) { notInTrenchEvents.add(event); }
 
-    public void TriggerInTrench(InTrench event) {
-        InTrench.add(event);
-    }
-
-    public void TriggerNotInTrench(NotInTrench event) {
-        NotInTrench.add(event);
-    }
-
+    /**
+     * 核心邏輯：處理爬升後的 Pose 重置
+     */
     public void updateOdometerStatus() {
-        boolean isNowClimbing = this.drive.isClimbing();
+        boolean isNowClimbing = this.drive.isClimbing(); // 確保 drive 有此方法
+
 
         if (m_wasClimbing && !isNowClimbing) {
 
             for (NeedResetPoseEvent listener : NeedResetPoseEvent) {
+        // 下降邊緣偵測 (Falling Edge): 剛從爬升狀態結束
+        if (m_wasClimbing && !isNowClimbing) {
+            for (NeedResetPoseEvent listener : needResetPoseEvents) {
                 listener.NeedResetPose();
             }
         }
-
         m_wasClimbing = isNowClimbing;
     }
 
+    /**
+     * 判斷是否在我方聯盟區域
+     * (已包含 Null Safety)
+     */
     public boolean isInMyAllianceZone() {
-        // 1. 取得目前 FMS 的聯盟顏色
         Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isEmpty()) return false;
 
-        // 2. 取得機器人目前在哪個區域
         Area currentArea = getArea();
-
-        // 3. 進行比對
         if (ally.get() == Alliance.Blue) {
-            // 我是藍隊，我在藍區嗎？
             return currentArea == Area.BlueAlliance;
         } else {
-            // 我是紅隊，我在紅區嗎？
             return currentArea == Area.RedAlliance;
         }
     }
 
-    public void isInTrenchEvent() {
-        if (isInTrench()) {
-            for (InTrench listener : InTrench) {
-                listener.InTrench();
-            }
-        } else {
-            for (NotInTrench listener : NotInTrench) {
-                listener.NotInTrench();
-            }
-        }
-    }
-    public void xtrue(){
-        this.xx = true;
-    }  
+    /**
+     * *** 效能修復核心 ***
+     * 只在狀態改變時觸發事件，而不是每個 Loop 都觸發。
+     */
+    public void updateTrenchStatus() {
+        boolean isNowInTrench = isInTrench();
 
-    public void xfalse() {
-        this.xx = false;
+        // 只有當狀態跟上一次不一樣時 (State Changed)，才執行動作
+        if (isNowInTrench != m_lastInTrench) {
+            if (isNowInTrench) {
+                // 剛進入 Trench
+                for (InTrench listener : inTrenchEvents) {
+                    listener.InTrench();
+                }
+            } else {
+                // 剛離開 Trench
+                for (NotInTrench listener : notInTrenchEvents) {
+                    listener.NotInTrench();
+                }
+            }
+            // 狀態改變時，強制記錄 Log
+            Logger.recordOutput("RobotStatus/InTrench", isNowInTrench);
+        }
+
+        m_lastInTrench = isNowInTrench;
     }
+
+    // debug override methods
+    public void forceTrenchTrue(){ this.debugForceTrench = true; }   
+    public void forceTrenchFalse() { this.debugForceTrench = false; }
 
     public boolean isInTrench() {
+        // 如果 debug 開啟，直接回傳 true
+        if (debugForceTrench) return true;
+
         var currentPose = drive.getPose2d();
 
-        boolean inRight = isInside(currentPose,
-                siteConstants.Right_TRENCHE_Pose1,
-                siteConstants.Right_TRENCHE_Pose2,
-                siteConstants.Right_TRENCHE_Pose3);
+        // 檢查一般區域
+        if (isInside(currentPose, siteConstants.Right_TRENCHE_Pose1, siteConstants.Right_TRENCHE_Pose2, siteConstants.Right_TRENCHE_Pose3)) return true;
+        if (isInside(currentPose, siteConstants.Left_TRENCHE_Pose1, siteConstants.Left_TRENCHE_Pose2, siteConstants.Left_TRENCHE_Pose3)) return true;
 
-        boolean inLeft = isInside(currentPose,
-                siteConstants.Left_TRENCHE_Pose1,
-                siteConstants.Left_TRENCHE_Pose2,
-                siteConstants.Left_TRENCHE_Pose3);
-
-        boolean inRightFlipped = isInside(currentPose,
+        // 檢查翻轉區域 (注意：AllianceFlipUtil 如果很耗時，這裡會變慢，但如果是簡單數學運算則沒問題)
+        if (isInside(currentPose, 
                 AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose1),
                 AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose2),
-                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose3));
+                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose3))) return true;
 
-        boolean inLeftFlipped = isInside(currentPose,
+        if (isInside(currentPose,
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose1),
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose2),
-                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3));
+                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3))) return true;
 
-        return inRight || inLeft || inRightFlipped || inLeftFlipped || xx;
+        return false;
     }
 
     private boolean isInside(Pose2d robotPose, Pose2d... corners) {
+        if (corners == null || corners.length == 0) return false;
+
         double x = robotPose.getX();
         double y = robotPose.getY();
 
-        // 初始化極大與極小值
-        double minX = Double.MAX_VALUE;
-        double maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE;
-        double maxY = Double.MIN_VALUE;
+        double minX = Double.MAX_VALUE, maxX = -Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
 
-        // 自動找出所有角落中的最大與最小範圍
         for (Pose2d corner : corners) {
-            minX = Math.min(minX, corner.getX());
-            maxX = Math.max(maxX, corner.getX());
-            minY = Math.min(minY, corner.getY());
-            maxY = Math.max(maxY, corner.getY());
+            if (corner != null) {
+                if (corner.getX() < minX) minX = corner.getX();
+                if (corner.getX() > maxX) maxX = corner.getX();
+                if (corner.getY() < minY) minY = corner.getY();
+                if (corner.getY() > maxY) maxY = corner.getY();
+            }
         }
         return (x >= minX && x <= maxX) && (y >= minY && y <= maxY);
     }
 
     @Override
     public void periodic() {
-        this.getArea();
-        this.getVerticalSide();
+        // 1. 更新狀態與事件觸發
         this.updateOdometerStatus();
-        this.isInMyAllianceZone();
-        this.isInTrenchEvent();
+        this.updateTrenchStatus(); // 改名後的 trench 事件處理
 
-        Logger.recordOutput("xx", xx);
+        // 2. 優化 Logging：每 10 個 Loop (0.2秒) 更新一次，或是在狀態改變時更新
+        // 這樣可以把 22ms 降到 < 1ms
+        logCounter++;
+        if (logCounter >= 25) { // 每 0.5 秒更新一次狀態 Log
+            Logger.recordOutput("RobotStatus/InMyAllianceZone", isInMyAllianceZone());
+            Logger.recordOutput("RobotStatus/Area", getArea().toString());
+            Logger.recordOutput("RobotStatus/VerticalSide", getVerticalSide().toString());
+            logCounter = 0;
+        }
     }
 }

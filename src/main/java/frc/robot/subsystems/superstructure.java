@@ -9,6 +9,7 @@ import frc.robot.subsystems.Drivetrain.AutoAlign;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper.HopperSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.util.RobotEvent.Event.*;
 
@@ -21,6 +22,7 @@ public class superstructure extends SubsystemBase {
     private final IntakeSubsystem intake;
     private final ShooterSubsystem shooter;
     private final HopperSubsystem hopper;
+    private final LED led;
     private final AutoAlign autoAlign;
     private final List<ShootingStateTrue> ShootingStateTrue = new ArrayList<>();
     private final List<ShootingStateFalse> ShootingStateFalse = new ArrayList<>();
@@ -30,11 +32,13 @@ public class superstructure extends SubsystemBase {
             ShooterSubsystem shooter,
             IntakeSubsystem intake,
             HopperSubsystem hopper,
+            LED led,
             AutoAlign autoAlign) {
         this.drive = drive;
         this.shooter = shooter;
         this.intake = intake;
         this.hopper = hopper;
+        this.led = led;
         this.autoAlign = autoAlign;
     }
 
@@ -108,6 +112,5 @@ public class superstructure extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-    }
+    public void periodic() {}
 }

@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Constants.PhotonVisionConstants;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 
@@ -53,6 +54,12 @@ public class PhotonVision extends SubsystemBase {
 
     public PhotonVision(CommandSwerveDrivetrain drive, Map<String, Transform3d> cameraTransforms) {
         this.drivetrain = drive;
+        
+        if (Robot.isSimulation()) {
+            System.out.println("Simulation mode detected - Skipping PhotonVision initialization");
+            return;
+        }
+
         AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
         cameraTransforms.forEach((name, transform) -> {

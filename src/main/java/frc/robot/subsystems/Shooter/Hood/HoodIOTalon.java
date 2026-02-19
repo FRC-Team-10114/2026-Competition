@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
-public class HoodTalon implements HoodIO {
+public class HoodIOTalon implements HoodIO {
 
     private final TalonFX HoodMotor;
     private final CANcoder Hoodcancoder;
@@ -45,7 +45,7 @@ public class HoodTalon implements HoodIO {
 
     private double latestTargetDegrees = 0.0;
 
-    public HoodTalon() {
+    public HoodIOTalon() {
         this.HoodMotor = new TalonFX(IDs.Shooter.HOOD_MOTOR, "canivore");
         this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER, "canivore");
         this.HoodPosition = HoodMotor.getPosition();

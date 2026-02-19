@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 import com.google.gson.annotations.Until;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -19,15 +20,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Shooter.ShooterCalculator.ShootingState;
 import frc.robot.subsystems.Shooter.Trigger.TriggerIO;
-import frc.robot.subsystems.Shooter.Trigger.TriggerIOHardware;
+import frc.robot.subsystems.Shooter.Trigger.TriggerIOTalon;
 import frc.robot.Robot;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelHardware;
 import frc.robot.subsystems.Shooter.Flywheel.FlywheelIO;
 import frc.robot.subsystems.Shooter.Hood.HoodIO;
-import frc.robot.subsystems.Shooter.Hood.HoodTalon;
+import frc.robot.subsystems.Shooter.Hood.HoodIOTalon;
 import frc.robot.subsystems.Shooter.Turret.TurretIO;
-import frc.robot.subsystems.Shooter.Turret.TurretIONEO;
+import frc.robot.subsystems.Shooter.Turret.TurretIOSpark;
 import frc.robot.subsystems.Shooter.Turret.TurretIO.ShootState;
 import frc.robot.util.RobotStatus.RobotStatus;
 
@@ -71,10 +72,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static ShooterSubsystem create(CommandSwerveDrivetrain drive, RobotStatus status) {
         return new ShooterSubsystem(
-            new TriggerIOHardware(),
-                new HoodTalon(),
+            new TriggerIOTalon(),
+                new HoodIOTalon(),
                 new FlywheelHardware(),
-                new TurretIONEO(),
+                new TurretIOSpark(),
                 new ShooterCalculator(drive, status),
                 drive,
                 status);
@@ -88,8 +89,6 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("m_targetAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
-        // this.hood.setAngle(m_targetAngle);
-
     }
 
     public void TrueIsshooting() {
@@ -152,6 +151,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("HoodTarget", HoodTarget);
 
         Logger.recordOutput("flywheelgoal", flywheelgoal);
+
+        Logger.recordOutput("TurretTarget", TurretTarget);
     }
 
     public void setHoodAngle(Angle targetRad) {
@@ -161,12 +162,7 @@ public class ShooterSubsystem extends SubsystemBase {
             this.hood.setAngle(targetRad);
         }
     }
-
-    // public void setRollerRPS(AngularVelocity velocity) {
-    // if (SpinAllTime() || Isshooting) {
-    // this.flywheel.setRPS(velocity);
-    // }
-    // }
+    
     public void shoot() {
         this.flywheel.setRPS(flywheelgoal);
         if(isAtSetPosition()){

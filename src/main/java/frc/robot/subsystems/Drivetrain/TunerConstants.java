@@ -51,17 +51,29 @@ public class TunerConstants {
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
-    private static final Current kSlipCurrent = Amps.of(80);
+    private static final Current kSlipCurrent = Amps.of(50);
 
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
+    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+    .withCurrentLimits(
+        new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(Amps.of(50)) 
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimit(Amps.of(35))
+            .withSupplyCurrentLimitEnable(true)
+    )
+    .withOpenLoopRamps(
+        new OpenLoopRampsConfigs()
+            .withDutyCycleOpenLoopRampPeriod(0.25) // 0.25秒的開環緩啟動，減少瞬間電流衝擊
+            .withVoltageOpenLoopRampPeriod(0.25)
+    );
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(
             new CurrentLimitsConfigs()
                 // Swerve azimuth does not require much torque output, so we can set a relatively low
                 // stator current limit to help avoid brownouts without impacting performance.
-                .withStatorCurrentLimit(Amps.of(60))
+                .withStatorCurrentLimit(Amps.of(30))
                 .withStatorCurrentLimitEnable(true)
         );
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
@@ -78,6 +90,7 @@ public class TunerConstants {
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
+    // TODO
     private static final double kCoupleRatio = 0;
 
     private static final double kDriveGearRatio = 5.83;
