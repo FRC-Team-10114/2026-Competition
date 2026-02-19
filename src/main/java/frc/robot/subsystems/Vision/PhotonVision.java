@@ -83,9 +83,7 @@ public class PhotonVision extends SubsystemBase {
     }
 
     private void updateVision() {
-        // 讀取所有相機
         for (CamWrapper cw : cams) {
-            // 讀取未讀取的結果 (處理高幀率)
             for (PhotonPipelineResult result : cw.cam.getAllUnreadResults()) {
 
                 // 基礎資訊更新
@@ -99,11 +97,8 @@ public class PhotonVision extends SubsystemBase {
 
                 EstimatedRobotPose est = poseOpt.get();
                 Pose3d cameraRobotPose3d = est.estimatedPose;
-                double resultTimeSec = est.timestampSeconds; // 這是 FPGA Timestamp
+                double resultTimeSec = est.timestampSeconds;
 
-                // ---------------------------------------------------------
-                // 過濾 A：旋轉速度過快（防止動態模糊導致的誤判）
-                // ---------------------------------------------------------
                 double rotSpeed = Math.abs(drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble());
                 if (rotSpeed > PhotonVisionConstants.maxYawRate)
                     continue;
@@ -169,33 +164,22 @@ public class PhotonVision extends SubsystemBase {
                         continue;
                 }
 
-                // ---------------------------------------------------------
-                // 計算信任權重 (Standard Deviations)
-                // ---------------------------------------------------------
                 Vector<N3> stdDevs;
                 if (this.NeedResetPose) {
-                    // 強制重置模式：給予極高信任度
                     stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(2));
-                    this.NeedResetPose = false; // 重置旗標
+                    this.NeedResetPose = false;
                 } else {
-                    // 一般模式
                     if (numTags >= 2) {
-                        // 多 Tag：信任度高
                         stdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(4));
                     } else {
-                        // 單 Tag：信任度隨距離下降
                         double distErr = 0.5 * Math.pow(avgDist, 2);
-                        stdDevs = VecBuilder.fill(distErr, distErr, 99999.0); // 旋轉信任度給低一點
+                        stdDevs = VecBuilder.fill(distErr, distErr, 99999.0);
                     }
                 }
-
-                // ---------------------------------------------------------
-                // 發送至 Drivetrain
-                // ---------------------------------------------------------
                 Logger.recordOutput("cameraRobotPose", cameraRobotPose3d);
                 drivetrain.addVisionMeasurement(
                         cameraRobotPose3d.toPose2d(),
-                        resultTimeSec, // 直接使用 PhotonVision 的 Timestamp
+                        resultTimeSec,
                         stdDevs);
             }
         }
@@ -204,65 +188,65 @@ public class PhotonVision extends SubsystemBase {
     /**
      * 用於自動階段初始化或特殊情況，尋找最可信的 Vision Pose 並強制覆蓋 Odometry
      */
-    // public boolean resetPoseToVision() {
-    //     Pose2d bestPose = null;
-    //     double minScore = 99999.0; // 分數越低越好
+    public boolean resetPoseToVision() {
+        Pose2d bestPose = null;
+        double minScore = 99999.0; // 分數越低越好
 
-    //     for (CamWrapper cw : cams) {
-    //         PhotonPipelineResult result = cw.cam.getLatestResult();
-    //         if (!result.hasTargets())
-    //             continue;
+        for (CamWrapper cw : cams) {
+            PhotonPipelineResult result = cw.cam.getLatestResult();
+            if (!result.hasTargets())
+                continue;
 
-    //         Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
-    //         if (poseOpt.isEmpty())
-    //             continue;
+            Optional<EstimatedRobotPose> poseOpt = cw.estimator.update(result);
+            if (poseOpt.isEmpty())
+                continue;
 
-    //         EstimatedRobotPose est = poseOpt.get();
-    //         Pose3d pose3d = est.estimatedPose;
+            EstimatedRobotPose est = poseOpt.get();
+            Pose3d pose3d = est.estimatedPose;
 
-    //         // 1. 高度檢查
-    //         if (Math.abs(pose3d.getZ()) > 0.5)
-    //             continue;
+            // 1. 高度檢查
+            if (Math.abs(pose3d.getZ()) > 0.5)
+                continue;
 
-    //         // 2. 計算 Tag 資訊
-    //         int numTags = est.targetsUsed.size();
-    //         double avgDist = 0.0;
-    //         for (var tgt : est.targetsUsed) {
-    //             avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
-    //         }
-    //         if (numTags > 0)
-    //             avgDist /= numTags;
+            // 2. 計算 Tag 資訊
+            int numTags = est.targetsUsed.size();
+            double avgDist = 0.0;
+            for (var tgt : est.targetsUsed) {
+                avgDist += tgt.getBestCameraToTarget().getTranslation().getNorm();
+            }
+            if (numTags > 0)
+                avgDist /= numTags;
 
-    //         // 3. 過濾模糊單 Tag
-    //         if (numTags == 1) {
-    //             var bestTarget = result.getBestTarget();
-    //             if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
-    //                 continue;
-    //         }
+            // 3. 過濾模糊單 Tag
+            if (numTags == 1) {
+                var bestTarget = result.getBestTarget();
+                if (bestTarget != null && bestTarget.getPoseAmbiguity() > 0.2)
+                    continue;
+            }
 
-    //         // 4. 評分 (多 Tag 優先，近距離優先)
-    //         double currentScore;
-    //         if (numTags >= 2) {
-    //             currentScore = avgDist; // 多 Tag 直接比距離
-    //         } else {
-    //             currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
-    //         }
+            // 4. 評分 (多 Tag 優先，近距離優先)
+            double currentScore;
+            if (numTags >= 2) {
+                currentScore = avgDist; // 多 Tag 直接比距離
+            } else {
+                currentScore = 100.0 + avgDist; // 單 Tag 分數加權，讓它永遠輸給多 Tag
+            }
 
-    //         // 更新最佳結果
-    //         if (currentScore < minScore) {
-    //             minScore = currentScore;
-    //             bestPose = pose3d.toPose2d();
-    //         }
-    //     }
+            // 更新最佳結果
+            if (currentScore < minScore) {
+                minScore = currentScore;
+                bestPose = pose3d.toPose2d();
+            }
+        }
 
-    //     if (bestPose != null) {
-    //         Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(), this.drivetrain.getRotation());
-    //         drivetrain.resetPose(resetPose2d);
-    //         return true;
-    //     }
+        if (bestPose != null) {
+            Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(), this.drivetrain.getRotation());
+            drivetrain.resetPose(resetPose2d);
+            return true;
+        }
 
-    //     return false;
-    // }
+        return false;
+    }
 
     public int getAprilTagId() {
         return m_lastTagId;

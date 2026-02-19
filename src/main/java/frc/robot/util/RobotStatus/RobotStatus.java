@@ -47,10 +47,8 @@ public class RobotStatus extends SubsystemBase {
         BOTTOM
     }
 
-    // 這個公開變數就是我們的 "旗標"
     public boolean NeedResetPose = false;
 
-    // 用來記住 "上一次" 是否在爬坡 (為了偵測下降邊緣)
     private boolean m_wasClimbing = false;
 
     public RobotStatus(CommandSwerveDrivetrain drive) {
@@ -93,10 +91,8 @@ public class RobotStatus extends SubsystemBase {
     public void updateOdometerStatus() {
         boolean isNowClimbing = this.drive.isClimbing();
 
-        // 下降邊緣偵測 (剛落地)
         if (m_wasClimbing && !isNowClimbing) {
 
-            // 2. [核心修改] 觸發事件：通知清單裡的所有人
             for (NeedResetPoseEvent listener : NeedResetPoseEvent) {
                 listener.NeedResetPose();
             }
