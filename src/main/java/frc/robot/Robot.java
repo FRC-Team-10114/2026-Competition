@@ -50,11 +50,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         Pathfinding.setPathfinder(new LocalADStarAK());
-        if (AllianceFlipUtil.shouldFlip()) {
-            m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(Math.PI)));
-        } else {
-            m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)));
-        }
+        // if (AllianceFlipUtil.shouldFlip()) {
+        //     m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(Math.PI)));
+        // } else {
+        //     m_robotContainer.drivetrain.resetPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)));
+        // }
     }
 
     @Override

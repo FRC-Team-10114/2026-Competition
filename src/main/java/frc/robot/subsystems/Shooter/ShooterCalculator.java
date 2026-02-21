@@ -1,4 +1,3 @@
-
 /*
  * Original code from Littleton Robotics (Team 6328) - 2026 Season
  * Modified by Team [10114]
@@ -40,6 +39,8 @@ public class ShooterCalculator {
         private final InterpolatingTreeMap<Double, Angle> hoodMap;
         private final InterpolatingTreeMap<Double, AngularVelocity> rollMap;
         private static final InterpolatingDoubleTreeMap timeOfFlightMap = new InterpolatingDoubleTreeMap();
+        private final InterpolatingTreeMap<Double, AngularVelocity> ToAillancerollMap;
+        private static final InterpolatingDoubleTreeMap ToAillancetimeOfFlightMap = new InterpolatingDoubleTreeMap();
         private final double time_error = 0.0;
         private final double phaseDelay = 0.03 + time_error;
         public static Transform3d robotToTurret = new Transform3d(0.2, 0.0, 0.44, Rotation3d.kZero);
@@ -71,6 +72,15 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
+                ToAillancerollMap = new InterpolatingTreeMap<>(
+                                InverseInterpolator.forDouble(),
+                                (start, end, t) -> {
+                                        // 邏輯：拆成 double (RPM) -> 算數學 -> 包回 Unit
+                                        double startVal = start.in(RotationsPerSecond);
+                                        double endVal = end.in(RotationsPerSecond);
+                                        double interpolated = MathUtil.interpolate(startVal, endVal, t);
+                                        return RotationsPerSecond.of(interpolated);
+                                });
                 rollMap.put(0.796222, RotationsPerSecond.of(30.0));
                 rollMap.put(1.545207, RotationsPerSecond.of(31.0));
                 rollMap.put(2.148772, RotationsPerSecond.of(33.5));
@@ -94,6 +104,19 @@ public class ShooterCalculator {
                 timeOfFlightMap.put(3.062585, 1.2);
                 timeOfFlightMap.put(4.099106, 1.21);
                 timeOfFlightMap.put(5.074542, 1.32);
+
+                ToAillancerollMap.put(2.077073, RotationsPerSecond.of(27.0));
+                ToAillancerollMap.put(3.185600, RotationsPerSecond.of(35.0));
+                ToAillancerollMap.put(4.191824, RotationsPerSecond.of(40.0));
+                ToAillancerollMap.put(5.258651, RotationsPerSecond.of(43.0));
+                ToAillancerollMap.put(11.258651, RotationsPerSecond.of(77.0));
+
+                ToAillancetimeOfFlightMap.put(2.077073, 0.91);
+                ToAillancetimeOfFlightMap.put(3.185600, 1.19);
+                ToAillancetimeOfFlightMap.put(4.191824, 1.31);
+                ToAillancetimeOfFlightMap.put(5.258651, 1.44);
+                ToAillancetimeOfFlightMap.put(11.258651, 3.0);
+
         }
 
         public record ShootingState(
@@ -163,9 +186,6 @@ public class ShooterCalculator {
                                 new Transform2d(
                                                 robotToTurret.getTranslation().toTranslation2d(),
                                                 robotToTurret.getRotation().toRotation2d()));
-
-                Logger.recordOutput("ToHubsimturretPosition",
-                                new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
 
                 Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
@@ -237,7 +257,7 @@ public class ShooterCalculator {
                 // 跑 5 次迭代通常就足夠收斂了，不用跑到 20 次
                 for (int i = 0; i < 5; i++) {
                         // 查表：根據目前的預測距離，查子彈飛多久
-                        timeOfFlight = timeOfFlightMap.get(lookaheadTurretToTargetDistance);
+                        timeOfFlight = ToAillancetimeOfFlightMap.get(lookaheadTurretToTargetDistance);
 
                         // 計算偏移量：在飛行時間內，機器人速度會把球帶偏多少
                         double offsetX = turretVelocityX * timeOfFlight;
@@ -260,14 +280,8 @@ public class ShooterCalculator {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
 
-                Pose2d simturretPosition = estimatedPose.transformBy(
-                                new Transform2d(
-                                                robotToTurret.getTranslation().toTranslation2d(),
-                                                robotToTurret.getRotation().toRotation2d()));
-
-                Logger.recordOutput("ToAlliancesimturretPosition",
-                                new Pose2d(simturretPosition.getX(), simturretPosition.getY(), targetFieldAngle));
-                return new ShootingState(targetFieldAngle, Hood_MAX_RADS, rollMap.get(lookaheadTurretToTargetDistance));
+                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
+                return new ShootingState(targetFieldAngle, Hood_MAX_RADS, ToAillancerollMap.get(lookaheadTurretToTargetDistance));
         }
 
 }

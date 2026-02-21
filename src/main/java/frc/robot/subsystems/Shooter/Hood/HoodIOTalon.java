@@ -85,7 +85,7 @@ public class HoodIOTalon implements HoodIO {
 
         double targetSensorRotations = Units.degreesToRotations(25.0) * sensorToMechRatio;
 
-        cfg.MagnetSensor.MagnetOffset = 0.4755859375 + targetSensorRotations;
+        cfg.MagnetSensor.MagnetOffset = 0.13232421875 + targetSensorRotations;
 
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -120,10 +120,10 @@ public class HoodIOTalon implements HoodIO {
         hoodConfig.Slot0.kP = 80.0;
         hoodConfig.Slot0.kI = 0.0;
         hoodConfig.Slot0.kD = 0.0;
-        hoodConfig.Slot0.kG = 0.41566;
-        hoodConfig.Slot0.kA = 0.0010283;
-        hoodConfig.Slot0.kS = 0.14603;
-        hoodConfig.Slot0.kV = 0.0097448;
+        // hoodConfig.Slot0.kG = 0.41566;
+        // hoodConfig.Slot0.kA = 0.0010283;
+        // hoodConfig.Slot0.kS = 0.14603;
+        // hoodConfig.Slot0.kV = 0.0097448;
         hoodConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
 

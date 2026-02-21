@@ -247,8 +247,7 @@ public class PhotonVision extends SubsystemBase {
         }
 
         if (bestPose != null) {
-            Pose2d resetPose2d = new Pose2d(bestPose.getX(), bestPose.getY(), this.drivetrain.getRotation());
-            drivetrain.resetPose(resetPose2d);
+            drivetrain.resetPose(bestPose);
             return true;
         }
 

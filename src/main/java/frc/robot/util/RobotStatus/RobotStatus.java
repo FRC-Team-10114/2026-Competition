@@ -20,12 +20,9 @@ public class RobotStatus extends SubsystemBase {
 
     public EventObject eventObject = new EventObject(getClass());
 
-    // 優化變數命名：用於除錯強制設定 Trench 狀態
-    private boolean debugForceTrench = false;
-
     private static final double BLUE_ZONE_LIMIT = 5.50;
-    private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50; 
-    private static final double MID_Y = FieldConstants.fieldWidth / 2.0; 
+    private static final double RED_ZONE_START = FieldConstants.fieldLength - 5.50;
+    private static final double MID_Y = FieldConstants.fieldWidth / 2.0;
 
     public final CommandSwerveDrivetrain drive;
 
@@ -45,9 +42,11 @@ public class RobotStatus extends SubsystemBase {
     }
 
     public boolean NeedResetPose = false;
-  
+
     private boolean m_wasClimbing = false;
-    
+
+    public boolean SafeHood = false;
+
     // 新增：用於狀態改變檢測 (Edge Detection)
     private boolean m_lastInTrench = false;
     // 新增：用於降低 Log 頻率
@@ -64,34 +63,42 @@ public class RobotStatus extends SubsystemBase {
 
     public Area getArea() {
         double x = drive.getPose2d().getX();
-        if (x < BLUE_ZONE_LIMIT) return Area.BlueAlliance;
-        if (x > RED_ZONE_START) return Area.RedAlliance;
+        if (x < BLUE_ZONE_LIMIT)
+            return Area.BlueAlliance;
+        if (x > RED_ZONE_START)
+            return Area.RedAlliance;
         return Area.CENTER;
+    }
+    public void SetSafeHood(boolean bool){
+        this.SafeHood = bool;
     }
 
     // --- 事件註冊區 ---
-    public void TriggerNeedResetPoseEvent(NeedResetPoseEvent event) { needResetPoseEvents.add(event); }
-    public void TriggerInTrench(InTrench event) { inTrenchEvents.add(event); }
-    public void TriggerNotInTrench(NotInTrench event) { notInTrenchEvents.add(event); }
+    public void TriggerNeedResetPoseEvent(NeedResetPoseEvent event) {
+        needResetPoseEvents.add(event);
+    }
+
+    public void TriggerInTrench(InTrench event) {
+        inTrenchEvents.add(event);
+    }
+
+    public void TriggerNotInTrench(NotInTrench event) {
+        notInTrenchEvents.add(event);
+    }
 
     /**
      * 核心邏輯：處理爬升後的 Pose 重置
      */
     public void updateOdometerStatus() {
-        boolean isNowClimbing = this.drive.isClimbing(); // 確保 drive 有此方法
+        boolean isNowClimbing = this.drive.isClimbing();
 
-
-        if (m_wasClimbing && !isNowClimbing) {
-
-            for (NeedResetPoseEvent listener : NeedResetPoseEvent) {
-        // 下降邊緣偵測 (Falling Edge): 剛從爬升狀態結束
         if (m_wasClimbing && !isNowClimbing) {
             for (NeedResetPoseEvent listener : needResetPoseEvents) {
-                listener.NeedResetPose();
+                        listener.NeedResetPose();
+                    }
+                }
+                m_wasClimbing = isNowClimbing;
             }
-        }
-        m_wasClimbing = isNowClimbing;
-    }
 
     /**
      * 判斷是否在我方聯盟區域
@@ -99,7 +106,8 @@ public class RobotStatus extends SubsystemBase {
      */
     public boolean isInMyAllianceZone() {
         Optional<Alliance> ally = DriverStation.getAlliance();
-        if (ally.isEmpty()) return false;
+        if (ally.isEmpty())
+            return false;
 
         Area currentArea = getArea();
         if (ally.get() == Alliance.Blue) {
@@ -136,36 +144,40 @@ public class RobotStatus extends SubsystemBase {
         m_lastInTrench = isNowInTrench;
     }
 
-    // debug override methods
-    public void forceTrenchTrue(){ this.debugForceTrench = true; }   
-    public void forceTrenchFalse() { this.debugForceTrench = false; }
-
     public boolean isInTrench() {
         // 如果 debug 開啟，直接回傳 true
-        if (debugForceTrench) return true;
+        if (SafeHood)
+            return true;
 
         var currentPose = drive.getPose2d();
 
         // 檢查一般區域
-        if (isInside(currentPose, siteConstants.Right_TRENCHE_Pose1, siteConstants.Right_TRENCHE_Pose2, siteConstants.Right_TRENCHE_Pose3)) return true;
-        if (isInside(currentPose, siteConstants.Left_TRENCHE_Pose1, siteConstants.Left_TRENCHE_Pose2, siteConstants.Left_TRENCHE_Pose3)) return true;
+        if (isInside(currentPose, siteConstants.Right_TRENCHE_Pose1, siteConstants.Right_TRENCHE_Pose2,
+                siteConstants.Right_TRENCHE_Pose3))
+            return true;
+        if (isInside(currentPose, siteConstants.Left_TRENCHE_Pose1, siteConstants.Left_TRENCHE_Pose2,
+                siteConstants.Left_TRENCHE_Pose3))
+            return true;
 
         // 檢查翻轉區域 (注意：AllianceFlipUtil 如果很耗時，這裡會變慢，但如果是簡單數學運算則沒問題)
-        if (isInside(currentPose, 
+        if (isInside(currentPose,
                 AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose1),
                 AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose2),
-                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose3))) return true;
+                AllianceFlipUtil.Needapply(siteConstants.Right_TRENCHE_Pose3)))
+            return true;
 
         if (isInside(currentPose,
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose1),
                 AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose2),
-                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3))) return true;
+                AllianceFlipUtil.Needapply(siteConstants.Left_TRENCHE_Pose3)))
+            return true;
 
         return false;
     }
 
     private boolean isInside(Pose2d robotPose, Pose2d... corners) {
-        if (corners == null || corners.length == 0) return false;
+        if (corners == null || corners.length == 0)
+            return false;
 
         double x = robotPose.getX();
         double y = robotPose.getY();
@@ -175,10 +187,14 @@ public class RobotStatus extends SubsystemBase {
 
         for (Pose2d corner : corners) {
             if (corner != null) {
-                if (corner.getX() < minX) minX = corner.getX();
-                if (corner.getX() > maxX) maxX = corner.getX();
-                if (corner.getY() < minY) minY = corner.getY();
-                if (corner.getY() > maxY) maxY = corner.getY();
+                if (corner.getX() < minX)
+                    minX = corner.getX();
+                if (corner.getX() > maxX)
+                    maxX = corner.getX();
+                if (corner.getY() < minY)
+                    minY = corner.getY();
+                if (corner.getY() > maxY)
+                    maxY = corner.getY();
             }
         }
         return (x >= minX && x <= maxX) && (y >= minY && y <= maxY);
