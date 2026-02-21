@@ -15,15 +15,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "testhum"
+                  "pathName": "comp_Right_justhum"
                 }
               }
             ]
@@ -36,7 +30,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "testhum2"
+                  "pathName": "comp_Right_justhum2"
                 }
               },
               {
@@ -55,13 +49,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "testhum3"
+                  "pathName": "comp_Right_justhum3"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "nostopshoot"
+                  "name": "shoot"
                 }
               }
             ]

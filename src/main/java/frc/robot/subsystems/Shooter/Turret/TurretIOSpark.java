@@ -88,7 +88,7 @@ public class TurretIOSpark extends TurretIO {
 
                 // 3. 將 2 度轉成弧度來比較
                 // 2 degrees ~= 0.035 radians
-                return errorRads < Units.degreesToRadians(2.0);
+                return !(errorRads > Units.degreesToRadians(40.0));
         }
 
         public void configureMotors() {
@@ -106,12 +106,12 @@ public class TurretIOSpark extends TurretIO {
                                 .forwardSoftLimit(ShooterConstants.HARD_MAX_RADS);
 
                 turretConfig.closedLoop
-                                .pid(0.6, 0, 0); // P 值可能需要調大一點，因為單位是 Radians
+                                .pid(0.8, 0, 0); // P 值可能需要調大一點，因為單位是 Radians
 
                 // 【修正 2】 單位修正：從度轉為弧度
                 turretConfig.closedLoop.maxMotion
-                                .cruiseVelocity(Units.degreesToRadians(100))
-                                .maxAcceleration(Units.degreesToRadians(300));
+                                .cruiseVelocity(Units.degreesToRadians(360))
+                                .maxAcceleration(Units.degreesToRadians(720));
 
                 turretConfig.encoder
                                 .positionConversionFactor(positionFactor)

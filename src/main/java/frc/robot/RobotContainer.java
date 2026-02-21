@@ -72,8 +72,8 @@ public class RobotContainer {
 
     private final LED led = new LED();
 
-
-    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, led, autoAlign);
+    private final superstructure superstructure = new superstructure(drivetrain, shooter, intake, hopper, led,
+            autoAlign);
 
     public final Signal signal = new Signal();
 
@@ -94,15 +94,26 @@ public class RobotContainer {
         log();
 
         NamedCommands.registerCommand("intakeDown", superstructure.intake());
+        NamedCommands.registerCommand("intakestop", superstructure.stopintake());
+        NamedCommands.registerCommand("HoodDown", Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus));
+        NamedCommands.registerCommand("StopHoodDown",
+                Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
         NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(3.5));
-        NamedCommands.registerCommand("nostopshoot", superstructure.autoshooter());
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
         NamedCommands.registerCommand("isIn",
                 Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
 
-        autoChooser = AutoBuilder.buildAutoChooser();
+        boolean isCompetition = true;
 
-        SmartDashboard.putData("chooser", autoChooser);
+        // Build an auto chooser. This will use Commands.none() as the default option.
+        // As an example, this will only show autos that start with "comp" while at
+        // competition as defined by the programmer
+        autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+                (stream) -> isCompetition
+                        ? stream.filter(auto -> auto.getName().startsWith("comp"))
+                        : stream);
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Warmup PathPlanner to avoid Java pauses
         // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
@@ -125,14 +136,18 @@ public class RobotContainer {
 
         // joystick.y().onTrue(drivetrain.runOnce(drivetrain::resetPosetotest));
 
-        joystick.leftBumper().whileTrue(this.superstructure.DriveToTrench());
+        // joystick.leftBumper().whileTrue(this.superstructure.DriveToTrench());
+
+        joystick.leftBumper().whileTrue(Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus))
+                .onFalse(Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
 
         joystick.leftTrigger().whileTrue((superstructure.intake()))
                 .onFalse(superstructure.stopintake());
         joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
 
-        // ---------------------------------------test Method-------------------------------------------------
+        // ---------------------------------------test
+        // Method-------------------------------------------------
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 

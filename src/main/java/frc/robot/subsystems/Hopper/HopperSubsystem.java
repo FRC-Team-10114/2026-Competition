@@ -31,7 +31,7 @@ public class HopperSubsystem extends SubsystemBase {
     }
 
     public void stopAll() {
-        this.stopSpin();
+        this.spindexer.run(0);
     }
 
     @Override

@@ -59,7 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private Angle turretAngle = Radians.of(0);
 
-    public ShooterSubsystem(TriggerIO trigger, HoodIO hood, FlywheelIO flywheel, TurretIO turret, ShooterCalculator shooterCalculator,
+    public ShooterSubsystem(TriggerIO trigger, HoodIO hood, FlywheelIO flywheel, TurretIO turret,
+            ShooterCalculator shooterCalculator,
             CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
         this.hood = hood;
         this.flywheel = flywheel;
@@ -72,7 +73,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public static ShooterSubsystem create(CommandSwerveDrivetrain drive, RobotStatus status) {
         return new ShooterSubsystem(
-            new TriggerIOTalon(),
+                new TriggerIOTalon(),
                 new HoodIOTalon(),
                 new FlywheelHardware(),
                 new TurretIOSpark(),
@@ -89,6 +90,10 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("m_targetAngle", m_targetAngle);
         Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
+        Logger.recordOutput("isAtSetPosition", this.isAtSetPosition());
+        Logger.recordOutput("turretisAtSetPosition", this.turret.isAtSetPosition());
+        Logger.recordOutput("flywheelisAtSetPosition", this.flywheel.isAtSetPosition());
+        // this.hood.setAngle(m_targetAngle);
     }
 
     public void TrueIsshooting() {
@@ -162,10 +167,10 @@ public class ShooterSubsystem extends SubsystemBase {
             this.hood.setAngle(targetRad);
         }
     }
-    
+
     public void shoot() {
         this.flywheel.setRPS(flywheelgoal);
-        if(isAtSetPosition()){
+        if (isAtSetPosition()) {
             this.trigger.run();
         }
     }
@@ -182,7 +187,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean isAtSetPosition() {
-        return flywheel.isAtSetPosition();
+        return flywheel.isAtSetPosition() && turret.isAtSetPosition();
     }
 
     // TEST METHOD
@@ -224,12 +229,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
     // public Command startCommand() {
-    //     return this.hood.startCommand();
+    // return this.hood.startCommand();
     // }
     // public Command stopCommand(){
-    //     return this.hood.stopCommand();
-    //     }
+    // return this.hood.stopCommand();
+    // }
     // public Command sysIdTest(){
-    //     return this.hood.sysIdTest();
+    // return this.hood.sysIdTest();
     // }
 }
