@@ -4,7 +4,11 @@ import static edu.wpi.first.units.Units.Radians;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Utils;
+import com.google.gson.annotations.Until;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
@@ -26,6 +30,8 @@ public abstract class TurretIO {
     public abstract boolean isAtSetPosition();
 
     public Angle Calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
+
+        lastSetpointRads = this.getAngle().baseUnitMagnitude();
 
         // 1. 根據狀態決定目前的 "合法範圍"
         double currentMin, currentMax;

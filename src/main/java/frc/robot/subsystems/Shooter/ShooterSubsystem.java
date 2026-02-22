@@ -87,12 +87,12 @@ public class ShooterSubsystem extends SubsystemBase {
         SetShooterGoal();
         Logger.recordOutput("HoodAngle", this.hood.getAngle());
         Logger.recordOutput("flywheelRPS", this.flywheel.getRPS());
-        Logger.recordOutput("m_targetAngle", m_targetAngle);
-        Logger.recordOutput("flywheelRPS", flywheelRPS);
+        // Logger.recordOutput("m_targetAngle", m_targetAngle);
+        // Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
-        Logger.recordOutput("isAtSetPosition", this.isAtSetPosition());
-        Logger.recordOutput("turretisAtSetPosition", this.turret.isAtSetPosition());
-        Logger.recordOutput("flywheelisAtSetPosition", this.flywheel.isAtSetPosition());
+        // Logger.recordOutput("isAtSetPosition", this.isAtSetPosition());
+        Logger.recordOutput("turretangle", this.turret.getAngle());
+        // Logger.recordOutput("flywheelisAtSetPosition", this.flywheel.isAtSetPosition());
         // this.hood.setAngle(m_targetAngle);
     }
 

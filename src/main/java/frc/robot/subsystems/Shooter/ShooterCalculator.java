@@ -182,17 +182,13 @@ public class ShooterCalculator {
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
 
-                Pose2d simturretPosition = estimatedPose.transformBy(
-                                new Transform2d(
-                                                robotToTurret.getTranslation().toTranslation2d(),
-                                                robotToTurret.getRotation().toRotation2d()));
-
-                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
                 // 3. 最後的鏡像翻轉 (保持你原本的邏輯，用於修正靜態瞄準)
                 if (AllianceFlipUtil.shouldFlip()) {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
+
+                Logger.recordOutput("targetFieldAngle", targetFieldAngle);
 
                 return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),
                                 rollMap.get(lookaheadTurretToTargetDistance));
