@@ -27,7 +27,7 @@ public class HopperSubsystem extends SubsystemBase {
     }
 
     public void warmUpforshoot() {
-        this.spindexer.run(-7);
+        this.spindexer.run(-12);
     }
 
     public void stopAll() {

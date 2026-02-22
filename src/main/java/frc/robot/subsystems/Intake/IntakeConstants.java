@@ -22,8 +22,8 @@ public class IntakeConstants {
         public static final double CRUISE_VELOCITY = 1.0;
         public static final double MAX_ACCELERATION = 2.0;
 
-        public static final Current STATOR_CURRENT_LIMIT = Amp.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(40);
+        public static final Current STATOR_CURRENT_LIMIT = Amp.of(30);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(30);
 
         public static final Angle FORWARD_LIMIT = Radians.of(100);
         public static final Angle REVERSE_LIMIT = Radians.of(100);
@@ -43,7 +43,7 @@ public class IntakeConstants {
 
 
 
-        public static final Current STATOR_CURRENT_LIMIT = Amp.of(60);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(50);
+        public static final Current STATOR_CURRENT_LIMIT = Amp.of(40);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(30);
     }
 }

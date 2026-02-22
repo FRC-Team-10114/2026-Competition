@@ -21,6 +21,18 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "comp_Left_center_center"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "HoodDown"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
                   "name": "stopshoot"
@@ -31,20 +43,8 @@
                 "data": {
                   "name": "intakestop"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "HoodDown"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "comp_Left_center_deploy"
           }
         },
         {
@@ -66,13 +66,25 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "comp_Left_center_deploy2"
+                  "pathName": "comp_Left_center_center2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "HoodDown"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "stopshoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakestop"
                 }
               }
             ]
@@ -81,13 +93,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "StopHoodDown"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intakestop"
+            "name": "shoot"
           }
         }
       ]

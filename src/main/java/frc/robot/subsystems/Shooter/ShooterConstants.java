@@ -19,7 +19,7 @@ public class ShooterConstants {
         public static final double SOFT_MIN_RADS = Units.degreesToRadians(-220.0);
         public static final double SOFT_MAX_RADS = Units.degreesToRadians(220.0);
 
-        public static final Angle Hood_MAX_RADS = Degree.of(50); // 上限55
+        public static final Angle Hood_MAX_RADS = Degree.of(55); // 上限63
         public static final Angle Hood_MIN_RADS = Degree.of(27); // 下限25
 
         public static final double Hood_GEAR_RATIO = (1.0 / 0.0181);

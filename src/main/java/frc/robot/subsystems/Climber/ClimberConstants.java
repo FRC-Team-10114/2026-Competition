@@ -12,7 +12,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ClimberConstants {
     
-    public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
     public static final double GEAR_RATIO = 1.0;

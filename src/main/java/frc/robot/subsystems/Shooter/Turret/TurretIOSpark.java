@@ -106,7 +106,7 @@ public class TurretIOSpark extends TurretIO {
                                 .forwardSoftLimit(ShooterConstants.HARD_MAX_RADS);
 
                 turretConfig.closedLoop
-                                .pid(0.8, 0, 0); // P 值可能需要調大一點，因為單位是 Radians
+                                .pid(0.8, 0, 0.0); // P 值可能需要調大一點，因為單位是 Radians
 
                 // 【修正 2】 單位修正：從度轉為弧度
                 turretConfig.closedLoop.maxMotion

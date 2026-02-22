@@ -42,7 +42,7 @@ public class RobotContainer {
 
     // Constants for tuning
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private final double MaxTeleOpSpeed = (4.5 / 5.29) * MaxSpeed;
+    private final double MaxTeleOpSpeed = MaxSpeed;
     private final double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond);
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -98,7 +98,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("HoodDown", Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus));
         NamedCommands.registerCommand("StopHoodDown",
                 Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
-        NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(3.5));
+        NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(2.0));
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
         NamedCommands.registerCommand("isIn",
                 Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
