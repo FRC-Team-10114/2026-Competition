@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.commands.Auto;
 import frc.robot.subsystems.superstructure;
 import frc.robot.subsystems.Dashboard.Dashboard;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
@@ -58,7 +57,6 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(this.drivetrain.getState());
     private final RobotStatus robotStatus = new RobotStatus(drivetrain);
 
-    private final Auto auto = new Auto(drivetrain);
     private final AutoAlign autoAlign = new AutoAlign(drivetrain, robotStatus);
 
     public final PhotonVision photonVision = new PhotonVision(drivetrain,
@@ -79,7 +77,7 @@ public class RobotContainer {
 
     private final Dashboard dashboard = new Dashboard(signal);
 
-    public final SendableChooser<Command> autoChooser;
+    // public final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
 
@@ -107,13 +105,13 @@ public class RobotContainer {
 
         // Build an auto chooser. This will use Commands.none() as the default option.
         // As an example, this will only show autos that start with "comp" while at
-        // competition as defined by the programmer
-        autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-                (stream) -> isCompetition
-                        ? stream.filter(auto -> auto.getName().startsWith("comp"))
-                        : stream);
+        // // competition as defined by the programmer
+        // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
+        //         (stream) -> isCompetition
+        //                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
+        //                 : stream);
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        // SmartDashboard.putData("Auto Chooser", autoChooser);
 
         // Warmup PathPlanner to avoid Java pauses
         // FollowPathCommand.warmupCommand().schedule(); (Deprecated)
@@ -148,6 +146,8 @@ public class RobotContainer {
 
         // ---------------------------------------test
         // Method-------------------------------------------------
+
+        // joystick.a().onTrue(this.shooter.sysid());
 
         // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
@@ -195,16 +195,13 @@ public class RobotContainer {
         return this.photonVision;
     }
 
-    public Auto getAutoInstance() {
-        return this.auto;
-    }
 
     public CommandSwerveDrivetrain getDrivetrainInstance() {
         return this.drivetrain;
     }
 
     public Command getAutonomousCommand() {
-        return this.autoChooser.getSelected();
+        return null;
 
     }
 

@@ -78,9 +78,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        if (IfResetPose == false) {
-            m_robotContainer.getAutoInstance().startResetPose();
-        }
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {

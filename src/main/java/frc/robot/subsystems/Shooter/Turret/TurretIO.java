@@ -10,6 +10,7 @@ import com.google.gson.annotations.Until;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.ShooterConstants;
 
 public abstract class TurretIO {
@@ -28,6 +29,9 @@ public abstract class TurretIO {
     public abstract Angle getAngle();
 
     public abstract boolean isAtSetPosition();
+    
+    public abstract Command sysid();
+
 
     public Angle Calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
 
