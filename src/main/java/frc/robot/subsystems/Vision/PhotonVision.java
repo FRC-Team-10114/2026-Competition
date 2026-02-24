@@ -76,13 +76,6 @@ public class PhotonVision extends SubsystemBase {
     @Override
     public void periodic() {
         updateVision();
-        for (CamWrapper cw : cams) {
-            // 記錄每一台相機的連線狀態
-            Logger.recordOutput("PhotonVision/Connected/" + cw.name, cw.cam.isConnected());
-
-            // 記錄是否有看到目標 (這也能輔助判斷 Pipeline 是否有在跑)
-            Logger.recordOutput("PhotonVision/HasTargets/" + cw.name, cw.cam.getLatestResult().hasTargets());
-        }
     }
 
     public void NeedResetPoseEvent() {

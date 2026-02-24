@@ -228,6 +228,9 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
     }
+    // public Command sysid(){
+    //   return  this.turret.sysid();
+    // }
     // public Command startCommand() {
     // return this.hood.startCommand();
     // }
