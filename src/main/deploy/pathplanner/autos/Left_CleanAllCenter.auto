@@ -27,6 +27,49 @@
           "data": {
             "pathName": "Left_CleanAllCenter"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopHoodDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopshoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakestop"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RIght_Climb"
+                }
+              }
+            ]
+          }
         }
       ]
     }

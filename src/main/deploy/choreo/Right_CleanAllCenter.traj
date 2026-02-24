@@ -381,5 +381,6 @@
  "events":[
    {"name":"NoStopShoot", "from":{"target":2, "targetTimestamp":1.98172, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"NoStopShoot"}}},
    {"name":"intakeDown", "from":{"target":1, "targetTimestamp":1.11258, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
-   {"name":"StopHoodDown", "from":{"target":2, "targetTimestamp":1.98172, "offset":{"exp":"-0.1 s", "val":-0.1}}, "event":{"type":"named", "data":{"name":"StopHoodDown"}}}]
+   {"name":"StopHoodDown", "from":{"target":2, "targetTimestamp":1.98172, "offset":{"exp":"-0.1 s", "val":-0.1}}, "event":{"type":"named", "data":{"name":"StopHoodDown"}}},
+   {"name":"HoodDown", "from":{"target":7, "targetTimestamp":8.52169, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"HoodDown"}}}]
 }

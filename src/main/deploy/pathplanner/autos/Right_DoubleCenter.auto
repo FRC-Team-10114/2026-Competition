@@ -23,9 +23,52 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "stopshoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakestop"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "HoodDown"
                 }
               },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RIght_Doublecenter1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StopHoodDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakestop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
@@ -39,12 +82,24 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "HoodDown"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "RIght_Doublecenter1.0"
+                  "pathName": "RIght_Doublecenter2"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeDown"
           }
         },
         {
@@ -60,34 +115,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "RIght_Doublecenter2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "HoodDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopshoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakestop"
-                }
-              }
-            ]
+            "pathName": "RIght_Climb"
           }
         },
         {
@@ -98,25 +128,6 @@
                 "type": "named",
                 "data": {
                   "name": "shoot"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "RIght_Climb"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopshoot"
                 }
               }
             ]

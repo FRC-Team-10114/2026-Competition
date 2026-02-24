@@ -275,6 +275,5 @@
   "splits":[0]
  },
  "events":[
-   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.53928, "offset":{"exp":"-0.1 s", "val":-0.1}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
-   {"name":"StopHoodDown", "from":{"target":null, "targetTimestamp":null, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"StopHoodDown"}}}]
+   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.53928, "offset":{"exp":"-0.1 s", "val":-0.1}}, "event":{"type":"named", "data":{"name":"intakeDown"}}}]
 }

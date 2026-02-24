@@ -36,6 +36,7 @@ import frc.robot.util.FMS.Signal;
 import frc.robot.util.RobotStatus.RobotStatus;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.AutoChooser;
 
 public class RobotContainer {
 
@@ -77,9 +78,14 @@ public class RobotContainer {
 
     private final Dashboard dashboard = new Dashboard(signal);
 
+    private final AutoChooser autoChooser;
+
     // public final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
+
+        this.autoChooser = new AutoChooser(drivetrain, superstructure, robotStatus);
+        
 
         // Swerve Drivetrain Current Test
         for (int i = 0; i < 4; i++)
@@ -91,15 +97,18 @@ public class RobotContainer {
 
         log();
 
-        NamedCommands.registerCommand("intakeDown", superstructure.intake());
-        NamedCommands.registerCommand("intakestop", superstructure.stopintake());
-        NamedCommands.registerCommand("HoodDown", Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus));
-        NamedCommands.registerCommand("StopHoodDown",
-                Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
-        NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(2.0));
-        NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
-        NamedCommands.registerCommand("isIn",
-                Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
+        // NamedCommands.registerCommand("intakeDown", superstructure.intake());
+        // NamedCommands.registerCommand("intakestop", superstructure.stopintake());
+        // NamedCommands.registerCommand("HoodDown", Commands.runOnce(() ->
+        // robotStatus.SetSafeHood(true), robotStatus));
+        // NamedCommands.registerCommand("StopHoodDown",
+        // Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
+        // NamedCommands.registerCommand("shoot",
+        // superstructure.autoshooter().withTimeout(2.0));
+        // NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
+        // NamedCommands.registerCommand("isIn",
+        // Commands.run(() ->
+        // System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
 
         boolean isCompetition = true;
 
@@ -107,9 +116,9 @@ public class RobotContainer {
         // As an example, this will only show autos that start with "comp" while at
         // // competition as defined by the programmer
         // autoChooser = AutoBuilder.buildAutoChooserWithOptionsModifier(
-        //         (stream) -> isCompetition
-        //                 ? stream.filter(auto -> auto.getName().startsWith("comp"))
-        //                 : stream);
+        // (stream) -> isCompetition
+        // ? stream.filter(auto -> auto.getName().startsWith("comp"))
+        // : stream);
 
         // SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -119,6 +128,8 @@ public class RobotContainer {
 
         // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
+
+
 
     private void configureBindings() {
 
@@ -195,13 +206,12 @@ public class RobotContainer {
         return this.photonVision;
     }
 
-
     public CommandSwerveDrivetrain getDrivetrainInstance() {
         return this.drivetrain;
     }
 
     public Command getAutonomousCommand() {
-        return null;
+        return autoChooser.auto();
 
     }
 

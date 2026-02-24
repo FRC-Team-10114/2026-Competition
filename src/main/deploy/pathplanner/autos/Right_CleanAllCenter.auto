@@ -17,40 +17,27 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left_DoubleCenter_1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "HoodDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopshoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakestop"
-                }
-              }
-            ]
+            "name": "HoodDown"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right_CleanAllCenter"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "StopHoodDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeDown"
           }
         },
         {
@@ -66,19 +53,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left_DoubleCenter_2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "HoodDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopshoot"
+                  "pathName": "Left_Cilmb"
                 }
               },
               {
@@ -86,20 +61,14 @@
                 "data": {
                   "name": "intakestop"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopshoot"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StopHoodDown"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         }
       ]

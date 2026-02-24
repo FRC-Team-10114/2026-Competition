@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
@@ -49,6 +50,8 @@ public class TurretIOSpark extends TurretIO {
 
                 this.masterCANcoder = new CANcoder(21);
                 this.slaveCANcoder = new CANcoder(22);
+
+                resetAngle();
 
                 configureMotors();
 
@@ -124,7 +127,7 @@ public class TurretIOSpark extends TurretIO {
         @Override
         public void setAngle(Rotation2d robotHeading, Angle targetRad, ShootState state) {
                 this.turretController.setSetpoint(this.Calculate(robotHeading, targetRad, state).in(Radians),
-                                ControlType.kMAXMotionPositionControl);
+                                ControlType.kPosition);
                 double target = this.Calculate(robotHeading, targetRad, state).in(Radians);
                 this.currentTargetRads = target;
         }
@@ -168,21 +171,12 @@ public class TurretIOSpark extends TurretIO {
                                 .forwardSoftLimitEnabled(true)
                                 .forwardSoftLimit(ShooterConstants.HARD_MAX_RADS);
 
-                // 🟢 修正：稍微給一點 P (例如 0.1)，因為純靠 FeedForward 可能會差一點點停不準
                 turretConfig.closedLoop
-                                .pid(0.8, 0.0, 0.0)
-                                .outputRange(-1.0, 1.0);
-
-                // 🟢 關鍵修正：SysId 給的是伏特，必須除以 12 轉成 Duty Cycle！
+                                .pid(0.8, 0.0, 0.0);
                 turretConfig.closedLoop.feedForward
-                                .kV(1.949 / 12.0) // 約等於 0.1624
-                                .kS(0.17489 / 12.0) // 約等於 0.0146
-                                .kA(0.086766 / 12.0); // 約等於 0.0072
-
-                // 🟢 修正：使用純弧度/秒的設定，不要再換算成 RPM
-                turretConfig.closedLoop.maxMotion
-                                .cruiseVelocity(Math.PI * 3)
-                                .maxAcceleration(Math.PI * 3);
+                                .kV(0.0)
+                                .kS(0.0) // 大約是 0.0145。讓馬達隨時保持「準備好要動」的狀態
+                                .kA(0.0);
 
                 turretConfig.encoder
                                 .positionConversionFactor(positionFactor)
