@@ -42,12 +42,12 @@ public abstract class TurretIO {
 
         if (state == ShootState.ACTIVE_SHOOTING) {
             // 射擊時：火力全開，使用硬體極限
-            currentMin = ShooterConstants.HARD_MIN_RADS;
-            currentMax = ShooterConstants.HARD_MAX_RADS;
+            currentMin = ShooterConstants.HARD_MIN_LIMIT;
+            currentMax = ShooterConstants.HARD_MAX_LIMIT;
         } else {
             // 追蹤時：保守一點，使用軟體限制
-            currentMin = ShooterConstants.SOFT_MIN_RADS;
-            currentMax = ShooterConstants.SOFT_MAX_RADS;
+            currentMin = ShooterConstants.SOFT_MIN_LIMIT;
+            currentMax = ShooterConstants.SOFT_MAX_LIMIT;
         }
 
         // 1. 先把單位 (Measure) 轉成幾何 (Rotation2d)

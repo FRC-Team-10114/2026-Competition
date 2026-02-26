@@ -11,7 +11,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Intake.IntakeConstants.ArmConstants;
 
@@ -30,17 +29,14 @@ public class ClimberIOTalon implements ClimberIO {
     }
 
     @Override
-    public void setPosition(Distance meter) {
-        double position = meter.baseUnitMagnitude() / ClimberConstants.ROTATION_PER_METER;
-        this.climberMotor.setControl(output.withPosition(position));
+    public void setPosition(Angle round) {
+        this.climberMotor.setControl(output.withPosition(round));
     }
 
     @Override
-    public Distance getPosition() {
+    public Angle getPosition() {
         this.climberPosition.refresh();
-        Distance position = Meters.of(climberPosition.getValueAsDouble() * ClimberConstants.ROTATION_PER_METER);
-
-        return position;
+        return climberPosition.getValue();
     }
 
     @Override
@@ -53,17 +49,17 @@ public class ClimberIOTalon implements ClimberIO {
         var climberConfig = new TalonFXConfiguration();
 
         climberConfig.CurrentLimits
-                .withStatorCurrentLimit(null)
-                .withStatorCurrentLimitEnable(false)
-                .withSupplyCurrentLimit(null)
-                .withSupplyCurrentLimitEnable(false);
+                .withStatorCurrentLimit(ClimberConstants.STATOR_CURRENT_LIMIT)
+                .withStatorCurrentLimitEnable(true)
+                .withSupplyCurrentLimit(ClimberConstants.SUPPLY_CURRENT_LIMIT)
+                .withSupplyCurrentLimitEnable(true);
         climberConfig.MotorOutput
                 .withInverted(InvertedValue.Clockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Brake);
         climberConfig.Feedback
                 .withSensorToMechanismRatio(ClimberConstants.GEAR_RATIO);
         climberConfig.Slot0
-                .withKP(0)
+                .withKP(0.15)
                 .withKI(0)
                 .withKD(0)
                 .withGravityType(GravityTypeValue.Elevator_Static);

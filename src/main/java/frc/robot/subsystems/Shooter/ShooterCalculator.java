@@ -45,7 +45,7 @@ public class ShooterCalculator {
         private final double phaseDelay = 0.03 + time_error;
         public static Transform3d robotToTurret = new Transform3d(0.2, 0.0, 0.44, Rotation3d.kZero);
 
-        private static final Angle Hood_MAX_RADS = ShooterConstants.Hood_MAX_RADS;
+        private static final Angle Hood_MAX_RADS = ShooterConstants.Hood_MAX_LIMIT;
 
         public ShooterCalculator(CommandSwerveDrivetrain drive, RobotStatus robotStatus) {
                 this.drive = drive;

@@ -98,21 +98,21 @@ public class HoodIOTalon implements HoodIO {
 
         hoodConfig.CurrentLimits
                 .withStatorCurrentLimitEnable(true)
-                .withStatorCurrentLimit(40.0)
+                .withStatorCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true)
-                .withSupplyCurrentLimit(40.0);
+                .withSupplyCurrentLimit(15);
 
         hoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         hoodConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         hoodConfig.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(ShooterConstants.Hood_MIN_RADS)
+                .withReverseSoftLimitThreshold(ShooterConstants.Hood_MIN_LIMIT)
                 .withForwardSoftLimitEnable(true)
-                .withForwardSoftLimitThreshold(ShooterConstants.Hood_MAX_RADS);
+                .withForwardSoftLimitThreshold(ShooterConstants.Hood_MAX_LIMIT);
 
         hoodConfig.Feedback
-                .withFeedbackRemoteSensorID(55)
+                .withFeedbackRemoteSensorID(IDs.Shooter.HOOD_CANCODER)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
                 .withRotorToSensorRatio(rotorToSensorRatio)
                 .withSensorToMechanismRatio(sensorToMechRatio);
