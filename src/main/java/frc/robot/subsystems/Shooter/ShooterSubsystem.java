@@ -162,7 +162,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setHoodAngle(Angle targetRad) {
         if (InTrench) {
-            this.hood.setAngle(ShooterConstants.Hood_MIN_RADS);
+            this.hood.setAngle(ShooterConstants.Hood_MIN_LIMIT);
         } else {
             this.hood.setAngle(targetRad);
         }

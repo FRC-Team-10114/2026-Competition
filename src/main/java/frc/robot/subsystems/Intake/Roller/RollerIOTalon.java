@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Intake.Roller;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -44,15 +45,14 @@ public class RollerIOTalon implements RollerIO{
 
         rollerConfig.Feedback
                 .withSensorToMechanismRatio(RollerConstants.VELOCITY_CONVERSION_FACOTR);
-        rollerConfig.MotionMagic
-                .withMotionMagicAcceleration(RollerConstants.MAX_ACCELERATION)
-                .withMotionMagicCruiseVelocity(RollerConstants.CRUISE_VELOCITY);
         rollerConfig.MotorOutput
                 .withInverted(InvertedValue.Clockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Coast);
         rollerConfig.CurrentLimits
-                .withStatorCurrentLimit(RollerConstants.STATOR_CURRENT_LIMIT.baseUnitMagnitude())
-                .withSupplyCurrentLimit(RollerConstants.SUPPLY_CURRENT_LIMIT.baseUnitMagnitude());
+                .withStatorCurrentLimitEnable(true)
+                .withSupplyCurrentLimitEnable(true)
+                .withStatorCurrentLimit(RollerConstants.STATOR_CURRENT_LIMIT.in(Amps))
+                .withSupplyCurrentLimit(RollerConstants.SUPPLY_CURRENT_LIMIT.in(Amps));
         rollerConfig.Slot0
                 .withKP(RollerConstants.PID[0])
                 .withKI(RollerConstants.PID[1])

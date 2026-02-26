@@ -15,10 +15,6 @@ import frc.robot.util.RobotEvent.Event.*;
 
 public class superstructure extends SubsystemBase {
 
-    private final CommandSwerveDrivetrain drive;
-
-    private boolean isshoot = true;
-
     private final IntakeSubsystem intake;
     private final ShooterSubsystem shooter;
     private final HopperSubsystem hopper;
@@ -28,13 +24,11 @@ public class superstructure extends SubsystemBase {
     private final List<ShootingStateFalse> ShootingStateFalse = new ArrayList<>();
 
     public superstructure(
-            CommandSwerveDrivetrain drive,
             ShooterSubsystem shooter,
             IntakeSubsystem intake,
             HopperSubsystem hopper,
             LED led,
             AutoAlign autoAlign) {
-        this.drive = drive;
         this.shooter = shooter;
         this.intake = intake;
         this.hopper = hopper;
@@ -50,15 +44,16 @@ public class superstructure extends SubsystemBase {
 
     public Command intake() {
         return Commands.parallel(
-                Commands.runOnce(intake::rollerStart),
                 Commands.runOnce(intake::armDown),
-                Commands.runOnce(hopper::warmUp));
+                Commands.runOnce(intake::rollerStart));
     }
 
     public Command stopintake() {
-        return Commands.parallel(Commands.runOnce(intake::rollerEnd),
-                Commands.runOnce(this.hopper::stopAll, this.hopper));
+        return Commands.parallel(
+                Commands.runOnce(intake::rollerEnd),
+                Commands.runOnce(intake::armUp));
     }
+
 
     public Command shootCommand() {
         return Commands.run(() -> {
@@ -71,21 +66,16 @@ public class superstructure extends SubsystemBase {
                 this.shooter.shoot();
                 hopper.warmUpforshoot();
             }
-        }, hopper)
-
-                .finallyDo(() -> {
-                    this.setShootingStateFalse();
-                    hopper.stopAll();
-                    this.shooter.stopShoot();
-                });
+        });
     }
 
     public Command stopShoot() {
         return Commands.parallel(
-                Commands.runOnce(hopper::stopAll),
                 Commands.runOnce(this::setShootingStateFalse),
-                Commands.runOnce(this.shooter::stopShoot, this.shooter));
+                Commands.runOnce(this.shooter::stopShoot),
+                Commands.runOnce(hopper::waiting));
     }
+    
 
     public Command DriveToTrench() {
         return this.autoAlign.DriveToTrench();
@@ -112,5 +102,6 @@ public class superstructure extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+    }
 }

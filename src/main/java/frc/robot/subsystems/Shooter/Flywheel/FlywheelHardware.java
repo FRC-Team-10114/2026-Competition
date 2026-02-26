@@ -40,7 +40,7 @@ public class FlywheelHardware implements FlywheelIO {
                 .withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(80.0)
                 .withSupplyCurrentLimitEnable(true)
-                .withSupplyCurrentLimit(60.0);
+                .withSupplyCurrentLimit(40);        // 60 -> 40
 
         // 馬達設定
         configs.MotorOutput.NeutralMode = NeutralModeValue.Coast; // Roller 通常用 Coast，停下來比較滑順

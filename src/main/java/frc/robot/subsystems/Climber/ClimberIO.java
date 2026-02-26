@@ -1,13 +1,12 @@
 package frc.robot.subsystems.Climber;
 
-import edu.wpi.first.units.measure.Distance;
-
+import edu.wpi.first.units.measure.Angle;
 
 public interface ClimberIO {
     
-    public void setPosition(Distance meter);
+    public void setPosition(Angle round);
 
-    public Distance getPosition();
+    public Angle getPosition();
 
     public void resetPosition();
 
