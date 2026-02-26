@@ -37,6 +37,7 @@ public class IntakeConstants {
         public static final double[] PID = { 0.1, 0.0, 0.0 };
 
         public static final Current STATOR_CURRENT_LIMIT = Amp.of(40);
+
         public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(20);
     }
 }
