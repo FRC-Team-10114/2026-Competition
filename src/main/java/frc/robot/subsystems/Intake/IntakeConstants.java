@@ -44,6 +44,6 @@ public class IntakeConstants {
 
 
         public static final Current STATOR_CURRENT_LIMIT = Amp.of(40);
-        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(30);
+        public static final Current SUPPLY_CURRENT_LIMIT = Amp.of(40);
     }
 }

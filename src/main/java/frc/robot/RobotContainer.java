@@ -85,7 +85,6 @@ public class RobotContainer {
     public RobotContainer() {
 
         this.autoChooser = new AutoChooser(drivetrain, superstructure, robotStatus);
-        
 
         // Swerve Drivetrain Current Test
         for (int i = 0; i < 4; i++)
@@ -129,15 +128,19 @@ public class RobotContainer {
         // drivetrain.runOnce(drivetrain::resetPosetotest);
     }
 
-
-
     private void configureBindings() {
 
         drivetrain.setDefaultCommand(
-                drivetrain.applyRequest(() -> drive
-                        .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed)
-                        .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
+                drivetrain.applyRequest(() -> {
+                    boolean slowMode = joystick.getLeftTriggerAxis() > 0.3 && joystick.getRightTriggerAxis() > 0.3;
+
+                    double translationMultiplier = slowMode ? 0.5 : 1.0;
+
+                    return drive
+                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed * translationMultiplier)
+                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed * translationMultiplier)
+                            .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                }));
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
