@@ -1,6 +1,6 @@
 package frc.robot.subsystems.Climber;
 
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotations;
 
 
 public class ClimberSubsystem {
@@ -11,11 +11,15 @@ public class ClimberSubsystem {
         this.climber = climber;
     }
 
+    public static ClimberSubsystem create() {
+        return new ClimberSubsystem(new ClimberIOSpark());
+    }
+
     public void up() {
-        this.climber.setPosition(Meters.of(5));
+        this.climber.setPosition(Rotations.of(10));
     }
 
     public void down() {
-        this.climber.setPosition(Meters.of(0.0));
+        this.climber.setPosition(Rotations.of(0));
     }
 }

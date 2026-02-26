@@ -114,9 +114,9 @@ public class TurretIOTalon extends TurretIO {
 
         configs.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MIN_RADS))
+                .withReverseSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MIN_LIMIT))
                 .withForwardSoftLimitEnable(true)
-                .withForwardSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MAX_RADS));
+                .withForwardSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MAX_LIMIT));
 
         // 馬達設定
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -145,22 +145,22 @@ public class TurretIOTalon extends TurretIO {
     // ==========================================
     public Command sysIdQuasistaticForward() {
         return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
-                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_RADS);
+                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT);
     }
 
     public Command sysIdQuasistaticReverse() {
         return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)
-                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_RADS);
+                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT);
     }
 
     public Command sysIdDynamicForward() {
         return sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)
-                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_RADS);
+                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT);
     }
 
     public Command sysIdDynamicReverse() {
         return sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)
-                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_RADS);
+                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT);
     }
 
     public Command sysid() {

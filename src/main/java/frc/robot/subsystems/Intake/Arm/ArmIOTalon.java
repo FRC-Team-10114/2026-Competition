@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Intake.Arm;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotation;
 
@@ -24,16 +25,14 @@ public class ArmIOTalon implements ArmIO {
 
     private final StatusSignal<Angle> armPosition;
 
-    // private final CANcoder armAbsoluteEncoder;
-
-    private final PositionVoltage armOutput;
+    private final MotionMagicVoltage armOutput;
 
     public ArmIOTalon() {
 
         this.armMotor = new TalonFX(IDs.Intake.ARM_MOTOR, "canivore");
         this.armPosition = armMotor.getPosition();
 
-        this.armOutput = new PositionVoltage(0.0);
+        this.armOutput = new MotionMagicVoltage(0.0);
 
         configure();
         resetEncoder();
@@ -57,34 +56,47 @@ public class ArmIOTalon implements ArmIO {
 
     @Override
     public void configure() {
-        
         var armConfig = new TalonFXConfiguration();
 
-        armConfig.Feedback.SensorToMechanismRatio = ArmConstants.GEAR_RATIO;
-        armConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        // 1. 基礎馬達與感測器設定
+        armConfig.Feedback
+                .withSensorToMechanismRatio(ArmConstants.GEAR_RATIO);
+        armConfig.MotorOutput
+                .withInverted(InvertedValue.Clockwise_Positive);
 
+        // 2. 電流限制 (你原本寫得很好，保留)
         armConfig.CurrentLimits
-                .withStatorCurrentLimit(ArmConstants.STATOR_CURRENT_LIMIT.baseUnitMagnitude())
-                .withSupplyCurrentLimit(ArmConstants.SUPPLY_CURRENT_LIMIT.baseUnitMagnitude())
+                .withStatorCurrentLimit(ArmConstants.STATOR_CURRENT_LIMIT.in(Amps)) 
+                .withSupplyCurrentLimit(ArmConstants.SUPPLY_CURRENT_LIMIT.in(Amps))
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimitEnable(true);
-        // armConfig.MotionMagic
-        //         .withMotionMagicAcceleration(ArmConstants.MAX_ACCELERATION)
-        //         .withMotionMagicCruiseVelocity(ArmConstants.CRUISE_VELOCITY);
-        // // armConfig.Feedback
-        //         .withFusedCANcoder(armAbsoluteEncoder)
-        //         .withSensorToMechanismRatio(ArmConstants.POSITION_CONVERSION_FACTOR);
+
+        // 3. 軟體極限設定 (新增！極度建議加入這兩個 Constant)
+        // 假設 0 是最低點，0.25 (四分之一圈/90度) 是最高點
+        armConfig.SoftwareLimitSwitch
+                .withForwardSoftLimitThreshold(ArmConstants.FORWARD_LIMIT) 
+                .withForwardSoftLimitEnable(true)
+                .withReverseSoftLimitThreshold(ArmConstants.REVERSE_LIMIT)
+                .withReverseSoftLimitEnable(true);
+
+        // 4. PID 控制與重力前饋
         armConfig.Slot0
                 .withKP(ArmConstants.PID[0])
                 .withKI(ArmConstants.PID[1])
                 .withKD(ArmConstants.PID[2])
                 .withGravityType(GravityTypeValue.Arm_Cosine);
+
+        // 5. Motion Magic (強烈建議取消註解並使用)
+        armConfig.MotionMagic
+                .withMotionMagicAcceleration(ArmConstants.MAX_ACCELERATION)
+                .withMotionMagicCruiseVelocity(ArmConstants.CRUISE_VELOCITY);
+
+        // 關閉硬體極限的 Autoset (維持你原本的設定)
         armConfig.HardwareLimitSwitch
                 .withForwardLimitAutosetPositionEnable(false)
-                .withForwardLimitAutosetPositionValue(128)
-                .withReverseLimitAutosetPositionEnable(false)
-                .withReverseLimitAutosetPositionValue(0);
+                .withReverseLimitAutosetPositionEnable(false);
 
+        // 應用設定
         armMotor.getConfigurator().apply(armConfig);
     }
 }

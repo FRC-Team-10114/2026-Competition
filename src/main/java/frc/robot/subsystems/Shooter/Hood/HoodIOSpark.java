@@ -61,9 +61,9 @@ public class HoodIOSpark implements HoodIO {
                 .smartCurrentLimit(40)
                 .apply(hoodConfig);
         hoodConfig.softLimit
-                .forwardSoftLimit(ShooterConstants.Hood_MAX_RADS.in(Radians))
+                .forwardSoftLimit(ShooterConstants.Hood_MAX_LIMIT.in(Radians))
                 .forwardSoftLimitEnabled(true)
-                .reverseSoftLimit(ShooterConstants.Hood_MIN_RADS.in(Radians))
+                .reverseSoftLimit(ShooterConstants.Hood_MIN_LIMIT.in(Radians))
                 .reverseSoftLimitEnabled(true)
                 .apply(hoodConfig.softLimit);
         hoodConfig.encoder

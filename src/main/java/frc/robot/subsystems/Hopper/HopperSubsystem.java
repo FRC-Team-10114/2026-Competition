@@ -18,10 +18,6 @@ public class HopperSubsystem extends SubsystemBase {
                 new SpindexerIOHardware());
     }
 
-    public void warmUp() {
-        this.spindexer.run(-2);
-    }
-
     public void stopSpin() {
         this.spindexer.stop();
     }
@@ -32,6 +28,10 @@ public class HopperSubsystem extends SubsystemBase {
 
     public void stopAll() {
         this.spindexer.run(0);
+    }
+
+    public void waiting() {
+        this.spindexer.run(-1);
     }
 
     @Override

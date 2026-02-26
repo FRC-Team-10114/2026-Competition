@@ -8,6 +8,6 @@ public class HopperConstant {
 
     public static final class SpindexerConstants {
         public static final Current MECHINE_STATOR_CURRENT_LIMIT = Amp.of(40);
-        public static final Current MECHINE_SUPPLY_CURRENT_LIMIT = Amp.of(30);
+        public static final Current MECHINE_SUPPLY_CURRENT_LIMIT = Amp.of(15);
     }
 }
