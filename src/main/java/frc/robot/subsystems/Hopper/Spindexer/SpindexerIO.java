@@ -7,4 +7,6 @@ public interface SpindexerIO {
     public void stop();
 
     public void configure();
+
+    public double getStatorCurrent();
 }

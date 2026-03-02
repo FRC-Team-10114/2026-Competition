@@ -6,7 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.google.gson.JsonObject;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -18,7 +21,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.superstructure;
+import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Dashboard.Dashboard;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
@@ -31,6 +36,7 @@ import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.FMS.Signal;
 import frc.robot.util.RobotStatus.RobotStatus;
+import frc.robot.Constants.IDs.Climber;
 import frc.robot.commands.AutoChooser;
 
 public class RobotContainer {
@@ -63,10 +69,11 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = ShooterSubsystem.create(drivetrain, robotStatus);
     private final IntakeSubsystem intake = IntakeSubsystem.create();
     private final HopperSubsystem hopper = HopperSubsystem.create();
+    private final ClimberSubsystem climber = ClimberSubsystem.create();
 
     private final LED led = new LED();
 
-    private final superstructure superstructure = new superstructure(shooter, intake, hopper, led, autoAlign);
+    private final superstructure superstructure = new superstructure(shooter, intake, hopper, led, autoAlign, climber);
 
     public final Signal signal = new Signal();
 
@@ -131,8 +138,8 @@ public class RobotContainer {
                     double translationMultiplier = slowMode ? 0.5 : 1.0;
 
                     return drive
-                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed * translationMultiplier)
-                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed * translationMultiplier)
+                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed)
+                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed)
                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
                 }));
         final var idle = new SwerveRequest.Idle();
@@ -144,26 +151,41 @@ public class RobotContainer {
 
         // joystick.leftBumper().whileTrue(this.superstructure.DriveToTrench());
 
-        joystick.leftBumper().whileTrue(Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus))
-                .onFalse(Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
+        // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
+        // robotStatus.SetSafeHood(true), robotStatus))
+        // .onFalse(Commands.runOnce(() -> robotStatus.SetSafeHood(false),
+        // robotStatus));
 
         joystick.leftTrigger().whileTrue((superstructure.intake()))
-                .onFalse(superstructure.stopintake());
+        .onFalse(superstructure.stopintake());
         joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
+
+        // joystick.a().whileTrue(superstructure.autoclimb());
 
         // ---------------------------------------test
         // Method-------------------------------------------------
 
-        // joystick.a().onTrue(this.shooter.sysid());
+        // joystick.y().onTrue(superstructure.intake());
 
-        // joystick.leftBumper().whileTrue(this.superstructure.shoot());
+        // joystick.a().onTrue(superstructure.stopintake());
+
+        joystick.a().onTrue(climber.climbcollecter());
+
+        joystick.y().whileTrue(climber.climbvolt());
+
+        // joystick.x().onTrue(this.intake.sysid());
+
+
+        // // joystick.a().onTrue(this.shooter.sysid());
+
+        // // joystick.leftBumper().whileTrue(this.superstructure.shoot());
 
         // joystick.x().whileTrue(
-        // Commands.runOnce(() -> this.shooter.hoodUp(), this.shooter));
+        // Commands.runOnce(() -> this.shooter.Hoodup(), this.shooter));
 
         // joystick.b().whileTrue(
-        // Commands.runOnce(() -> this.shooter.hoodDown(), this.shooter));
+        // Commands.runOnce(() -> this.shooter.Hooddown(), this.shooter));
 
         // joystick.leftBumper().whileTrue(Commands.runOnce(() ->
         // this.shooter.flywheelup(), this.shooter));
@@ -187,6 +209,8 @@ public class RobotContainer {
         // joystick.x().onTrue(this.shooter.startCommand());
         // joystick.a().onTrue(this.shooter.stopCommand());
         // joystick.rightBumper().onTrue(this.shooter.sysIdTest());
+
+        sysidTest();
     }
 
     private void configureEvents() {
@@ -219,10 +243,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     }
 

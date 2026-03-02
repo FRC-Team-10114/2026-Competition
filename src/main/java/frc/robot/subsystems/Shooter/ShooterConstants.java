@@ -28,7 +28,7 @@ public class ShooterConstants {
         public static final double Flywheel_GEAR_RATIO = 1.0 / (12.0 / 16.0);
 
         public static final class TriggerConstants {
-                public static final Current TRIGGER_STATOR_CURRENT_LIMIT = Amp.of(30);
-                public static final Current TRIGGER_SUPPLY_CURRENT_LIMIT = Amp.of(15);
+                public static final Current TRIGGER_STATOR_CURRENT_LIMIT = Amp.of(40);
+                public static final Current TRIGGER_SUPPLY_CURRENT_LIMIT = Amp.of(40);
         }
 }

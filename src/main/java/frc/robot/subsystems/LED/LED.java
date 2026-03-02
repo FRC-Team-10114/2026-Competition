@@ -15,7 +15,7 @@ import frc.robot.Constants.IDs;
 import frc.robot.util.RobotEvent.Event.LEDRainbow;
 
 public class LED extends SubsystemBase {
-    
+
     private final CANdle ledController;
 
     private final RainbowAnimation rainbowAnimation;
@@ -37,11 +37,11 @@ public class LED extends SubsystemBase {
     }
 
     public void setRainbow() {
-        ledController.setControl(rainbowAnimation.withBrightness(1));
+        ledController.setControl(rainbowAnimation.withBrightness(0.1));
     }
 
     public void setFire() {
-        ledController.setControl(fireAnimation.withBrightness(1));
+        ledController.setControl(fireAnimation.withBrightness(0.0));
     }
 
     public void close() {

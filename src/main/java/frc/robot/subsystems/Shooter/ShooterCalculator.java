@@ -190,6 +190,8 @@ public class ShooterCalculator {
 
                 Logger.recordOutput("targetFieldAngle", targetFieldAngle);
 
+                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
+
                 return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),
                                 rollMap.get(lookaheadTurretToTargetDistance));
         }

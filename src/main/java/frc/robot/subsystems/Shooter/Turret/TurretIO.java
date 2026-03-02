@@ -22,9 +22,11 @@ public abstract class TurretIO {
 
     public double lastSetpointRads = 0.0;
 
+    public abstract Angle getAnglegoal();
+
     public abstract void setAngle(Rotation2d robotHeading, Angle targetRad, ShootState state);
 
-    public abstract void resetAngle();
+    // public abstract void resetAngle();
 
     public abstract Angle getAngle();
 

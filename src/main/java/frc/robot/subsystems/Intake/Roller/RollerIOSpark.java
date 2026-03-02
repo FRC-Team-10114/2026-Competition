@@ -6,9 +6,11 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -19,12 +21,12 @@ import frc.robot.subsystems.Intake.IntakeConstants.RollerConstants;
 
 public class RollerIOSpark implements RollerIO {
 
-    private final SparkMax rollerMotor;
+    private final SparkFlex rollerMotor;
     private final RelativeEncoder rollerEncoder;
     private final SparkClosedLoopController rollerController;
 
     public RollerIOSpark() {
-        this.rollerMotor = new SparkMax(IDs.Intake.ROLLER_MOTOR, MotorType.kBrushless);
+        this.rollerMotor = new SparkFlex(IDs.Intake.ROLLER_MOTOR, MotorType.kBrushless);
         this.rollerEncoder = rollerMotor.getEncoder();
         this.rollerController = rollerMotor.getClosedLoopController();
     }
@@ -41,7 +43,7 @@ public class RollerIOSpark implements RollerIO {
 
     @Override
     public void configure() {
-        var rollerConfig = new SparkMaxConfig();
+        var rollerConfig = new SparkFlexConfig();
 
         rollerConfig
                 .idleMode(IdleMode.kBrake)

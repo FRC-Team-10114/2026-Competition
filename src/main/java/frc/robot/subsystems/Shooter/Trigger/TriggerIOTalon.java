@@ -27,7 +27,7 @@ public class TriggerIOTalon implements TriggerIO {
 
     @Override
     public void run() {
-        this.triggerMotor.setControl(this.output.withOutput(Volt.of(7)).withEnableFOC(false));
+        this.triggerMotor.setControl(this.output.withOutput(Volt.of(10)).withEnableFOC(true));
     }
 
     @Override

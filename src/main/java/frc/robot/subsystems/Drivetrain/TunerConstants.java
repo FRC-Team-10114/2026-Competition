@@ -32,7 +32,7 @@ public class TunerConstants {
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     private static final Slot0Configs driveGains = new Slot0Configs()
             .withKP(10).withKI(0).withKD(0)
-            .withKS(1.5).withKV(0.0);
+            .withKS(0.32734).withKV(0.12293).withKA(0.0070088);
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
@@ -53,11 +53,6 @@ public class TunerConstants {
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
 
-    // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
-    // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
-
-    private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration();
 
     private static final Current kSlipCurrent = Amps.of(50);
 
@@ -144,7 +139,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 1;
     private static final int kFrontLeftSteerMotorId = 5;
     private static final int kFrontLeftEncoderId = 9;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.3681640625);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.210693359375);
     private static final boolean kFrontLeftSteerMotorInverted = true;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -155,7 +150,7 @@ public class TunerConstants {
     private static final int kFrontRightDriveMotorId = 2;
     private static final int kFrontRightSteerMotorId = 6;
     private static final int kFrontRightEncoderId = 10;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.320068359375);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(0.48486328125);
     private static final boolean kFrontRightSteerMotorInverted = true;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -166,7 +161,7 @@ public class TunerConstants {
     private static final int kBackLeftDriveMotorId = 3;
     private static final int kBackLeftSteerMotorId = 7;
     private static final int kBackLeftEncoderId = 11;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.37158203125);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.282958984375);
     private static final boolean kBackLeftSteerMotorInverted = true;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -177,7 +172,7 @@ public class TunerConstants {
     private static final int kBackRightDriveMotorId = 4;
     private static final int kBackRightSteerMotorId = 8;
     private static final int kBackRightEncoderId = 12;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(0.048828125);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.233642578125);
     private static final boolean kBackRightSteerMotorInverted = true;
     private static final boolean kBackRightEncoderInverted = false;
 

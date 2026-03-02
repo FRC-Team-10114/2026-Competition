@@ -40,8 +40,8 @@ public class HoodIOTalon implements HoodIO {
 
     private final double sensorToMechRatio = ShooterConstants.Hood_GEAR_RATIO
             / ShooterConstants.HoodCancoder_GEAR_RATIO_TOMotor;
-    // private final VoltageOut voltagRequire = new VoltageOut(0.0);
-    // private final SysIdRoutine sysIdRoutine;
+    private final VoltageOut voltagRequire = new VoltageOut(0.0);
+    private final SysIdRoutine sysIdRoutine;
 
     private double latestTargetDegrees = 0.0;
 
@@ -50,24 +50,27 @@ public class HoodIOTalon implements HoodIO {
         this.Hoodcancoder = new CANcoder(IDs.Shooter.HOOD_CANCODER, "canivore");
         this.HoodPosition = HoodMotor.getPosition();
 
-        // SignalLogger.setPath("/home/lvuser");
+      SignalLogger.setPath("/U/");
 
-
-        // this.sysIdRoutine = new SysIdRoutine(
-        //     new SysIdRoutine.Config(Volts.of(0.25).per(Second), Volts.of(1),
-        //             null, (state) -> SignalLogger.writeString("state", state.toString())),
-        //     new SysIdRoutine.Mechanism(
-        //             (volts) -> {
-        //                 this.HoodMotor.setControl(voltagRequire.withOutput(volts.in(Volts)));
-        //             },
-        //             null,
-        //             this));
+        this.sysIdRoutine = new SysIdRoutine(
+                new SysIdRoutine.Config(Volts.of(0.5).per(Second), Volts.of(3),
+                        null, (state) -> SignalLogger.writeString("state", state.toString())),
+                new SysIdRoutine.Mechanism(
+                        (volts) -> this.HoodMotor.setControl(voltagRequire.withOutput(volts.in(Volts))),
+                        null,
+                        // 🟢 修正 1：給予一個虛擬的 SubsystemBase，避免 IO 層轉型失敗當機
+                        new SubsystemBase() {
+                            @Override
+                            public String getName() {
+                                return "TurretSysId";
+                            }
+                        }));
 
         CANcoderConfig();
 
         configure();
 
-        initStartingPosition();
+        // initStartingPosition();
     }
 
     private void initStartingPosition() {
@@ -85,7 +88,7 @@ public class HoodIOTalon implements HoodIO {
 
         double targetSensorRotations = Units.degreesToRotations(25.0) * sensorToMechRatio;
 
-        cfg.MagnetSensor.MagnetOffset = 0.128662109375 + targetSensorRotations;
+        cfg.MagnetSensor.MagnetOffset = 0.343505859375 + targetSensorRotations;
 
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -120,10 +123,10 @@ public class HoodIOTalon implements HoodIO {
         hoodConfig.Slot0.kP = 80.0;
         hoodConfig.Slot0.kI = 0.0;
         hoodConfig.Slot0.kD = 0.0;
-        hoodConfig.Slot0.kG = 0.41566;
-        hoodConfig.Slot0.kA = 0.0010283;
-        hoodConfig.Slot0.kS = 0.14603;
-        hoodConfig.Slot0.kV = 0.0097448;
+        hoodConfig.Slot0.kG = 0.29103;
+        hoodConfig.Slot0.kA = 0.099301;
+        hoodConfig.Slot0.kS = 0.21953;
+        hoodConfig.Slot0.kV = 4.5976;
         hoodConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
 
@@ -161,47 +164,49 @@ public class HoodIOTalon implements HoodIO {
         // 6. 只要誤差小於 2 度，就回傳 true (允許開火)
         return error < 2.0;
     }
-//           public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-//         return this.sysIdRoutine.quasistatic(direction);
-//     }
+          public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return this.sysIdRoutine.quasistatic(direction);
+    }
 
-//     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-//         return this.sysIdRoutine.dynamic(direction);
-//     }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return this.sysIdRoutine.dynamic(direction);
+    }
 
-// public Command startCommand() {
-//         System.err.println("start");
-//         return Commands.runOnce(SignalLogger::start);
-//     }
+public Command startCommand() {
+        System.err.println("start");
+        return Commands.runOnce(SignalLogger::start);
+    }
 
-//     public Command stopCommand() {
-//         System.err.println("end");
-//         return Commands.runOnce(SignalLogger::stop);
-//     }
+    public Command stopCommand() {
+        System.err.println("end");
+        return Commands.runOnce(SignalLogger::stop);
+    }
 
-// public Command sysIdTest() {
-//         return Commands.sequence(
-//             // 1. Quasistatic Forward (慢慢往前推)
-//             this.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-//                 .until(() -> this.getAngle() > 50.0), // 當角度大於 43 度時停止
+public Command sysIdTest() {
+        return Commands.sequence(
+            this.startCommand(),
+            // 1. Quasistatic Forward (慢慢往前推)
+            this.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                .until(() -> this.getAngle() > 50.0), // 當角度大於 43 度時停止
             
-//             new WaitCommand(0.5), // 休息 1.5 秒讓機構穩定
+            new WaitCommand(0.5), // 休息 1.5 秒讓機構穩定
 
-//             // 2. Quasistatic Reverse (慢慢往後拉)
-//             this.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-//                 .until(() -> this.getAngle() < 30.0), // 當角度小於 30 度時停止
+            // 2. Quasistatic Reverse (慢慢往後拉)
+            this.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                .until(() -> this.getAngle() < 30.0), // 當角度小於 30 度時停止
             
-//             new WaitCommand(0.5),
+            new WaitCommand(0.5),
 
-//             // 3. Dynamic Forward (快速往前推)
-//             this.sysIdDynamic(SysIdRoutine.Direction.kForward)
-//                 .until(() -> this.getAngle() > 43.0),
+            // 3. Dynamic Forward (快速往前推)
+            this.sysIdDynamic(SysIdRoutine.Direction.kForward)
+                .until(() -> this.getAngle() > 43.0),
             
-//             new WaitCommand(0.5),
+            new WaitCommand(0.5),
 
-//             // 4. Dynamic Reverse (快速往後拉)
-//             this.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-//                 .until(() -> this.getAngle() < 30.0)
-//         );
-//     }
+            // 4. Dynamic Reverse (快速往後拉)
+            this.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+                .until(() -> this.getAngle() < 30.0),
+            this.stopCommand()
+        );
+    }
 }

@@ -2,9 +2,14 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.LogManager;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Drivetrain.AutoAlign;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper.HopperSubsystem;
@@ -18,6 +23,7 @@ public class superstructure extends SubsystemBase {
     private final IntakeSubsystem intake;
     private final ShooterSubsystem shooter;
     private final HopperSubsystem hopper;
+    private final ClimberSubsystem Climber;
     private final LED led;
     private final AutoAlign autoAlign;
     private final List<ShootingStateTrue> ShootingStateTrue = new ArrayList<>();
@@ -28,12 +34,30 @@ public class superstructure extends SubsystemBase {
             IntakeSubsystem intake,
             HopperSubsystem hopper,
             LED led,
-            AutoAlign autoAlign) {
+            AutoAlign autoAlign,
+            ClimberSubsystem Climber) {
         this.shooter = shooter;
         this.intake = intake;
         this.hopper = hopper;
         this.led = led;
         this.autoAlign = autoAlign;
+        this.Climber = Climber;
+    }
+
+    public Command autoclimb() {
+        return Commands.sequence(Commands.parallel(ClimbPrepare(), stopintake(), autoAlign.FindClimbPath()), Climb());
+    }
+
+    public Command ClimbPrepare() {
+        return this.Climber.up();
+    }
+
+    public Command Climb() {
+        return this.Climber.climbup();
+    }
+
+    public Command Climbdown() {
+        return this.Climber.climbup();
     }
 
     public Command autoshooter() {
@@ -42,31 +66,42 @@ public class superstructure extends SubsystemBase {
 
     // Intake Methods
 
+    public Command Climberup() {
+        return this.Climber.up();
+    }
+
+    public Command Climberdown() {
+        return this.Climber.down();
+    }
+
     public Command intake() {
-        return Commands.parallel(
-                Commands.runOnce(intake::armDown),
-                Commands.runOnce(intake::rollerStart));
+        return this.intake.intake();
     }
 
     public Command stopintake() {
         return Commands.parallel(
                 Commands.runOnce(intake::rollerEnd),
-                Commands.runOnce(intake::armUp));
+                Commands.runOnce(intake::armup));
     }
 
+public Command shootCommand() {
+        return Commands.parallel(
+            
+            this.intake.shootintake(),
 
-    public Command shootCommand() {
-        return Commands.run(() -> {
-            this.setShootingStateTrue();
+            // 2. 執行射擊與供彈判斷的 Command
+            Commands.run(() -> {
+                this.setShootingStateTrue();
+                
+                this.shooter.shoot();
 
-            if (shooter.isAtSetPosition()) {
-                hopper.warmUpforshoot();
-                this.shooter.shoot();
-            } else {
-                this.shooter.shoot();
-                hopper.warmUpforshoot();
-            }
-        });
+                if (shooter.isAtSetPosition()) {
+                    hopper.warmUpforshoot();
+                } else {
+                    hopper.stopAll(); 
+                }
+            }, this.shooter, this.hopper)
+        );
     }
 
     public Command stopShoot() {
@@ -75,7 +110,6 @@ public class superstructure extends SubsystemBase {
                 Commands.runOnce(this.shooter::stopShoot),
                 Commands.runOnce(hopper::waiting));
     }
-    
 
     public Command DriveToTrench() {
         return this.autoAlign.DriveToTrench();
@@ -103,5 +137,6 @@ public class superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("climber", this.Climber.getPosition());
     }
 }

@@ -33,6 +33,10 @@ public class SpindexerIOHardware implements SpindexerIO {
     public void stop() {
         this.mechineMotor.stopMotor();
     }
+    @Override
+    public double getStatorCurrent(){
+        return this.mechineMotor.getStatorCurrent().getValueAsDouble();
+    }
 
     @Override
     public void configure() {

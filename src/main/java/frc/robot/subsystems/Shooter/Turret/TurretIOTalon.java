@@ -1,25 +1,26 @@
 package frc.robot.subsystems.Shooter.Turret;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.logging.Logger;
+
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,43 +29,34 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.IDs;
 import frc.robot.subsystems.Shooter.ShooterConstants;
-import frc.robot.util.MathHelper.PositionWithGearRatio;
-import frc.robot.util.MathHelper.RobustCRTCalculator;
 
 public class TurretIOTalon extends TurretIO {
     private final TalonFX turretMotor;
-    private final CANcoder master, slave;
+    private final CANcoder turretCaNcoder;
+    private final StatusSignal<Angle> turretPosition;
 
-    // 依照 Spark 版本，你的齒輪比應該是這個（如果硬體相同）
     private final double gearRatio = (96.0 / 16.0) * 3.0;
 
-    private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-    private final VoltageOut m_voltageRequest = new VoltageOut(0);
+    private final PositionVoltage m_request = new PositionVoltage(0);
+    private final VoltageOut voltagRequire = new VoltageOut(0.0);
+    public Angle goal;
 
-    // 🟢 【新增】SysIdRoutine
     private final SysIdRoutine sysIdRoutine;
 
     public TurretIOTalon() {
-        this.turretMotor = new TalonFX(IDs.Shooter.TURRET_MOTOR);
-        this.master = new CANcoder(IDs.Shooter.TURRET_MASTER_CANCODER);
-        this.slave = new CANcoder(IDs.Shooter.TURRET_SLAVE_CANCODER);
+        this.turretMotor = new TalonFX(IDs.Shooter.TURRET_MOTOR, "canivore");
+        this.turretCaNcoder = new CANcoder(IDs.Shooter.TURRET_Cancoder, "canivore");
+        this.turretPosition = turretMotor.getPosition();
 
-        // ==========================================
-        // 🟢 【新增】初始化 SysId 測試機制 (TalonFX 版本)
-        // ==========================================
+      SignalLogger.setPath("/U/");
+
         this.sysIdRoutine = new SysIdRoutine(
-                new SysIdRoutine.Config(),
+                new SysIdRoutine.Config(Volts.of(0.5).per(Second), Volts.of(3),
+                        null, (state) -> SignalLogger.writeString("state", state.toString())),
                 new SysIdRoutine.Mechanism(
-                        // 1. 給電壓 (使用 Phoenix 6 的 VoltageOut)
-                        (voltage) -> turretMotor.setControl(m_voltageRequest.withOutput(voltage.in(Volts))),
-                        // 2. 記錄狀態
-                        log -> {
-                            log.motor("TurretMotor")
-                                    .voltage(Volts.of(turretMotor.getMotorVoltage().getValueAsDouble()))
-                                    .angularPosition(turretMotor.getPosition().getValue()) // Talon 直接回傳 Angle 單位
-                                    .angularVelocity(turretMotor.getVelocity().getValue()); // Talon 直接回傳 Velocity 單位
-                        },
-                        // 3. 虛擬子系統綁定
+                        (volts) -> this.turretMotor.setControl(voltagRequire.withOutput(volts.in(Volts))),
+                        null,
+                        // 🟢 修正 1：給予一個虛擬的 SubsystemBase，避免 IO 層轉型失敗當機
                         new SubsystemBase() {
                             @Override
                             public String getName() {
@@ -72,40 +64,21 @@ public class TurretIOTalon extends TurretIO {
                             }
                         }));
 
-        this.configureMotors();
-        this.resetAngle();
-        initStartingPosition();
+        this.CANcoderConfig();
+        configureMotors();
     }
 
-    private void initStartingPosition() {
-
-        StatusSignal<Angle> currentPos = turretMotor.getPosition();
-
-        currentPos.waitForUpdate(0.25);
-
-        m_request.Position = currentPos.getValueAsDouble();
+    public void CANcoderConfig() {
+        var cfg = new CANcoderConfiguration();
+        cfg.MagnetSensor.MagnetOffset = 0.448486328125;
+        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        turretCaNcoder.getConfigurator().apply(cfg);
     }
-
-    // @Override
-    // public void CANcoderConfig() {
-    // var cfg = new CANcoderConfiguration();
-
-    // double targetSensorRotations = Units.degreesToRotations(25.0) *
-    // sensorToMechRatio;
-
-    // cfg.MagnetSensor.MagnetOffset = 0.128662109375 + targetSensorRotations;
-
-    // cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-    // cfg.MagnetSensor.SensorDirection =
-    // SensorDirectionValue.CounterClockwise_Positive;
-
-    // Hoodcancoder.getConfigurator().apply(cfg);
-    // }
 
     public void configureMotors() {
         TalonFXConfiguration configs = new TalonFXConfiguration();
 
-        // 電流限制
         configs.CurrentLimits
                 .withStatorCurrentLimitEnable(true)
                 .withStatorCurrentLimit(70.0)
@@ -114,64 +87,26 @@ public class TurretIOTalon extends TurretIO {
 
         configs.SoftwareLimitSwitch
                 .withReverseSoftLimitEnable(true)
-                .withReverseSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MIN_LIMIT))
+                .withReverseSoftLimitThreshold(ShooterConstants.HARD_MIN_LIMIT)
                 .withForwardSoftLimitEnable(true)
-                .withForwardSoftLimitThreshold(Units.radiansToRotations(ShooterConstants.HARD_MAX_LIMIT));
+                .withForwardSoftLimitThreshold(ShooterConstants.HARD_MAX_LIMIT);
 
-        // 馬達設定
+        configs.Feedback
+                .withFeedbackRemoteSensorID(IDs.Shooter.TURRET_Cancoder)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                .withRotorToSensorRatio(-36.0)
+                .withSensorToMechanismRatio(0.5);
+
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        // PID & FF (建議保留 Slot0 供 Motion Magic 使用)
-        configs.Slot0.kS = 0.25;
-        configs.Slot0.kV = 0.12;
-        configs.Slot0.kA = 0.01;
-        configs.Slot0.kP = 0.11;
-        configs.Slot0.kI = 0.0;
-        configs.Slot0.kD = 0.0;
-
-        // Motion Magic 設定
-        configs.MotionMagic.withMotionMagicCruiseVelocity(DegreesPerSecond.of(360))
-                .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(720));
-
-        // 🟢 【關鍵】設定齒輪比，讓 getPosition 直接讀到旋轉台角度
-        configs.Feedback.SensorToMechanismRatio = gearRatio;
+        configs.Slot0.kS = 0.63542;
+        configs.Slot0.kV = 1.5255;
+        configs.Slot0.kA = 0.13204;
+        configs.Slot0.kP = 42.0;
+        configs.Slot0.kD = 1.5;
 
         turretMotor.getConfigurator().apply(configs);
-    }
-
-    // ==========================================
-    // 🟢 【新增】SysId 指令組 (從 Spark 版本移植)
-    // ==========================================
-    public Command sysIdQuasistaticForward() {
-        return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
-                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT);
-    }
-
-    public Command sysIdQuasistaticReverse() {
-        return sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)
-                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT);
-    }
-
-    public Command sysIdDynamicForward() {
-        return sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)
-                .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT);
-    }
-
-    public Command sysIdDynamicReverse() {
-        return sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)
-                .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT);
-    }
-
-    public Command sysid() {
-        return Commands.sequence(
-                sysIdQuasistaticForward(),
-                new WaitCommand(1.5),
-                sysIdQuasistaticReverse(),
-                new WaitCommand(1.5),
-                sysIdDynamicForward(),
-                new WaitCommand(1.5),
-                sysIdDynamicReverse());
     }
 
     @Override
@@ -180,19 +115,62 @@ public class TurretIOTalon extends TurretIO {
     }
 
     @Override
-    public void resetAngle() {
-        turretMotor.setPosition(0.0);
+    public Angle getAngle() {
+        this.turretPosition.refresh();
+        return Radians.of(turretPosition.getValue().in(Radians));
     }
 
     @Override
-    public Angle getAngle() {
-        // 這依然回傳 Angle 物件，但在視覺上明確了我們關注的是 Radians
-        return Radians.of(turretMotor.getPosition().getValue().in(Radians));
+    public Angle getAnglegoal() {
+        return goal;
     }
 
     @Override
     public boolean isAtSetPosition() {
-        // 誤差小於 2 度視為到達
         return Math.abs(turretMotor.getClosedLoopError().getValueAsDouble()) < (40.0 / 360.0);
+    }
+
+    // ==========================================
+    // 🟢 【終極修正版】SysId 測試指令
+    // ==========================================
+    @Override
+    public Command sysid() {
+        return Commands.sequence(
+                Commands.runOnce(() -> {
+                    SignalLogger.start();
+                    turretMotor.getPosition().setUpdateFrequency(250);
+                    turretMotor.getVelocity().setUpdateFrequency(250);
+                    turretMotor.getMotorVoltage().setUpdateFrequency(250);
+                }),
+
+                sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward)
+                        .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT),
+
+                new WaitCommand(1.5),
+
+                sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse)
+                        .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT),
+
+                new WaitCommand(1.5),
+
+                // 4. Dynamic Forward (快速往前推)
+                sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)
+                        .until(() -> this.getAngle().in(Radians) > ShooterConstants.SOFT_MAX_LIMIT),
+
+                new WaitCommand(1.5),
+
+                // 5. Dynamic Reverse (快速往後拉)
+                sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse)
+                        .until(() -> this.getAngle().in(Radians) < ShooterConstants.SOFT_MIN_LIMIT),
+
+                // 🟢 6. 測試結束：關閉紀錄器，並將更新率降回正常的 50Hz
+                Commands.runOnce(() -> {
+                    System.err.println("🛑 SysId 紀錄結束！");
+                    SignalLogger.stop();
+                    turretMotor.getPosition().setUpdateFrequency(50);
+                    turretMotor.getVelocity().setUpdateFrequency(50);
+                    turretMotor.getMotorVoltage().setUpdateFrequency(50);
+                })
+        );
     }
 }

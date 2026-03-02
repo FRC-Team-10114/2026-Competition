@@ -1,5 +1,9 @@
 package frc.robot.subsystems.Hopper;
 
+import java.security.PublicKey;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Hopper.Spindexer.SpindexerIO;
 import frc.robot.subsystems.Hopper.Spindexer.SpindexerIOHardware;
@@ -23,7 +27,7 @@ public class HopperSubsystem extends SubsystemBase {
     }
 
     public void warmUpforshoot() {
-        this.spindexer.run(-10);
+        this.spindexer.run(-5.0);
     }
 
     public void stopAll() {
@@ -36,5 +40,6 @@ public class HopperSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        Logger.recordOutput("spindexer", spindexer.getStatorCurrent());
     }
 }

@@ -23,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RIght_hum.0"
+                  "pathName": "Left_DoubleCenter_1.0"
                 }
               },
               {
@@ -42,25 +42,44 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "intakestop"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "stopshoot"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left_DoubleCenter_2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
                   "name": "shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ClimbPrepare"
                 }
               }
             ]
