@@ -37,31 +37,6 @@
                 "data": {
                   "name": "intakestop"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "HoodDown"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakeDown"
-                }
               }
             ]
           }
@@ -69,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "ClimbPrepare"
+            "name": "shoot"
           }
         }
       ]

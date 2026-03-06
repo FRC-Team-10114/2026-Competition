@@ -305,6 +305,7 @@
   "splits":[0]
  },
  "events":[
-   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61024, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
-   {"name":"intakestop", "from":{"target":7, "targetTimestamp":5.09394, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakestop"}}}]
+   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61024, "offset":{"exp":"0.2 s", "val":0.2}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
+   {"name":"intakestop", "from":{"target":7, "targetTimestamp":5.09394, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakestop"}}},
+   {"name":"intakestop", "from":{"target":1, "targetTimestamp":0.76293, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakestop"}}}]
 }

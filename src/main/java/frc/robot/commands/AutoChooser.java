@@ -87,7 +87,8 @@ public class AutoChooser {
         AutoStartChooser.addOption("Start: CENTER", AutoStart.CENTER);
 
         ShowtimeChooser.setDefaultOption("None", ShowTime.None);
-        // ShowtimeChooser.addOption("LeftDoubleCenter", ShowTime.LeftDoubleCenter);
+        ShowtimeChooser.addOption("LeftDoubleCenter", ShowTime.LeftDoubleCenter);
+        ShowtimeChooser.addOption("RightDoubleCenter", ShowTime.RightDoubleCenter);
         ShowtimeChooser.addOption("LeftCleanAllCenter", ShowTime.LeftCleanAllCenter);
         ShowtimeChooser.addOption("RightCleanAllCenter", ShowTime.RightCleanAllCenter);
 

@@ -98,7 +98,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
     public Command climbintake(){
-        return Commands.runOnce(this::armupforclimb, this);
+        return Commands.sequence(
+                Commands.runOnce(this::armupforclimb, this),
+                Commands.runOnce(this::rollerEnd, this));
     }
     public Command sysid(){
         return this.arm.sysid();

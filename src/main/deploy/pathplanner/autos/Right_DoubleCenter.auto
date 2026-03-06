@@ -99,38 +99,13 @@
         {
           "type": "named",
           "data": {
-            "name": "intakeDown"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "StopHoodDown"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RIght_Climb"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "NoStopShoot"
           }
         }
       ]

@@ -54,12 +54,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "intakeDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "ClimbPrepare"
                 }
               }

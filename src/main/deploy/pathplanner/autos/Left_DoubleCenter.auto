@@ -48,6 +48,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intakestop"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -79,13 +85,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Climb"
+                  "name": "NoStopShoot"
                 }
               }
             ]
