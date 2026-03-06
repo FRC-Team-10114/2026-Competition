@@ -48,17 +48,17 @@ public class LED extends SubsystemBase {
 
         setRainbow();
     }
-
     public void setRainbow() {
         // Speed 範圍是 0.0 ~ 1.0 (預設通常是 1.0)
-        ledController.setControl(rainbowAnimation.withBrightness(1.0));
+        ledController.setControl(rainbowAnimation.withBrightness(0.05));
     }
 
     public void setFire() {
         // 🔴 小提醒：你原本設定 withBrightness(0.0)，這會讓火焰完全看不見(亮度為0)！
         // 建議改成 0.5 甚至 1.0 才會有燃燒的效果喔！
-        ledController.setControl(fireAnimation.withBrightness(1.0));
+        ledController.setControl(fireAnimation.withBrightness(0.05).withFrameRate(500));
     }
+
 
     public void close() {
         ledController.close();
