@@ -48,13 +48,13 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public Command up() {
         return Commands.run(() -> this.climber.setVolt(-9), this)
-                .withTimeout(1.9)
+                .withTimeout(1.35)
                 .finallyDo(() -> this.climber.setVolt(0));
     }
 
     public Command climb() {
         return Commands.run(() -> this.climber.setVolt(9), this)
-                .withTimeout(2.0)
+                .withTimeout(1.0)
                 .finallyDo(() -> this.climber.setVolt(0));
     }
     public Command climbupvolt(){

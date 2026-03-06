@@ -167,7 +167,11 @@ public class RobotContainer {
 
         joystick.povUp().whileTrue(superstructure.ManualClimbUp());
 
-        controller.y().onTrue(superstructure.stopintake());
+        controller.x().onTrue(superstructure.stopintake());
+
+        controller.b().onTrue(Commands.runOnce(this.shooter::cameralowset, this.shooter));
+
+        controller.a().onTrue(Commands.runOnce(this.shooter::camerabackset, this.shooter));
 
         // joystick.a().whileTrue(superstructure.autoclimb());
 
@@ -178,9 +182,9 @@ public class RobotContainer {
 
         // joystick.a().onTrue(superstructure.stopintake());
 
-        // joystick.b().onTrue(superstructure.ClimbPrepare());
+        joystick.b().onTrue(superstructure.ClimbPrepare());
 
-        // joystick.x().onTrue(superstructure.Climb());
+        joystick.x().onTrue(superstructure.Climb());
 
         // joystick.y().onTrue(superstructure.autoclimb());
 

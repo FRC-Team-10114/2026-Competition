@@ -56,6 +56,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private boolean InTrench = false;
 
+    public boolean cameralow = false;
+
     private Angle HoodtargetAngle = Degrees.of(25);
 
     private Angle turretAngle = Radians.of(0);
@@ -94,17 +96,18 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("isInTrench", InTrench);
         // Logger.recordOutput("isAtSetPosition", this.isAtSetPosition());
         Logger.recordOutput("turretangle", this.turret.getAngle());
-        // Logger.recordOutput("flywheelisAtSetPosition", this.flywheel.isAtSetPosition());
-        //  this.setHoodAngle(HoodtargetAngle);
-         Logger.recordOutput("HoodtargetAngle", HoodtargetAngle);
-         Logger.recordOutput("getAnglegoal", this.turret.getAnglegoal());
+        // Logger.recordOutput("flywheelisAtSetPosition",
+        // this.flywheel.isAtSetPosition());
+        // this.setHoodAngle(HoodtargetAngle);
+        Logger.recordOutput("HoodtargetAngle", HoodtargetAngle);
+        Logger.recordOutput("getAnglegoal", this.turret.getAnglegoal());
     }
-// public void Hoodup() {
-//         this.HoodtargetAngle = this.HoodtargetAngle.plus(Degrees.of(1));
-//     }
+    // public void Hoodup() {
+    // this.HoodtargetAngle = this.HoodtargetAngle.plus(Degrees.of(1));
+    // }
 
-//     public void Hooddown() {
-//         this.HoodtargetAngle = this.HoodtargetAngle.minus(Degrees.of(1));
+    // public void Hooddown() {
+    // this.HoodtargetAngle = this.HoodtargetAngle.minus(Degrees.of(1));
     // }
     public void TrueIsshooting() {
         Isshooting = true;
@@ -181,9 +184,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public void shoot() {
         this.setHoodAngle(HoodtargetAngle);
         this.flywheel.setRPS(flywheelgoal);
-        // if (isAtSetPosition()) {
-            this.trigger.run();
-        // }
+        if (isAtSetPosition()) {
+        this.trigger.run();
+        }
     }
 
     public void stopShoot() {
@@ -194,8 +197,20 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setTurretAngle(Rotation2d robotAngle, Angle targetRad) {
 
-        this.turret.setAngle(robotAngle, targetRad, currentShootState);
+        if (cameralow) {
+            this.turret.setAngle(new Rotation2d(0.0), Radians.of(0.0), currentShootState);
+        } else {
+            this.turret.setAngle(robotAngle, targetRad, currentShootState);
+        }
 
+    }
+
+    public void cameralowset() {
+        cameralow = true;
+    }
+
+    public void camerabackset() {
+        cameralow = false;
     }
 
     public boolean isAtSetPosition() {
@@ -206,13 +221,13 @@ public class ShooterSubsystem extends SubsystemBase {
     // TEST METHOD
 
     // public void flywheelup() {
-    //     this.flywheelRPS += 1;
-    //     this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
+    // this.flywheelRPS += 1;
+    // this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     // }
 
     // public void flywheeldown() {
-    //     this.flywheelRPS -= 1;
-    //     this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
+    // this.flywheelRPS -= 1;
+    // this.flywheel.setRPS(RotationsPerSecond.of(flywheelRPS));
     // }
 
     public void turretup() {
@@ -233,8 +248,9 @@ public class ShooterSubsystem extends SubsystemBase {
         }
 
     }
+
     // public Command sysid(){
-    //   return  this.turret.sysid();
+    // return this.turret.sysid();
     // }
     // public Command startCommand() {
     // return this.hood.startCommand();
@@ -242,7 +258,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // public Command stopCommand(){
     // return this.hood.stopCommand();
     // }
-    public Command sysIdTest(){
-    return this.hood.sysIdTest();
+    public Command sysIdTest() {
+        return this.hood.sysIdTest();
     }
 }
