@@ -50,6 +50,12 @@
         {
           "type": "named",
           "data": {
+            "name": "intakeDown"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "StopHoodDown"
           }
         },
@@ -57,6 +63,12 @@
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbPrepare"
           }
         }
       ]

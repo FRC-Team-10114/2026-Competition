@@ -81,15 +81,15 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                rollMap.put(0.796222, RotationsPerSecond.of(30.0));
-                rollMap.put(1.545207, RotationsPerSecond.of(31.0));
-                rollMap.put(2.148772, RotationsPerSecond.of(33.5));
-                rollMap.put(2.590749, RotationsPerSecond.of(34.0));
-                rollMap.put(3.062585, RotationsPerSecond.of(38.5));
-                rollMap.put(4.099106, RotationsPerSecond.of(41.0));
-                rollMap.put(5.074542, RotationsPerSecond.of(46.0));
+                rollMap.put(0.796222, RotationsPerSecond.of(32.3));
+                rollMap.put(1.545207, RotationsPerSecond.of(33.3));
+                rollMap.put(2.148772, RotationsPerSecond.of(35.8));
+                rollMap.put(2.590749, RotationsPerSecond.of(36.3));
+                rollMap.put(3.062585, RotationsPerSecond.of(40.8));
+                rollMap.put(4.099106, RotationsPerSecond.of(43.3));
+                rollMap.put(5.074542, RotationsPerSecond.of(48.3));
 
-                hoodMap.put(0.796222, Degree.of(30.0));
+                hoodMap.put(0.796222, Degree.of(27.0));
                 hoodMap.put(1.545207, Degree.of(32.0));
                 hoodMap.put(2.148772, Degree.of(33.0));
                 hoodMap.put(2.590749, Degree.of(33.5));
@@ -105,10 +105,10 @@ public class ShooterCalculator {
                 timeOfFlightMap.put(4.099106, 1.21);
                 timeOfFlightMap.put(5.074542, 1.32);
 
-                ToAillancerollMap.put(2.077073, RotationsPerSecond.of(27.0));
-                ToAillancerollMap.put(3.185600, RotationsPerSecond.of(35.0));
-                ToAillancerollMap.put(4.191824, RotationsPerSecond.of(40.0));
-                ToAillancerollMap.put(5.258651, RotationsPerSecond.of(43.0));
+                ToAillancerollMap.put(2.077073, RotationsPerSecond.of(29.0));
+                ToAillancerollMap.put(3.185600, RotationsPerSecond.of(37.0));
+                ToAillancerollMap.put(4.191824, RotationsPerSecond.of(42.0));
+                ToAillancerollMap.put(5.258651, RotationsPerSecond.of(45.0));
                 ToAillancerollMap.put(11.258651, RotationsPerSecond.of(77.0));
 
                 ToAillancetimeOfFlightMap.put(2.077073, 0.91);

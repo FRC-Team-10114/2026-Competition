@@ -43,9 +43,16 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput("intakearmangle", this.arm.getPosition());
 
     }
+    public boolean canclimb(){
+        if(this.arm.getPosition() >= 130){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public void rollerStart() {
-        this.roller.setVoltage(Volts.of(2.8));
+        this.roller.setVoltage(Volts.of(2.5));
     }
 
     public void rollerEnd() {
@@ -69,6 +76,9 @@ public class IntakeSubsystem extends SubsystemBase {
         state = intakestate.suck;
         this.arm.setPosition(Degrees.of(0));
     }
+    public void armupforclimb(){
+        this.arm.setPosition(Degrees.of(135));
+    }
 
     public Command intake() {
         return Commands.sequence(
@@ -86,6 +96,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
                 Commands.waitSeconds(0.2)), Commands.none(), () -> state == intakestate.none);
 
+    }
+    public Command climbintake(){
+        return Commands.runOnce(this::armupforclimb, this);
     }
     public Command sysid(){
         return this.arm.sysid();

@@ -100,13 +100,13 @@ public class ArmIOTalon implements ArmIO {
 
                 IntakeArmConfig.SoftwareLimitSwitch
                                 .withReverseSoftLimitEnable(true)
-                                .withReverseSoftLimitThreshold(Degree.of(3))
+                                .withReverseSoftLimitThreshold(Degree.of(-2))
                                 .withForwardSoftLimitEnable(true)
-                                .withForwardSoftLimitThreshold(Degree.of(115));
+                                .withForwardSoftLimitThreshold(Degree.of(135));
 
                 IntakeArmConfig.Feedback.SensorToMechanismRatio = 10.0;
 
-                IntakeArmConfig.Slot0.kP = 60.0;
+                IntakeArmConfig.Slot0.kP = 120.0;
                 IntakeArmConfig.Slot0.kI = 0.0;
                 IntakeArmConfig.Slot0.kD = 3.5;
                 IntakeArmConfig.Slot0.kG = 0.0;
@@ -117,8 +117,8 @@ public class ArmIOTalon implements ArmIO {
                 IntakeArmConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
                 IntakeArmConfig.MotionMagic
-                                .withMotionMagicCruiseVelocity(DegreesPerSecond.of(540))
-                                .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(1250));
+                                .withMotionMagicCruiseVelocity(DegreesPerSecond.of(1080))
+                                .withMotionMagicAcceleration(DegreesPerSecondPerSecond.of(3600));
 
                 armMotor.getConfigurator().apply(IntakeArmConfig);
         }

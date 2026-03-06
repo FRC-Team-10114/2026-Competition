@@ -199,8 +199,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public boolean isAtSetPosition() {
-        // return flywheel.isAtSetPosition() && turret.isAtSetPosition();
-        return true;
+        return flywheel.isAtSetPosition() && turret.isAtSetPosition();
+        // return true;
     }
 
     // TEST METHOD

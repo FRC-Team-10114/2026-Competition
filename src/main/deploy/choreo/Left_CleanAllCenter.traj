@@ -404,5 +404,6 @@
    {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.87489, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
    {"name":"NoStopShoot", "from":{"target":4, "targetTimestamp":2.76715, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"NoStopShoot"}}},
    {"name":"HoodDown", "from":{"target":7, "targetTimestamp":8.36142, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"HoodDown"}}},
-   {"name":"StopHoodDown", "from":{"target":4, "targetTimestamp":2.76715, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"StopHoodDown"}}}]
+   {"name":"StopHoodDown", "from":{"target":4, "targetTimestamp":2.76715, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"StopHoodDown"}}},
+   {"name":"intakestop", "from":{"target":1, "targetTimestamp":0.76293, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakestop"}}}]
 }

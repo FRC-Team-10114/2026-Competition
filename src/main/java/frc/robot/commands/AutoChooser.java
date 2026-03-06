@@ -50,9 +50,8 @@ public class AutoChooser {
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
         NamedCommands.registerCommand("isIn",
                 Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
-        NamedCommands.registerCommand("ClimbPrepare", superstructure.ClimbPrepare());
+        NamedCommands.registerCommand("ClimbPrepare", this.ClimbPrepare());
         NamedCommands.registerCommand("Climb", superstructure.Climb());
-        NamedCommands.registerCommand("Climbdown", superstructure.Climb());
 
     }
 
@@ -88,7 +87,7 @@ public class AutoChooser {
         AutoStartChooser.addOption("Start: CENTER", AutoStart.CENTER);
 
         ShowtimeChooser.setDefaultOption("None", ShowTime.None);
-        ShowtimeChooser.addOption("LeftDoubleCenter", ShowTime.LeftDoubleCenter);
+        // ShowtimeChooser.addOption("LeftDoubleCenter", ShowTime.LeftDoubleCenter);
         ShowtimeChooser.addOption("LeftCleanAllCenter", ShowTime.LeftCleanAllCenter);
         ShowtimeChooser.addOption("RightCleanAllCenter", ShowTime.RightCleanAllCenter);
 
@@ -159,16 +158,17 @@ public class AutoChooser {
             }
         }
 
-        Command autoCommand = null;
-
         switch (issShowTime) {
             case LeftDoubleCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Left_DoubleCenter");
             case RightDoubleCenter:
                 return new PathPlannerAuto("Right_DoubleCenter");
             case LeftCleanAllCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Left_CleanAllCenter");
             case RightCleanAllCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Right_CleanAllCenter");
             default:
                 break;
@@ -222,10 +222,9 @@ public class AutoChooser {
             default:
                 break;
         }
-
         return Commands.sequence(start, end);
+        }
     }
     // public Command auto_down(){
     //     IfGoclimb ifGoclimb = IfGoClimbChooser.getSelected();
     // }
-}

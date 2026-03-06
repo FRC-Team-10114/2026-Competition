@@ -19,6 +19,12 @@
                 "data": {
                   "name": "shoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Climb"
+                }
               }
             ]
           }

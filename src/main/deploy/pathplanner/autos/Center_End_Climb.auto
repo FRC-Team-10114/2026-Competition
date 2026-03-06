@@ -11,15 +11,15 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "intakestop"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center_End_Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]

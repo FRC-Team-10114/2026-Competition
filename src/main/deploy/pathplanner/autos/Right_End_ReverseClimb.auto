@@ -21,6 +21,12 @@
           "data": {
             "pathName": "RIght_ReverseClimb"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
+          }
         }
       ]
     }

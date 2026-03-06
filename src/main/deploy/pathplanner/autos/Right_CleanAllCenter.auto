@@ -51,6 +51,12 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "ClimbPrepare"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "Left_Cilmb"
@@ -69,6 +75,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]

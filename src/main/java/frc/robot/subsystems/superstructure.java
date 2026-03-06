@@ -6,6 +6,8 @@ import java.util.logging.LogManager;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.signals.RGBWColor;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,15 +51,11 @@ public class superstructure extends SubsystemBase {
     }
 
     public Command ClimbPrepare() {
-        return this.Climber.up();
+        return Commands.sequence(this.intake.climbintake().until(() -> this.intake.canclimb()), this.Climber.up());
     }
 
     public Command Climb() {
-        return this.Climber.climbup();
-    }
-
-    public Command Climbdown() {
-        return this.Climber.climbup();
+        return this.Climber.climb();
     }
 
     public Command autoshooter() {
@@ -84,31 +82,60 @@ public class superstructure extends SubsystemBase {
                 Commands.runOnce(intake::armup));
     }
 
-public Command shootCommand() {
+    public Command shootCommand() {
         return Commands.parallel(
-            
-            this.intake.shootintake(),
 
-            // 2. 執行射擊與供彈判斷的 Command
-            Commands.run(() -> {
-                this.setShootingStateTrue();
-                
-                this.shooter.shoot();
+                Commands.runOnce(() -> this.led.setStrobe(RGBWColor.fromHSV(30, 100, 100)), this.led),
 
-                if (shooter.isAtSetPosition()) {
-                    hopper.warmUpforshoot();
-                } else {
-                    hopper.stopAll(); 
-                }
-            }, this.shooter, this.hopper)
-        );
+                this.intake.shootintake(),
+
+                // 2. 執行射擊與供彈判斷的 Command
+                Commands.run(() -> {
+                    this.setShootingStateTrue();
+
+                    this.shooter.shoot();
+
+                    if (shooter.isAtSetPosition()) {
+                        hopper.warmUpforshoot();
+                    } else {
+                        hopper.stopAll();
+                    }
+                }, this.shooter, this.hopper));
     }
 
     public Command stopShoot() {
         return Commands.parallel(
+                Commands.runOnce(led::setFire),
                 Commands.runOnce(this::setShootingStateFalse),
                 Commands.runOnce(this.shooter::stopShoot),
                 Commands.runOnce(hopper::waiting));
+    }
+
+    public Command ManualClimbUp() {
+        return Commands.sequence(
+                Commands.runOnce(() -> this.led.setLoadingFlow(RGBWColor.fromHSV(30, 100, 100)), this.led),
+
+                this.intake.climbintake().until(() -> this.intake.canclimb()),
+
+                // 3. 開始向上攀爬
+                this.Climber.up()
+
+        ).finallyDo(() -> {
+            this.led.setFire();
+        });
+    }
+
+    public Command ManualClimbdown() {
+        return Commands.sequence(
+                Commands.runOnce(() -> this.led.setLoadingFlow(RGBWColor.fromHSV(30, 100, 100)), this.led),
+
+                this.intake.climbintake().until(() -> this.intake.canclimb()),
+
+                this.Climber.down()
+
+        ).finallyDo(() -> {
+            this.led.setFire();
+        });
     }
 
     public Command DriveToTrench() {

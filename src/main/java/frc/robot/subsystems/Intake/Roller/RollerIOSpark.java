@@ -46,6 +46,7 @@ public class RollerIOSpark implements RollerIO {
         var rollerConfig = new SparkFlexConfig();
 
         rollerConfig
+        
                 .idleMode(IdleMode.kBrake)
                 .inverted(false)
                 .smartCurrentLimit((int) RollerConstants.SUPPLY_CURRENT_LIMIT.baseUnitMagnitude())

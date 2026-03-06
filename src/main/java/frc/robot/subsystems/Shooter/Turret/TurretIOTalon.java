@@ -70,7 +70,7 @@ public class TurretIOTalon extends TurretIO {
 
     public void CANcoderConfig() {
         var cfg = new CANcoderConfiguration();
-        cfg.MagnetSensor.MagnetOffset = 0.448486328125;
+        cfg.MagnetSensor.MagnetOffset = 0.357177734375;
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         turretCaNcoder.getConfigurator().apply(cfg);

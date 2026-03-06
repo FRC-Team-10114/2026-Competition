@@ -67,8 +67,20 @@
                 "data": {
                   "pathName": "RIght_Climb"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ClimbPrepare"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Climb"
           }
         }
       ]

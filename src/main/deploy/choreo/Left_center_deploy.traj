@@ -305,5 +305,6 @@
   "splits":[0]
  },
  "events":[
-   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61024, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakeDown"}}}]
+   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61024, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
+   {"name":"intakestop", "from":{"target":7, "targetTimestamp":5.09394, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakestop"}}}]
 }
