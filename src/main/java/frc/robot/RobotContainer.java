@@ -54,6 +54,7 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController controller = new CommandXboxController(1);
 
     final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
@@ -158,9 +159,15 @@ public class RobotContainer {
         // robotStatus));
 
         joystick.leftTrigger().whileTrue((superstructure.intake()))
-        .onFalse(superstructure.stopintake());
+                .onFalse(superstructure.stopintake());
         joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
+
+        joystick.povDown().whileTrue(superstructure.ManualClimbdown());
+
+        joystick.povUp().whileTrue(superstructure.ManualClimbUp());
+
+        controller.y().onTrue(superstructure.stopintake());
 
         // joystick.a().whileTrue(superstructure.autoclimb());
 
@@ -171,18 +178,13 @@ public class RobotContainer {
 
         // joystick.a().onTrue(superstructure.stopintake());
 
-        joystick.povDown().whileTrue(superstructure.ManualClimbdown());
+        // joystick.b().onTrue(superstructure.ClimbPrepare());
 
-        joystick.povUp().whileTrue(superstructure.ManualClimbUp());
+        // joystick.x().onTrue(superstructure.Climb());
 
-        joystick.b().onTrue(superstructure.ClimbPrepare());
-
-        joystick.x().onTrue(superstructure.Climb());
-
-        joystick.y().onTrue(superstructure.autoclimb());
+        // joystick.y().onTrue(superstructure.autoclimb());
 
         // joystick.x().onTrue(this.intake.sysid());
-
 
         // // joystick.a().onTrue(this.shooter.sysid());
 
@@ -244,9 +246,11 @@ public class RobotContainer {
     }
 
     public void sysidTest() {
-        // joystick.povUp().whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
+        // joystick.povUp().whileTrue(drivetrain.applyRequest(() ->
+        // forwardStraight.withVelocityX(0.5).withVelocityY(0)));
         // joystick.povDown()
-        //         .whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
+        // .whileTrue(drivetrain.applyRequest(() ->
+        // forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
