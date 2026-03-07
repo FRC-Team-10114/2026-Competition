@@ -85,9 +85,9 @@ public class ShooterCalculator {
                 rollMap.put(1.545207, RotationsPerSecond.of(33.3));
                 rollMap.put(2.148772, RotationsPerSecond.of(35.8));
                 rollMap.put(2.590749, RotationsPerSecond.of(36.3));
-                rollMap.put(3.062585, RotationsPerSecond.of(40.8));
-                rollMap.put(4.099106, RotationsPerSecond.of(43.3));
-                rollMap.put(5.074542, RotationsPerSecond.of(48.3));
+                rollMap.put(3.062585, RotationsPerSecond.of(44.8));
+                rollMap.put(4.099106, RotationsPerSecond.of(48.3));
+                rollMap.put(5.074542, RotationsPerSecond.of(53.3));
 
                 hoodMap.put(0.796222, Degree.of(27.0));
                 hoodMap.put(1.545207, Degree.of(32.0));
@@ -188,7 +188,7 @@ public class ShooterCalculator {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
 
-                Logger.recordOutput("targetFieldAngle", targetFieldAngle);
+                // Logger.recordOutput("targetFieldAngle", targetFieldAngle);
 
                 Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
@@ -278,7 +278,7 @@ public class ShooterCalculator {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
 
-                Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
+                // Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
                 return new ShootingState(targetFieldAngle, Hood_MAX_RADS, ToAillancerollMap.get(lookaheadTurretToTargetDistance));
         }
 

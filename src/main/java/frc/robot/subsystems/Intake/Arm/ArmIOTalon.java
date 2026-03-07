@@ -100,7 +100,7 @@ public class ArmIOTalon implements ArmIO {
 
                 IntakeArmConfig.SoftwareLimitSwitch
                                 .withReverseSoftLimitEnable(true)
-                                .withReverseSoftLimitThreshold(Degree.of(-2))
+                                .withReverseSoftLimitThreshold(Degree.of(-5))
                                 .withForwardSoftLimitEnable(true)
                                 .withForwardSoftLimitThreshold(Degree.of(135));
 

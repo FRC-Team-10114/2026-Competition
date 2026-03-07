@@ -40,7 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("intakearmangle", this.arm.getPosition());
+        // Logger.recordOutput("intakearmangle", this.arm.getPosition());
 
     }
     public boolean canclimb(){
@@ -52,7 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void rollerStart() {
-        this.roller.setVoltage(Volts.of(2.5));
+        this.roller.setVoltage(Volts.of(2.7));
     }
 
     public void rollerEnd() {
@@ -74,7 +74,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void armdown() {
         state = intakestate.suck;
-        this.arm.setPosition(Degrees.of(0));
+        this.arm.setPosition(Degrees.of(-2.5));
     }
     public void armupforclimb(){
         this.arm.setPosition(Degrees.of(135));

@@ -164,6 +164,6 @@ public class superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("climber", this.Climber.getPosition());
+        // Logger.recordOutput("climber", this.Climber.getPosition());
     }
 }

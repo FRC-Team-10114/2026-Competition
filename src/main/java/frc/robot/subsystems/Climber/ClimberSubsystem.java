@@ -106,7 +106,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("mainclimb", this.climber.maingetOutputCurrent());
-        Logger.recordOutput("mclimb", this.climber.getOutputCurrent());
+        // Logger.recordOutput("mainclimb", this.climber.maingetOutputCurrent());
+        // Logger.recordOutput("mclimb", this.climber.getOutputCurrent());
     }
 }

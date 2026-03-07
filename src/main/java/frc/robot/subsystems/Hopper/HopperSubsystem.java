@@ -40,6 +40,6 @@ public class HopperSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("spindexer", spindexer.getStatorCurrent());
+        // Logger.recordOutput("spindexer", spindexer.getStatorCurrent());
     }
 }

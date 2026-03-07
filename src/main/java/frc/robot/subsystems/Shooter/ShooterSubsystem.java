@@ -89,8 +89,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public void periodic() {
         // trigger.run();
         SetShooterGoal();
-        Logger.recordOutput("HoodAngle", this.hood.getAngle());
-        Logger.recordOutput("flywheelRPS", this.flywheel.getRPS());
+        // Logger.recordOutput("HoodAngle", this.hood.getAngle());
+        // Logger.recordOutput("flywheelRPS", this.flywheel.getRPS());
         // Logger.recordOutput("m_targetAngle", m_targetAngle);
         // Logger.recordOutput("flywheelRPS", flywheelRPS);
         Logger.recordOutput("isInTrench", InTrench);
