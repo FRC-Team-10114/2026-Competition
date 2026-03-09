@@ -283,6 +283,7 @@
   "splits":[0]
  },
  "events":[
-   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61058, "offset":{"exp":"-0.5 s", "val":-0.5}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
-   {"name":"Marker", "from":{"target":3, "targetTimestamp":1.61058, "offset":{"exp":"0 s", "val":0.0}}, "event":null}]
+   {"name":"intakeDown", "from":{"target":3, "targetTimestamp":1.61058, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeDown"}}},
+   {"name":"intakestop", "from":{"target":1, "targetTimestamp":0.76293, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakestop"}}},
+   {"name":"intakestop", "from":{"target":7, "targetTimestamp":5.37378, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakestop"}}}]
 }

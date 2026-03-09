@@ -18,17 +18,17 @@ import edu.wpi.first.units.measure.LinearVelocity;
 
 public class ClimberConstants {
     
-    public static final Current STATOR_CURRENT_LIMIT = Amps.of(50);
+    public static final Current STATOR_CURRENT_LIMIT = Amps.of(40);
     public static final Current SUPPLY_CURRENT_LIMIT = Amps.of(40);
 
     public static final double GEAR_RATIO = 1.0;
     public static final double POSITION_CONVERSION_FACTOR = GEAR_RATIO;
 
-    public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(5.0);
-    public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(2);
+    public static final AngularAcceleration MAX_ACCELERATION = RotationsPerSecondPerSecond.of(10.0);
+    public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(20.0);
 
-    public static final Angle FORWARD_LIMIT = Rotations.of(5.0);
-    public static final Angle REVERSE_LIMIT = Rotations.of(0.0);
+    public static final Angle FORWARD_LIMIT = Rotations.of(85.0);
+    public static final Angle REVERSE_LIMIT = Rotations.of(-1.0);
 }
 
 

@@ -14,4 +14,7 @@ public interface HoodIO {
     public void configure();
 
     public boolean isAtSetPosition();
+
+    public Command sysIdTest();
+
 }

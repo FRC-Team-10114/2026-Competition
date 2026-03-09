@@ -1,5 +1,9 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
+import org.opencv.ml.RTrees;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -22,6 +26,10 @@ public class AutoChooser {
     public final SendableChooser<IfGoCenter> IfGoCenterChooser = new SendableChooser<>();
     public final SendableChooser<IfGoclimb> IfGoClimbChooser = new SendableChooser<>();
 
+    public boolean isClimbEnabled = false;
+
+    public BooleanSupplier ifclimb = () -> isClimbEnabled;
+
     public AutoChooser(CommandSwerveDrivetrain drive, superstructure superstructure, RobotStatus robotStatus) {
         this.drive = drive;
         this.superstructure = superstructure;
@@ -42,6 +50,13 @@ public class AutoChooser {
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
         NamedCommands.registerCommand("isIn",
                 Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
+        NamedCommands.registerCommand("ClimbPrepare", this.ClimbPrepare());
+        NamedCommands.registerCommand("Climb", superstructure.Climb());
+
+    }
+
+    public Command ClimbPrepare() {
+        return Commands.either(superstructure.ClimbPrepare(), Commands.none(), ifclimb);
     }
 
     public enum ShowTime {
@@ -144,16 +159,17 @@ public class AutoChooser {
             }
         }
 
-        Command autoCommand = null;
-
         switch (issShowTime) {
             case LeftDoubleCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Left_DoubleCenter");
             case RightDoubleCenter:
                 return new PathPlannerAuto("Right_DoubleCenter");
             case LeftCleanAllCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Left_CleanAllCenter");
             case RightCleanAllCenter:
+            isClimbEnabled = true;
                 return new PathPlannerAuto("Right_CleanAllCenter");
             default:
                 break;
@@ -186,6 +202,7 @@ public class AutoChooser {
                     end = new PathPlannerAuto("Right_End_Climb");
                 else if (startPose == AutoStart.CENTER)
                     end = new PathPlannerAuto("Center_End_Climb");
+                isClimbEnabled = true;
                 break;
             case ReverseClimb:
                 if (startPose == AutoStart.LEFT)
@@ -194,6 +211,7 @@ public class AutoChooser {
                     end = new PathPlannerAuto("Right_End_ReverseClimb");
                 else if (startPose == AutoStart.CENTER)
                     end = new PathPlannerAuto("Center_End_ReverseClimb");
+                isClimbEnabled = true;
                 break;
             case EndAtCenter:
                 if (startPose == AutoStart.LEFT)
@@ -205,7 +223,9 @@ public class AutoChooser {
             default:
                 break;
         }
-
         return Commands.sequence(start, end);
+        }
     }
-}
+    // public Command auto_down(){
+    //     IfGoclimb ifGoclimb = IfGoClimbChooser.getSelected();
+    // }

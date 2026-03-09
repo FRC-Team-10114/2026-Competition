@@ -42,15 +42,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "intakeDown"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ClimbPrepare"
+                }
+              }
+            ]
           }
         }
       ]

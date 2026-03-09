@@ -23,6 +23,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intakestop"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Right_CleanAllCenter"
@@ -37,38 +43,7 @@
         {
           "type": "named",
           "data": {
-            "name": "intakeDown"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left_Cilmb"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intakestop"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopshoot"
-                }
-              }
-            ]
+            "name": "NoStopShoot"
           }
         }
       ]
