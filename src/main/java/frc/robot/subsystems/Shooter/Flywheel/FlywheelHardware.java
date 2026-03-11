@@ -71,8 +71,8 @@ public class FlywheelHardware implements FlywheelIO {
     }
 
     @Override
-    public void setRPS(AngularVelocity RPS) {
-        double targetRPS = RPS.in(RotationsPerSecond);
+    public void setVelocity(AngularVelocity RotationPerSec) {
+        double targetRPS = RotationPerSec.in(RotationsPerSecond);
 
         this.targetRPS = targetRPS;
 
@@ -80,11 +80,12 @@ public class FlywheelHardware implements FlywheelIO {
     }
 
     @Override
-    public AngularVelocity getRPS() {
+    public AngularVelocity getVelocity() {
         velocitySignal.refresh();
 
         return velocitySignal.getValue();
     }
+
     @Override
     public boolean isAtSetPosition() {
         // 1. 刷新數據

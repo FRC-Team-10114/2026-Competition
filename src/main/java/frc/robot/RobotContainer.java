@@ -53,8 +53,8 @@ public class RobotContainer {
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
-    private final CommandXboxController controller = new CommandXboxController(1);
+    private final CommandXboxController driverJoystick = new CommandXboxController(0);
+    private final CommandXboxController controllerJoystick = new CommandXboxController(1);
 
     final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final SwerveDrivetrainTest[] tests = new SwerveDrivetrainTest[4];
@@ -135,14 +135,14 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> {
-                    boolean slowMode = joystick.getLeftTriggerAxis() > 0.3 && joystick.getRightTriggerAxis() > 0.3;
+                    boolean slowMode = driverJoystick.getLeftTriggerAxis() > 0.3 && driverJoystick.getRightTriggerAxis() > 0.3;
 
                     double translationMultiplier = slowMode ? 0.5 : 1.0;
 
                     return drive
-                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed)
-                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed)
-                            .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                            .withVelocityX(-driverJoystick.getLeftY() * MaxTeleOpSpeed)
+                            .withVelocityY(-driverJoystick.getLeftX() * MaxTeleOpSpeed)
+                            .withRotationalRate(-driverJoystick.getRightX() * MaxAngularRate);
                 }));
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
@@ -158,20 +158,20 @@ public class RobotContainer {
         // .onFalse(Commands.runOnce(() -> robotStatus.SetSafeHood(false),
         // robotStatus));
 
-        joystick.leftTrigger().whileTrue((superstructure.intake()))
-                .onFalse(superstructure.stopintake());
-        joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
+        driverJoystick.leftTrigger().whileTrue((superstructure.intake()))
+                .onFalse(superstructure.stopIntake());
+        driverJoystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
 
-        joystick.povDown().whileTrue(superstructure.ManualClimbdown());
+        driverJoystick.povDown().whileTrue(superstructure.manualClimberDown());
 
-        joystick.povUp().whileTrue(superstructure.ManualClimbUp());
+        driverJoystick.povUp().whileTrue(superstructure.manualClimberUp());
 
-        controller.x().onTrue(superstructure.stopintake());
+        controllerJoystick.x().onTrue(superstructure.stopIntake());
 
-        controller.b().onTrue(Commands.runOnce(this.shooter::cameralowset, this.shooter));
+        controllerJoystick.b().onTrue(Commands.runOnce(this.shooter::setCameraLost, this.shooter));
 
-        controller.a().onTrue(Commands.runOnce(this.shooter::camerabackset, this.shooter));
+        controllerJoystick.a().onTrue(Commands.runOnce(this.shooter::setCameraExist, this.shooter));
 
         // joystick.a().whileTrue(superstructure.autoclimb());
 
@@ -226,15 +226,17 @@ public class RobotContainer {
         sysidTest();
     }
 
+    // TODO
     private void configureEvents() {
         robotStatus.TriggerNeedResetPoseEvent(photonVision::NeedResetPoseEvent);
-        robotStatus.TriggerInTrench(shooter::TrueInTrench);
-        robotStatus.TriggerNotInTrench(shooter::FalsInTrench);
-        signal.TargetInactive(shooter::FalseTargetactive);
-        signal.Targetactive(shooter::TrueTargetactive);
-        superstructure.TriggerShootingStateTrue(shooter::TrueIsshooting);
-        superstructure.TriggerShootingStateFalse(shooter::FalseIsshooting);
+        robotStatus.TriggerInTrench(shooter::isIntrench);
+        robotStatus.TriggerNotInTrench(shooter::isNotInTrench);
+        signal.TargetInactive(shooter::targetInactive);
+        signal.Targetactive(shooter::targetActive);
+        superstructure.TriggerShootingStateTrue(shooter::isShooting);
+        superstructure.TriggerShootingStateFalse(shooter::isNotShooting);
     }
+    //TODO
 
     public PhotonVision getPhotonVisionInstance() {
         return this.photonVision;
@@ -258,10 +260,10 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        driverJoystick.back().and(driverJoystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        driverJoystick.back().and(driverJoystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        driverJoystick.start().and(driverJoystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        driverJoystick.start().and(driverJoystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
     }
 
     public void log() {

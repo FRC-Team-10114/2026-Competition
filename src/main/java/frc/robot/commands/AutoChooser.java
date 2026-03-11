@@ -41,22 +41,22 @@ public class AutoChooser {
 
     public void SetNamedCommands() {
         NamedCommands.registerCommand("intakeDown", superstructure.intake());
-        NamedCommands.registerCommand("intakestop", superstructure.stopintake());
+        NamedCommands.registerCommand("intakestop", superstructure.stopIntake());
         NamedCommands.registerCommand("HoodDown", Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus));
         NamedCommands.registerCommand("StopHoodDown",
                 Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
-        NamedCommands.registerCommand("shoot", superstructure.autoshooter().withTimeout(2.0));
-        NamedCommands.registerCommand("NoStopShoot", superstructure.autoshooter());
+        NamedCommands.registerCommand("shoot", superstructure.autoShooter().withTimeout(2.0));
+        NamedCommands.registerCommand("NoStopShoot", superstructure.autoShooter());
         NamedCommands.registerCommand("stopshoot", superstructure.stopShoot());
         NamedCommands.registerCommand("isIn",
                 Commands.run(() -> System.out.println("Stop!!!!!!!")).until(robotStatus::isInTrench));
         NamedCommands.registerCommand("ClimbPrepare", this.ClimbPrepare());
-        NamedCommands.registerCommand("Climb", superstructure.Climb());
+        NamedCommands.registerCommand("Climb", superstructure.climb());
 
     }
 
     public Command ClimbPrepare() {
-        return Commands.either(superstructure.ClimbPrepare(), Commands.none(), ifclimb);
+        return Commands.either(superstructure.prepareClimb(), Commands.none(), ifclimb);
     }
 
     public enum ShowTime {

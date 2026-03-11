@@ -34,9 +34,9 @@ public class RollerIOTalon implements RollerIO{
         this.rollerMotor.setControl(output.withOutput(voltage));
     }
     @Override
-    public AngularVelocity getVelocity() {
+    public Voltage getVoltage() {
         this.rollerVelocity.refresh();
-        return this.rollerVelocity.getValue();
+        return Volts.of(0);
     }
 
     @Override

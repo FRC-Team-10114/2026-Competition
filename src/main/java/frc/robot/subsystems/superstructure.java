@@ -46,40 +46,32 @@ public class superstructure extends SubsystemBase {
         this.Climber = Climber;
     }
 
-    public Command autoclimb() {
-        return Commands.sequence(Commands.parallel(ClimbPrepare(), stopintake(), autoAlign.FindClimbPath()), Climb());
+    public Command autoClimb() {
+        return Commands.sequence(Commands.parallel(prepareClimb(), stopIntake(), autoAlign.FindClimbPath()), climb());
     }
 
-    public Command ClimbPrepare() {
-        return Commands.sequence(this.intake.climbintake().until(() -> this.intake.canclimb()), this.Climber.up());
+    public Command prepareClimb() {
+        return Commands.sequence(this.intake.takeIntakeBack().until(() -> this.intake.isCanClimb()), this.Climber.up());
     }
 
-    public Command Climb() {
+    public Command climb() {
         return this.Climber.climb();
     }
 
-    public Command autoshooter() {
+    public Command autoShooter() {
         return shootCommand();
     }
 
     // Intake Methods
 
-    public Command Climberup() {
-        return this.Climber.up();
-    }
-
-    public Command Climberdown() {
-        return this.Climber.down();
-    }
-
     public Command intake() {
         return this.intake.intake();
     }
 
-    public Command stopintake() {
+    public Command stopIntake() {
         return Commands.parallel(
                 Commands.runOnce(intake::rollerEnd),
-                Commands.runOnce(intake::armup));
+                Commands.runOnce(intake::armUp));
     }
 
     public Command shootCommand() {
@@ -87,7 +79,7 @@ public class superstructure extends SubsystemBase {
 
                 Commands.runOnce(() -> this.led.setStrobe(RGBWColor.fromHSV(30, 100, 100)), this.led),
 
-                this.intake.shootintake(),
+                this.intake.swingIntake(),
 
                 // 2. 執行射擊與供彈判斷的 Command
                 Commands.run(() -> {
@@ -111,34 +103,34 @@ public class superstructure extends SubsystemBase {
                 Commands.runOnce(hopper::waiting));
     }
 
-    public Command ManualClimbUp() {
+    public Command manualClimberUp() {
         return Commands.sequence(
                 Commands.runOnce(() -> this.led.setLoadingFlow(RGBWColor.fromHSV(30, 100, 100)), this.led),
 
-                this.intake.climbintake().until(() -> this.intake.canclimb()),
+                this.intake.takeIntakeBack().until(() -> this.intake.isCanClimb()),
 
                 // 3. 開始向上攀爬
-                this.Climber.up()
+                this.Climber.manualClimberUp()
 
         ).finallyDo(() -> {
             this.led.setFire();
         });
     }
 
-    public Command ManualClimbdown() {
+    public Command manualClimberDown() {
         return Commands.sequence(
                 Commands.runOnce(() -> this.led.setLoadingFlow(RGBWColor.fromHSV(30, 100, 100)), this.led),
 
-                this.intake.climbintake().until(() -> this.intake.canclimb()),
+                this.intake.takeIntakeBack().until(() -> this.intake.isCanClimb()),
 
-                this.Climber.down()
+                this.Climber.manualClimberDown()
 
         ).finallyDo(() -> {
             this.led.setFire();
         });
     }
 
-    public Command DriveToTrench() {
+    public Command alignToTrench() {
         return this.autoAlign.DriveToTrench();
     }
 

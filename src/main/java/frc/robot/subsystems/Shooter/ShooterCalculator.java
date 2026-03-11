@@ -151,17 +151,16 @@ public class ShooterCalculator {
                                         robotVelocity.omegaRadiansPerSecond);
                 }
 
-                // 2. 計算 Turret 的場地速度 (包含機器人旋轉帶來的切線速度)
+                // 2. 計算 Turret 的場地速度
+                Translation2d turretOffsetField = robotToTurret.getTranslation().toTranslation2d()
+                                .rotateBy(estimatedPose.getRotation());
+
+                // v = omega * r
                 double turretVelocityX = robotVelocity.vxMetersPerSecond
-                                + robotVelocity.omegaRadiansPerSecond
-                                                * (robotToTurret.getY() * Math.cos(robotAngle)
-                                                                - robotToTurret.getX() * Math.sin(robotAngle));
+                                - (robotVelocity.omegaRadiansPerSecond * turretOffsetField.getY());
 
                 double turretVelocityY = robotVelocity.vyMetersPerSecond
-                                + robotVelocity.omegaRadiansPerSecond
-                                                * (robotToTurret.getX() * Math.cos(robotAngle)
-                                                                - robotToTurret.getY() * Math.sin(robotAngle));
-
+                                + (robotVelocity.omegaRadiansPerSecond * turretOffsetField.getX());
                 double timeOfFlight = 0.0;
                 Pose2d lookaheadPose = turretPosition;
                 double lookaheadTurretToTargetDistance = turretToTargetDistance;
@@ -181,7 +180,6 @@ public class ShooterCalculator {
 
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
-
 
                 // 3. 最後的鏡像翻轉 (保持你原本的邏輯，用於修正靜態瞄準)
                 if (AllianceFlipUtil.shouldFlip()) {
@@ -278,8 +276,10 @@ public class ShooterCalculator {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
 
-                // Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
-                return new ShootingState(targetFieldAngle, Hood_MAX_RADS, ToAillancerollMap.get(lookaheadTurretToTargetDistance));
+                // Logger.recordOutput("lookaheadTurretToTargetDistance",
+                // lookaheadTurretToTargetDistance);
+                return new ShootingState(targetFieldAngle, Hood_MAX_RADS,
+                                ToAillancerollMap.get(lookaheadTurretToTargetDistance));
         }
 
 }

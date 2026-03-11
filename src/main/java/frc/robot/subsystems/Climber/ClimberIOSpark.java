@@ -56,7 +56,7 @@ public class ClimberIOSpark implements ClimberIO {
     }
 
     @Override
-    public void setVolt(double voltage) {
+    public void setVoltage(double voltage) {
         this.master.setVoltage(voltage);
         this.slave.setVoltage(voltage);
     }
@@ -66,18 +66,18 @@ public class ClimberIOSpark implements ClimberIO {
         this.climberEncoder.setPosition(0.0);
     }
     @Override
-    public double maingetOutputCurrent() {
+    public double getMasterCurrent() {
         // 讀取 SparkFlex 的實際輸出負載電流 (安培)
         return this.master.getOutputCurrent();
     }
     @Override
-    public double getOutputCurrent() {
+    public double getSlaveCurrent() {
         return this.slave.getOutputCurrent();
     }
     
 
     @SuppressWarnings("removal")
-    @Override
+@Override
     public void configure() {
         var masterConfig = new SparkFlexConfig();
         var slaveConfig = new SparkFlexConfig();

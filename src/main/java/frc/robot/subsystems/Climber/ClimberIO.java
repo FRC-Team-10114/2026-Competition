@@ -12,9 +12,9 @@ public interface ClimberIO {
 
     public void configure();
 
-    public void setVolt(double voltage);
+    public void setVoltage(double voltage);
 
-    public  double maingetOutputCurrent();
+    public  double getMasterCurrent();
 
-    public  double getOutputCurrent();
+    public  double getSlaveCurrent();
 }

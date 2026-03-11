@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.RobotEvent.Event.*;
 
-public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
+public class Signal extends SubsystemBase {
     public String gameData;
     public boolean CanGetPoint;
     private final List<TargetInactive> TargetInactive = new ArrayList<>();
@@ -22,7 +22,7 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
 
     public Signal() {
     }
-
+    //TODO
     public char getAllianceChar() {
         char alliance;
 
@@ -61,6 +61,7 @@ public class Signal extends SubsystemBase { // 類別名稱習慣大寫開頭
     public boolean isInactive() {
         return getAllianceChar() == getInactive();
     }
+    //TODO
 
     public void TargetInactive(TargetInactive event) {
         TargetInactive.add(event);

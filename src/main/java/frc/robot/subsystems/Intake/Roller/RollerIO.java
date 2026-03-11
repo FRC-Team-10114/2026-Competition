@@ -7,7 +7,7 @@ public interface RollerIO {
 
     public void setVoltage(Voltage volt);
 
-    public AngularVelocity getVelocity();
+    public Voltage getVoltage();
 
     public void configure();
 }

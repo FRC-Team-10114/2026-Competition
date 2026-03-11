@@ -18,7 +18,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private final ClimberIO climber;
 
-    public climbstate state = climbstate.down;
+    public climbstate state = climbstate.DOWN;
 
     public ClimberSubsystem(ClimberIO climber) {
         this.climber = climber;
@@ -26,7 +26,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public enum climbstate {
-        up, down;
+        UP, DOWN;
     }
 
     public static ClimberSubsystem create() {
@@ -41,63 +41,57 @@ public class ClimberSubsystem extends SubsystemBase {
     // }
 
     public Command down() {
-        return Commands.run(() -> this.climber.setVolt(9), this)
-                .until(() -> this.climber.maingetOutputCurrent() >= 42 && this.climber.getOutputCurrent() >= 40)
-                .finallyDo(() -> this.climber.setVolt(0));
+        return Commands.run(() -> this.climber.setVoltage(9), this)
+                .until(() -> this.climber.getMasterCurrent() >= 42 && this.climber.getSlaveCurrent() >= 40)
+                .finallyDo(() -> this.climber.setVoltage(0));
     }
 
     public Command up() {
-        return Commands.run(() -> this.climber.setVolt(-9), this)
+        return Commands.run(() -> this.climber.setVoltage(-9), this)
                 .withTimeout(1.35)
-                .finallyDo(() -> this.climber.setVolt(0));
+                .finallyDo(() -> this.climber.setVoltage(0));
     }
 
     public Command climb() {
-        return Commands.run(() -> this.climber.setVolt(9), this)
+        return Commands.run(() -> this.climber.setVoltage(9), this)
                 .withTimeout(1.0)
-                .finallyDo(() -> this.climber.setVolt(0));
-    }
-    public Command climbupvolt(){
-        return Commands.runEnd(() -> this.climber.setVolt(9), () -> this.climber.setVolt(0), this);
-    }
-        public Command climbdownvolt(){
-        return Commands.runEnd(() -> this.climber.setVolt(9), () -> this.climber.setVolt(0), this);
+                .finallyDo(() -> this.climber.setVoltage(0));
     }
 
+    public Command manualClimberUp() {
+        return Commands.runEnd(() -> this.climber.setVoltage(9), () -> this.climber.setVoltage(0), this);
+    }
 
-    public Command climbup() {
-        return Commands.run(() -> this.climber.setVolt(9), this)
+    public Command manualClimberDown() {
+        return Commands.runEnd(() -> this.climber.setVoltage(-9), () -> this.climber.setVoltage(0), this);
+    }
+
+    public Command autoClimberUp() {
+        return Commands.run(() -> this.climber.setVoltage(9), this)
                 .withTimeout(1.6)
-                .finallyDo(() -> this.climber.setVolt(0));
+                .finallyDo(() -> this.climber.setVoltage(0));
     }
 
-    public Command climbdown() {
-        return Commands.run(() -> this.climber.setVolt(-9), this)
+    public Command autoClimberDown() {
+        return Commands.run(() -> this.climber.setVoltage(-9), this)
                 .withTimeout(0.8)
-                .finallyDo(() -> this.climber.setVolt(0));
+                .finallyDo(() -> this.climber.setVoltage(0));
     }
 
-    public Command climbcollecter() {
+    public Command climberCollecter() {
         return Commands.defer(() -> {
-            if (state == climbstate.down) {
-                state = climbstate.up;
+            if (state == climbstate.DOWN) {
+                state = climbstate.UP;
                 return up();
             } else {
-                state = climbstate.down;
+                state = climbstate.DOWN;
                 return down();
             }
 
         }, Set.of(this));
     }
-
-    // public void up(){
-    // this.climber.setPosition(85); // -109
-    // }
-    // public void down() {
-    // this.climber.setPosition(0); // -40
-    // }
     public void stop() {
-        this.climber.setVolt(0);
+        this.climber.setVoltage(0);
     }
 
     public double getPosition() {
@@ -105,8 +99,5 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-        // Logger.recordOutput("mainclimb", this.climber.maingetOutputCurrent());
-        // Logger.recordOutput("mclimb", this.climber.getOutputCurrent());
-    }
+    public void periodic() {}
 }

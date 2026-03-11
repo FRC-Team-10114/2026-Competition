@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Intake.Roller;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -23,22 +25,20 @@ public class RollerIOSpark implements RollerIO {
 
     private final SparkFlex rollerMotor;
     private final RelativeEncoder rollerEncoder;
-    private final SparkClosedLoopController rollerController;
 
     public RollerIOSpark() {
         this.rollerMotor = new SparkFlex(IDs.Intake.ROLLER_MOTOR, MotorType.kBrushless);
         this.rollerEncoder = rollerMotor.getEncoder();
-        this.rollerController = rollerMotor.getClosedLoopController();
     }
 
     @Override
     public void setVoltage(Voltage voltage) {
-        this.rollerController.setSetpoint(voltage.baseUnitMagnitude(), ControlType.kVoltage);
+        this.rollerMotor.setVoltage(voltage);
     }
 
     @Override
-    public AngularVelocity getVelocity() {
-        return RadiansPerSecond.of(this.rollerEncoder.getPosition());
+    public Voltage getVoltage() {
+        return Volts.of(this.rollerMotor.getBusVoltage());
     }
 
     @Override
@@ -46,21 +46,10 @@ public class RollerIOSpark implements RollerIO {
         var rollerConfig = new SparkFlexConfig();
 
         rollerConfig
-        
                 .idleMode(IdleMode.kBrake)
                 .inverted(false)
-                .smartCurrentLimit((int) RollerConstants.SUPPLY_CURRENT_LIMIT.baseUnitMagnitude())
+                .smartCurrentLimit((int) RollerConstants.SUPPLY_CURRENT_LIMIT.in(Amps))
                 .apply(rollerConfig);
-        rollerConfig.closedLoop
-                .pid(
-                        RollerConstants.PID[0], 
-                        RollerConstants.PID[1], 
-                        RollerConstants.PID[2])
-                .apply(rollerConfig.closedLoop);
-        rollerConfig.encoder
-                .velocityConversionFactor(RollerConstants.VELOCITY_CONVERSION_FACOTR)
-                .positionConversionFactor(RollerConstants.POSITION_CONVERSION_FACTOR)
-                .apply(rollerConfig.encoder);
 
         rollerMotor.configure(
                 rollerConfig, 

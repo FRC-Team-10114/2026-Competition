@@ -35,7 +35,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public enum intakestate {
-        suck, none;
+        intake, none;
     }
 
     @Override
@@ -43,10 +43,11 @@ public class IntakeSubsystem extends SubsystemBase {
         // Logger.recordOutput("intakearmangle", this.arm.getPosition());
 
     }
-    public boolean canclimb(){
-        if(this.arm.getPosition() >= 130){
+
+    public boolean isCanClimb() {
+        if (this.arm.getPosition() >= 130) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -59,50 +60,52 @@ public class IntakeSubsystem extends SubsystemBase {
         this.roller.setVoltage(Volts.of(0));
     }
 
-    public void armup() {
+    public void armUp() {
         state = intakestate.none;
         this.arm.setPosition(Degrees.of(82));
     }
-    
-    public void armdownforshoot() {
+
+    public void armDownForShoot() {
         this.arm.setPosition(Degrees.of(82));
     }
 
-    public void armupforshoot() {     
+    public void armUpForShoot() {
         this.arm.setPosition(Degrees.of(72));
     }
 
-    public void armdown() {
-        state = intakestate.suck;
+    public void armDown() {
+        state = intakestate.intake;
         this.arm.setPosition(Degrees.of(-2.5));
     }
-    public void armupforclimb(){
+
+    public void armUpForClimb() {
         this.arm.setPosition(Degrees.of(135));
     }
 
     public Command intake() {
         return Commands.sequence(
-                Commands.runOnce(this::armdown, this),
+                Commands.runOnce(this::armDown, this),
                 Commands.runOnce(this::rollerStart, this));
     }
 
-    public Command shootintake() {
-        return Commands.either(Commands.repeatingSequence(
-                Commands.runOnce(this::armdownforshoot, this),
-
-                Commands.waitSeconds(0.2),
-
-                Commands.runOnce(this::armupforshoot, this),
-
-                Commands.waitSeconds(0.2)), Commands.none(), () -> state == intakestate.none);
+    public Command swingIntake() {
+        return Commands.either(
+            Commands.repeatingSequence(
+                Commands.runOnce(this::armDownForShoot, this).withTimeout(0.2),
+                Commands.runOnce(this::armUpForShoot, this).withTimeout(0.2)),
+            Commands.none(), 
+            () -> state == intakestate.none);
 
     }
-    public Command climbintake(){
+
+    public Command takeIntakeBack() {
         return Commands.sequence(
-                Commands.runOnce(this::armupforclimb, this),
-                Commands.runOnce(this::rollerEnd, this));
+                Commands.runOnce(this::rollerEnd, this),
+                Commands.runOnce(this::armUpForClimb, this)
+                );
     }
-    public Command sysid(){
+
+    public Command sysid() {
         return this.arm.sysid();
     }
 }

@@ -68,6 +68,7 @@ public class Dashboard extends SubsystemBase {
         timeAlert();
     }
 
+    //TODO
     private void updateRoundTime() {
         if (DriverStation.isAutonomous()) {
             roundTime = DriverStation.getMatchTime();
@@ -91,6 +92,7 @@ public class Dashboard extends SubsystemBase {
         status = "End Game";
         return;
     }
+    //TODO
 
     public void timeAlert() {
         if (roundTime <= 10) {
@@ -99,8 +101,9 @@ public class Dashboard extends SubsystemBase {
             timeAlert = false;
         }
     }
-
+    //TODO
     private void alertBlink() {
         timeAlert = (int) (Timer.getFPGATimestamp() * 2) % 2 == 0;
     }
+    //TODO
 }

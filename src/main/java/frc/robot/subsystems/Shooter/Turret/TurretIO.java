@@ -2,13 +2,7 @@ package frc.robot.subsystems.Shooter.Turret;
 
 import static edu.wpi.first.units.Units.Radians;
 
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.Utils;
-import com.google.gson.annotations.Until;
-
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter.ShooterConstants;
@@ -35,7 +29,7 @@ public abstract class TurretIO {
     public abstract Command sysid();
 
 
-    public Angle Calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
+    public Angle calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
 
         lastSetpointRads = this.getAngle().baseUnitMagnitude();
 
@@ -87,7 +81,7 @@ public abstract class TurretIO {
         // 防呆：如果在 Soft Limit 找不到角度 (極罕見)，試著放寬到 Hard Limit 找一次
         // 避免因為 Soft Limit 設太窄導致追蹤丟失
         if (!foundValidAngle && state == ShootState.TRACKING) {
-            return Calculate(robotHeading, targetRad, ShootState.ACTIVE_SHOOTING);
+            return calculate(robotHeading, targetRad, ShootState.ACTIVE_SHOOTING);
         }
 
         if (!foundValidAngle) {

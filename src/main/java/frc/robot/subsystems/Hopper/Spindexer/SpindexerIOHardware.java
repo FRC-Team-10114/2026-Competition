@@ -13,29 +13,30 @@ import frc.robot.subsystems.Hopper.HopperConstant.SpindexerConstants;
 
 public class SpindexerIOHardware implements SpindexerIO {
 
-    private final TalonFX mechineMotor;
+    private final TalonFX spindexerMotor;
 
     private final VoltageOut output;
 
     public SpindexerIOHardware() {
-        this.mechineMotor = new TalonFX(IDs.Hopper.SPINDEXER_MOTOR, "canivore");
+        this.spindexerMotor = new TalonFX(IDs.Hopper.SPINDEXER_MOTOR, "canivore");
         this.output = new VoltageOut(Volts.of(0)); 
 
         configure();
     }
 
     @Override
-    public void run(double vlot) {
-        this.mechineMotor.setControl(output.withOutput(Volts.of(vlot)));
+    public void run(double Voltage) {
+        this.spindexerMotor.setControl(output.withOutput(Volts.of(Voltage)));
     }
 
     @Override
     public void stop() {
-        this.mechineMotor.stopMotor();
+        this.spindexerMotor.stopMotor();
     }
+    
     @Override
     public double getStatorCurrent(){
-        return this.mechineMotor.getStatorCurrent().getValueAsDouble();
+        return this.spindexerMotor.getStatorCurrent().getValueAsDouble();
     }
 
     @Override
@@ -51,7 +52,7 @@ public class SpindexerIOHardware implements SpindexerIO {
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimitEnable(true);
         
-        mechineMotor.getConfigurator().apply(mechineConfig);
+        spindexerMotor.getConfigurator().apply(mechineConfig);
     }
     
 }
