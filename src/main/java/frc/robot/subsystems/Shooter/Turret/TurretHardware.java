@@ -133,7 +133,7 @@ public class TurretHardware extends TurretIO {
 
     @Override
     public void setAngle(Rotation2d robotHeading, Angle targetRad, ShootState state) {
-        double target = Calculate(robotHeading, targetRad, state).in(Radians);
+        double target = calculate(robotHeading, targetRad, state).in(Radians);
         double current = getAngle().in(Radians);
         double error = target - current;
 
@@ -141,10 +141,10 @@ public class TurretHardware extends TurretIO {
         double currentMaxAccel = BASE_ACCELERATION;
         double extraFeedForwardVolts = 0.0;
 
-        org.littletonrobotics.junction.Logger.recordOutput("fix", Calculate(robotHeading, targetRad, state));
+        org.littletonrobotics.junction.Logger.recordOutput("fix", calculate(robotHeading, targetRad, state));
 
         turretMotor.setControl(m_request
-                .withPosition(Calculate(robotHeading, targetRad, state))
+                .withPosition(calculate(robotHeading, targetRad, state))
                 .withVelocity(currentMaxVel)
                 .withAcceleration(currentMaxAccel)
                 .withJerk(BASE_JERK)
