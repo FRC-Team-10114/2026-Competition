@@ -62,7 +62,7 @@ public class TunerConstants {
     // documentation.
     private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40) // 限制從電池抽取的電流 (保護電池，防止壓降)
+                    .withSupplyCurrentLimit(50) // 限制從電池抽取的電流 (保護電池，防止壓降)
                     .withSupplyCurrentLimitEnable(true)
                     .withStatorCurrentLimit(60) // 限制馬達輸出的定子電流 (限制瞬間扭力)
                     .withStatorCurrentLimitEnable(true));

@@ -44,7 +44,6 @@ public class AutoAlign {
 
         SmartDashboard.putData("End/Climb", EndClimbChooser);
     }
-    // Pose Alignments Methods
 
     public enum Endclimb {
         None, Climb, ReseveClimb
@@ -75,7 +74,6 @@ public class AutoAlign {
                 Rotation2d.fromDegrees(180),
                 Rotation2d.fromDegrees(-90));
 
-        // 使用 defer: 確保「按下按鈕的那一瞬間」才計算機器人要去哪
         return Commands.defer(() -> {
 
             Pose2d rawTargetPose = ToTrenchPose();

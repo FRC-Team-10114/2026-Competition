@@ -33,16 +33,8 @@ public class ClimberSubsystem extends SubsystemBase {
         return new ClimberSubsystem(new ClimberIOSpark());
     }
 
-    // public void up() {
-    // this.climber.setVolt(9);
-    // }
-    // public void down() {
-    // this.climber.setVolt(-9);
-    // }
-
     public Command down() {
         return Commands.run(() -> this.climber.setVolt(9), this)
-                .until(() -> this.climber.maingetOutputCurrent() >= 42 && this.climber.getOutputCurrent() >= 40)
                 .finallyDo(() -> this.climber.setVolt(0));
     }
 
@@ -90,12 +82,6 @@ public class ClimberSubsystem extends SubsystemBase {
         }, Set.of(this));
     }
 
-    // public void up(){
-    // this.climber.setPosition(85); // -109
-    // }
-    // public void down() {
-    // this.climber.setPosition(0); // -40
-    // }
     public void stop() {
         this.climber.setVolt(0);
     }

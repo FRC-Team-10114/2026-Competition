@@ -35,7 +35,7 @@ public class TriggerIOSpark implements TriggerIO {
         var TriggerConfig = new SparkFlexConfig();
 
         TriggerConfig
-                .smartCurrentLimit(40) // 建議 40A 就夠了
+                .smartCurrentLimit(40)
                 .idleMode(IdleMode.kBrake)
                 .inverted(false);
 

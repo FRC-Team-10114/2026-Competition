@@ -15,6 +15,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -44,7 +45,7 @@ public class RobotContainer {
 
     // Constants for tuning
     private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private final double MaxTeleOpSpeed = MaxSpeed * (3.5 / 5.29);
+    private final double MaxTeleOpSpeed = MaxSpeed;
     private final double MaxAngularRate = RotationsPerSecond.of(1.25).in(RadiansPerSecond);
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -135,13 +136,16 @@ public class RobotContainer {
 
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> {
-                    boolean slowMode = joystick.getLeftTriggerAxis() > 0.3 && joystick.getRightTriggerAxis() > 0.3;
+                    boolean turboMode = controller.rightBumper().getAsBoolean();
 
-                    double translationMultiplier = slowMode ? 0.5 : 1.0;
+                    double translationMultiplier = turboMode ? 1.0 : 0.78;
 
                     return drive
-                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed)
-                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed)
+
+                            .withVelocityX(-joystick.getLeftY() * MaxTeleOpSpeed * translationMultiplier)
+
+                            .withVelocityY(-joystick.getLeftX() * MaxTeleOpSpeed * translationMultiplier)
+
                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
                 }));
         final var idle = new SwerveRequest.Idle();
@@ -160,6 +164,7 @@ public class RobotContainer {
 
         joystick.leftTrigger().whileTrue((superstructure.intake()))
                 .onFalse(superstructure.stopintake());
+
         joystick.rightTrigger().whileTrue(this.superstructure.shootCommand())
                 .onFalse(this.superstructure.stopShoot());
 
@@ -172,6 +177,9 @@ public class RobotContainer {
         controller.b().onTrue(Commands.runOnce(this.shooter::cameralowset, this.shooter));
 
         controller.a().onTrue(Commands.runOnce(this.shooter::camerabackset, this.shooter));
+
+        controller.leftBumper().onTrue(Commands.runOnce(() -> robotStatus.SetSafeHood(true), robotStatus))
+                .onFalse(Commands.runOnce(() -> robotStatus.SetSafeHood(false), robotStatus));
 
         // joystick.a().whileTrue(superstructure.autoclimb());
 
@@ -244,9 +252,12 @@ public class RobotContainer {
         return this.drivetrain;
     }
 
+    public ShooterSubsystem shooter() {
+        return this.shooter;
+    }
+
     public Command getAutonomousCommand() {
         return autoChooser.auto();
-
     }
 
     public void sysidTest() {

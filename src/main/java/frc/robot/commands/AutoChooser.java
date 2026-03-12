@@ -112,7 +112,6 @@ public class AutoChooser {
         IfGoCenter ifGoCenter = IfGoCenterChooser.getSelected();
         IfGoclimb ifGoclimb = IfGoClimbChooser.getSelected();
 
-        // 1. 增加 Null 防護，避免儀表板未同步導致 Crash
         if (startPose == null)
             startPose = AutoStart.NONE;
         if (issShowTime == null)
@@ -139,7 +138,6 @@ public class AutoChooser {
                         .getStartingHolonomicPose()
                         .orElse(new Pose2d());
 
-                // C. 計算距離 (使用 getTranslation().getDistance())
                 double distLeft = currentPose.getTranslation().getDistance(leftStart.getTranslation());
                 double distCenter = currentPose.getTranslation().getDistance(centerStart.getTranslation());
                 double distRight = currentPose.getTranslation().getDistance(rightStart.getTranslation());
@@ -175,7 +173,6 @@ public class AutoChooser {
                 break;
         }
 
-        // --- 組合路徑邏輯 ---
         Command start = Commands.none();
         switch (startPose) {
             case LEFT:
@@ -226,6 +223,3 @@ public class AutoChooser {
         return Commands.sequence(start, end);
         }
     }
-    // public Command auto_down(){
-    //     IfGoclimb ifGoclimb = IfGoClimbChooser.getSelected();
-    // }

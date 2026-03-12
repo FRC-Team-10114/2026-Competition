@@ -58,7 +58,6 @@ public class HoodIOTalon implements HoodIO {
                 new SysIdRoutine.Mechanism(
                         (volts) -> this.HoodMotor.setControl(voltagRequire.withOutput(volts.in(Volts))),
                         null,
-                        // 🟢 修正 1：給予一個虛擬的 SubsystemBase，避免 IO 層轉型失敗當機
                         new SubsystemBase() {
                             @Override
                             public String getName() {
@@ -88,7 +87,7 @@ public class HoodIOTalon implements HoodIO {
 
         double targetSensorRotations = Units.degreesToRotations(25.0) * sensorToMechRatio;
 
-        cfg.MagnetSensor.MagnetOffset = 0.343505859375 + targetSensorRotations;
+        cfg.MagnetSensor.MagnetOffset = 0.332275390625 + targetSensorRotations;
 
         cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
@@ -152,16 +151,12 @@ public class HoodIOTalon implements HoodIO {
 
     @Override
     public boolean isAtSetPosition() {
-        // 3. 務必刷新訊號，確保讀到的是最新位置
         this.HoodPosition.refresh();
 
-        // 4. 取得當前實際角度
         double currentDegrees = this.HoodPosition.getValue().in(Degrees);
 
-        // 5. 計算誤差絕對值 (目標 - 實際)
         double error = Math.abs(this.latestTargetDegrees - currentDegrees);
 
-        // 6. 只要誤差小於 2 度，就回傳 true (允許開火)
         return error < 2.0;
     }
           public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -185,25 +180,21 @@ public Command startCommand() {
 public Command sysIdTest() {
         return Commands.sequence(
             this.startCommand(),
-            // 1. Quasistatic Forward (慢慢往前推)
             this.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                .until(() -> this.getAngle() > 50.0), // 當角度大於 43 度時停止
-            
-            new WaitCommand(0.5), // 休息 1.5 秒讓機構穩定
-
-            // 2. Quasistatic Reverse (慢慢往後拉)
-            this.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                .until(() -> this.getAngle() < 30.0), // 當角度小於 30 度時停止
+                .until(() -> this.getAngle() > 50.0),
             
             new WaitCommand(0.5),
 
-            // 3. Dynamic Forward (快速往前推)
+            this.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                .until(() -> this.getAngle() < 30.0),
+            
+            new WaitCommand(0.5),
+
             this.sysIdDynamic(SysIdRoutine.Direction.kForward)
                 .until(() -> this.getAngle() > 43.0),
             
             new WaitCommand(0.5),
 
-            // 4. Dynamic Reverse (快速往後拉)
             this.sysIdDynamic(SysIdRoutine.Direction.kReverse)
                 .until(() -> this.getAngle() < 30.0),
             this.stopCommand()

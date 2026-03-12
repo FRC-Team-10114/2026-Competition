@@ -58,7 +58,6 @@ public class ArmIOTalon implements ArmIO {
                                                 (volts) -> this.armMotor
                                                                 .setControl(voltagRequire.withOutput(volts.in(Volts))),
                                                 null,
-                                                // 🟢 修正 1：給予一個虛擬的 SubsystemBase，避免 IO 層轉型失敗當機
                                                 new SubsystemBase() {
                                                         @Override
                                                         public String getName() {
@@ -147,15 +146,10 @@ public class ArmIOTalon implements ArmIO {
 
                                 new WaitCommand(1.5),
 
-                                // 4. Dynamic Forward (快速往前推)
                                 sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward)
                                                 .until(() -> this.getPosition() > 135),
 
-                                // 5. Dynamic Reverse (快速往後拉)
-
-                                // 🟢 6. 測試結束：關閉紀錄器，並將更新率降回正常的 50Hz
                                 Commands.runOnce(() -> {
-                                        System.err.println("🛑 SysId 紀錄結束！");
                                         SignalLogger.stop();
                                         armMotor.getPosition().setUpdateFrequency(50);
                                         armMotor.getVelocity().setUpdateFrequency(50);
