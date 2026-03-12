@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.logging.Logger;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusSignal;
@@ -45,7 +45,7 @@ public class TurretIOTalon extends TurretIO {
     private final SysIdRoutine sysIdRoutine;
 
     private double lastTargetPosition = 0.0;
-    private final double BLACKLASH_OFFSET = Radians.convertFrom(1, Degrees);
+    private final double BLACKLASH_OFFSET = Radians.convertFrom(2, Degrees);
     private boolean isPushPositive = false;
 
     public TurretIOTalon() {
@@ -109,7 +109,7 @@ public class TurretIOTalon extends TurretIO {
         configs.Slot0.kS = 0.63542;
         configs.Slot0.kV = 1.5255;
         configs.Slot0.kA = 0.13204;
-        configs.Slot0.kP = 5.0;
+        configs.Slot0.kP = 50.0;
         configs.Slot0.kD = 0.1;
 
         turretMotor.getConfigurator().apply(configs);
@@ -127,6 +127,7 @@ public class TurretIOTalon extends TurretIO {
 
         double compensatedTarget = rawTarget;
 
+        Logger.recordOutput("turretTarget", compensatedTarget);
         compensatedTarget += isPushPositive ? (BLACKLASH_OFFSET / 2.0) : -(BLACKLASH_OFFSET / 2.0);
 
         turretMotor.setControl(m_request.withPosition(Radians.of(compensatedTarget)));
