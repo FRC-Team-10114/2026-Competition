@@ -81,14 +81,13 @@ public class ShooterCalculator {
                                         double interpolated = MathUtil.interpolate(startVal, endVal, t);
                                         return RotationsPerSecond.of(interpolated);
                                 });
-                rollMap.put(0.796222, RotationsPerSecond.of(32.3));
-                rollMap.put(1.545207, RotationsPerSecond.of(33.3));
-                rollMap.put(2.148772, RotationsPerSecond.of(35.8));
-                rollMap.put(2.590749, RotationsPerSecond.of(36.3));
+                rollMap.put(0.796222, RotationsPerSecond.of(33.8));
+                rollMap.put(1.545207, RotationsPerSecond.of(35.3));
+                rollMap.put(2.148772, RotationsPerSecond.of(37.8));
+                rollMap.put(2.590749, RotationsPerSecond.of(38.3));
                 rollMap.put(3.062585, RotationsPerSecond.of(40.8));
-                rollMap.put(4.099106, RotationsPerSecond.of(43.3));
-                rollMap.put(4.622348, RotationsPerSecond.of(45.8));
-                rollMap.put(5.074542, RotationsPerSecond.of(47.3));
+                rollMap.put(4.099106, RotationsPerSecond.of(44.3));
+                rollMap.put(5.074542, RotationsPerSecond.of(50.3));
 
                 hoodMap.put(0.796222, Degree.of(27.0));
                 hoodMap.put(1.545207, Degree.of(32.0));
@@ -152,16 +151,19 @@ public class ShooterCalculator {
                                         robotVelocity.omegaRadiansPerSecond);
                 }
 
-                // 2. 計算 Turret 的場地速度 (包含機器人旋轉帶來的切線速度)
+                // 2. 計算 Turret 的場地速度
+                Translation2d turretOffsetField = robotToTurret.getTranslation().toTranslation2d()
+                                .rotateBy(estimatedPose.getRotation());
+
                 double turretVelocityX = robotVelocity.vxMetersPerSecond
                                 + robotVelocity.omegaRadiansPerSecond
                                                 * (robotToTurret.getY() * Math.cos(robotAngle)
                                                                 - robotToTurret.getX() * Math.sin(robotAngle));
-
                 double turretVelocityY = robotVelocity.vyMetersPerSecond
                                 + robotVelocity.omegaRadiansPerSecond
                                                 * (robotToTurret.getX() * Math.cos(robotAngle)
                                                                 - robotToTurret.getY() * Math.sin(robotAngle));
+
 
                 double timeOfFlight = 0.0;
                 Pose2d lookaheadPose = turretPosition;
@@ -182,7 +184,6 @@ public class ShooterCalculator {
 
                 Translation2d vectorToTarget = target.minus(lookaheadPose.getTranslation());
                 Rotation2d targetFieldAngle = vectorToTarget.getAngle();
-
 
                 // 3. 最後的鏡像翻轉 (保持你原本的邏輯，用於修正靜態瞄準)
                 if (AllianceFlipUtil.shouldFlip()) {
@@ -279,8 +280,10 @@ public class ShooterCalculator {
                         targetFieldAngle = Rotation2d.fromDegrees(targetFieldAngle.getDegrees() - 180.0);
                 }
 
-                // Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
-                return new ShootingState(targetFieldAngle, Hood_MAX_RADS, ToAillancerollMap.get(lookaheadTurretToTargetDistance));
+                // Logger.recordOutput("lookaheadTurretToTargetDistance",
+                // lookaheadTurretToTargetDistance);
+                return new ShootingState(targetFieldAngle, Hood_MAX_RADS,
+                                ToAillancerollMap.get(lookaheadTurretToTargetDistance));
         }
 
 }

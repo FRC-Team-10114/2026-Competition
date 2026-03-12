@@ -35,7 +35,7 @@ public abstract class TurretIO {
     public abstract Command sysid();
 
 
-    public Angle Calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
+    public Angle calculate(Rotation2d robotHeading, Angle targetRad, ShootState state) {
 
         lastSetpointRads = this.getAngle().baseUnitMagnitude();
 
@@ -76,7 +76,7 @@ public abstract class TurretIO {
         }
 
         if (!foundValidAngle && state == ShootState.TRACKING) {
-            return Calculate(robotHeading, targetRad, ShootState.ACTIVE_SHOOTING);
+            return calculate(robotHeading, targetRad, ShootState.ACTIVE_SHOOTING);
         }
 
         if (!foundValidAngle) {
