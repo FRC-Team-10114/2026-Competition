@@ -190,9 +190,9 @@ public class RobotContainer {
 
         // joystick.a().onTrue(superstructure.stopintake());
 
-        // joystick.b().onTrue(superstructure.ClimbPrepare());
+        joystick.b().onTrue(superstructure.ClimbPrepare());
 
-        // joystick.x().onTrue(superstructure.Climb());
+        joystick.x().onTrue(superstructure.Climb());
 
         // joystick.y().onTrue(superstructure.autoclimb());
 

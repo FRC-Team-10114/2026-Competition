@@ -86,8 +86,8 @@ public class ShooterCalculator {
                 rollMap.put(2.148772, RotationsPerSecond.of(37.8));
                 rollMap.put(2.590749, RotationsPerSecond.of(38.3));
                 rollMap.put(3.062585, RotationsPerSecond.of(40.8));
-                rollMap.put(4.099106, RotationsPerSecond.of(44.3));
-                rollMap.put(5.074542, RotationsPerSecond.of(50.3));
+                rollMap.put(4.099106, RotationsPerSecond.of(42.3));
+                rollMap.put(5.074542, RotationsPerSecond.of(46.3));
 
                 hoodMap.put(0.796222, Degree.of(27.0));
                 hoodMap.put(1.545207, Degree.of(32.0));
@@ -194,8 +194,8 @@ public class ShooterCalculator {
 
                 Logger.recordOutput("lookaheadTurretToTargetDistance", lookaheadTurretToTargetDistance);
 
-                return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance),
-                                rollMap.get(lookaheadTurretToTargetDistance));
+                return new ShootingState(targetFieldAngle, hoodMap.get(lookaheadTurretToTargetDistance-0.19304),
+                                rollMap.get(lookaheadTurretToTargetDistance-0.19304));
         }
 
         // -------------------------------------------------------------------------------------------------------------------

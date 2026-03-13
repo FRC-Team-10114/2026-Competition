@@ -65,7 +65,7 @@ public class Constants {
             public static final double Swerve = Units.inchesToMeters(27/2 + 27);
 
             public static final Translation3d topCenterPoint = new Translation3d(
-                    layout.getTagPose(26).get().getX() + width / 2.0,
+                    layout.getTagPose(26).get().getX() + Units.inchesToMeters(60) / 2.0,
                     fieldWidth / 2.0, // Y 軸置中
                     height // 高度固定
             );

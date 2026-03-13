@@ -45,7 +45,7 @@ public class TurretIOTalon extends TurretIO {
     private final SysIdRoutine sysIdRoutine;
 
     private double lastTargetPosition = 0.0;
-    private final double BLACKLASH_OFFSET = Radians.convertFrom(2, Degrees);
+    private final double BLACKLASH_OFFSET = Radians.convertFrom(5, Degrees);
     private boolean isPushPositive = false;
 
     public TurretIOTalon() {
@@ -125,7 +125,7 @@ public class TurretIOTalon extends TurretIO {
             isPushPositive = false;
         }
 
-        double compensatedTarget = rawTarget;
+        double compensatedTarget = rawTarget - Radians.convertFrom(0, Degrees);
 
         Logger.recordOutput("turretTarget", compensatedTarget);
         compensatedTarget += isPushPositive ? (BLACKLASH_OFFSET / 2.0) : -(BLACKLASH_OFFSET / 2.0);

@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.Current;
 
 public class ShooterConstants {
         public static Transform3d robotToTurret = new Transform3d(0.10167023632566, -0.00000037052800, 0.26373899694824,
-                        Rotation3d.kZero);
+                        Rotation3d.kZero);//-0.00000037052800
 
         public static final double HARD_MIN_LIMIT = Units.degreesToRadians(-250.0);
         public static final double HARD_MAX_LIMIT = Units.degreesToRadians(250.0);
