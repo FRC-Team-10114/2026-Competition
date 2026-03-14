@@ -86,8 +86,8 @@ public class ShooterCalculator {
                 rollMap.put(2.148772, RotationsPerSecond.of(37.8));
                 rollMap.put(2.590749, RotationsPerSecond.of(38.3));
                 rollMap.put(3.062585, RotationsPerSecond.of(40.8));
-                rollMap.put(4.099106, RotationsPerSecond.of(42.3));
-                rollMap.put(5.074542, RotationsPerSecond.of(46.3));
+                rollMap.put(4.099106, RotationsPerSecond.of(42.8));
+                rollMap.put(5.074542, RotationsPerSecond.of(48.3));
 
                 hoodMap.put(0.796222, Degree.of(27.0));
                 hoodMap.put(1.545207, Degree.of(32.0));
